@@ -1,4 +1,4 @@
-package frc.team670.robot.utils.sort;
+package frc.team670.robot.utils.search;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import frc.team670.robot.utils.Logger;
 
 /**
  * Implementation of an A* search algorithm

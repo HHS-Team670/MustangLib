@@ -1,7 +1,7 @@
-package frc.team670.robot.utils.sort;
+package frc.team670.robot.utils.search;
 
 /**
- * Represents an edge that connects nodes. 
+ * Represents an edge which connects nodes on a graph. 
  */
 
 public interface Edge extends Comparable<Edge> {

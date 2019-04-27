@@ -1,8 +1,9 @@
-package frc.team670.robot.utils.sort;
+package frc.team670.robot.utils.search;
 
 /**
 * Models a node on a graph
 */
+
 public interface Node extends Comparable<Node> {  
     
     /**
