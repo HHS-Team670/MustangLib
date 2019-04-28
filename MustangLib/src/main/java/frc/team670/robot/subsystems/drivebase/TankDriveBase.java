@@ -5,17 +5,22 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.robot.subsystems;
+package frc.team670.robot.subsystems.drivebase;
 
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import frc.team670.robot.commands.XboxRocketLeagueDrive;
 
 /**
- * Add your docs here.
+ * 
+ * Represents a tank drive base using the WPIlib DifferentialDrive class. Defaults to using XboxRocketLeagueDrive.
+ * This can be overriden using the setDefaultCommand() method
+ * 
+ * @author shaylandias
  */
-public abstract class DriveBase extends Subsystem {
+public abstract class TankDriveBase extends Subsystem {
 
   protected SpeedControllerGroup leftMotors, rightMotors;
   protected DifferentialDrive drive; 
@@ -29,7 +34,7 @@ public abstract class DriveBase extends Subsystem {
    * @param deadband A minimum motor input to move the drivebase
    * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
    */
-  public DriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
+  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
     this.leftMotors = generateControllerGroup(leftMotors);
     this.rightMotors = generateControllerGroup(rightMotors);
     drive = new DifferentialDrive(this.leftMotors, this.rightMotors);
@@ -43,7 +48,7 @@ public abstract class DriveBase extends Subsystem {
    * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
    * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
    */
-  public DriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors) {
+  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors) {
     this(leftMotors, rightMotors, true, true, 0.02, true);
   }
 
@@ -54,7 +59,7 @@ public abstract class DriveBase extends Subsystem {
    * @param inverted Invert the motors (make what would have been the fron the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
-  public DriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
+  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
     this(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
   }
 
@@ -213,6 +218,11 @@ public abstract class DriveBase extends Subsystem {
    */
   public double getRightVelocityInches() {
     return ticksToInches(getRightVelocityTicks());
+  }
+
+  @Override
+  protected void initDefaultCommand() {
+      setDefaultCommand(new XboxRocketLeagueDrive(this));
   }
 
 }

@@ -9,20 +9,20 @@ package frc.team670.robot.commands;
 
 import edu.wpi.first.wpilibj.command.InstantCommand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team670.robot.subsystems.DriveBase;
+import frc.team670.robot.subsystems.drivebase.TankDriveBase;
 
  
 
 /**
  * Drives the Robot using Xbox controls like the game Rocket League. Triggers control speed, stick is for steering.
- * @author lakshbhambhani
+ * @author lakshbhambhani, shaylandias
  */
 public class XboxRocketLeagueDrive extends InstantCommand {
 
    private final boolean SMOOTH_ROCKET_LEAGUE_STEER, SMOOTH_ROCKET_LEAGUE_TRIGGER;
    private static boolean isReversed;
 
-  public XboxRocketLeagueDrive(DriveBase driveBase) {
+  public XboxRocketLeagueDrive(TankDriveBase driveBase) {
     super();
     SMOOTH_ROCKET_LEAGUE_STEER = true;
     SMOOTH_ROCKET_LEAGUE_TRIGGER = true;
