@@ -7,6 +7,7 @@
 
 package frc.team670.robot.subsystems;
 
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -16,10 +17,62 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
  */
 public abstract class DriveBase extends Subsystem {
 
+  protected SpeedControllerGroup leftMotors, rightMotors;
   protected DifferentialDrive drive; 
 
-  public DriveBase(SpeedControllerGroup left, SpeedControllerGroup right){
-    drive = new DifferentialDrive(left, right);
+  /**
+   * 
+   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param inverted Invert the motors (make what would have been the fron the back)
+   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
+   * @param deadband A minimum motor input to move the drivebase
+   * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
+   */
+  public DriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
+    this.leftMotors = generateControllerGroup(leftMotors);
+    this.rightMotors = generateControllerGroup(rightMotors);
+    drive = new DifferentialDrive(this.leftMotors, this.rightMotors);
+    drive.setRightSideInverted(rightSideInverted);
+    drive.setDeadband(deadband);
+    drive.setSafetyEnabled(safetyEnabled);
+  }
+
+  /**
+   * 
+   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   */
+  public DriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors) {
+    this(leftMotors, rightMotors, true, true, 0.02, true);
+  }
+
+  /**
+   * 
+   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param inverted Invert the motors (make what would have been the fron the back)
+   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
+   */
+  public DriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
+    this(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
+  }
+
+  private SpeedControllerGroup generateControllerGroup(SpeedController[] motors) {
+    if(motors.length > 0) {
+      SpeedControllerGroup group;
+      if(motors.length > 1) {
+        SpeedController[] otherMotors = new SpeedController[motors.length - 1];
+        for(int i = 1; i < motors.length; i++) {
+          otherMotors[i-1] = motors[i];
+        }
+        group = new SpeedControllerGroup(motors[0], otherMotors);
+      } else {
+        group = new SpeedControllerGroup(motors[0]);
+      }
+      return group;
+    }
+    return null;
   }
 
   /**
@@ -28,14 +81,138 @@ public abstract class DriveBase extends Subsystem {
    */
   public abstract void setRampRate(double rampRate);
 
+   /**
+   * 
+   * Drives the Robot using a tank drive configuration (two joysticks, or auton).
+   * Squares inputs to linearize them.
+   * 
+   * @param leftSpeed  Speed for left side of drive base [-1, 1]. Automatically
+   *                   squares this value to linearize it.
+   * @param rightSpeed Speed for right side of drive base [-1, 1]. Automatically
+   *                   squares this value to linearize it.
+   */
+  public void tankDrive(double leftSpeed, double rightSpeed) {
+    tankDrive(leftSpeed, rightSpeed, true);
+  }
+  /**
+   * 
+   * Drives the Robot using a tank drive configuration (two joysticks, or auton)
+   * 
+   * @param leftSpeed     Speed for left side of drive base [-1, 1]
+   * @param rightSpeed    Speed for right side of drive base [-1, 1]
+   * @param squaredInputs If true, decreases sensitivity at lower inputs
+   */
+  public void tankDrive(double leftSpeed, double rightSpeed, boolean squaredInputs) {
+    drive.tankDrive(leftSpeed, rightSpeed, squaredInputs);
+  }
 
   /**
-   * Sets the drive base to drive. -1 is reverse, 1 is forward
-   * @param left The left power [-1, 1]
-   * @param right The right power [-1, 1]
+   * 
+   * Drives the Robot using a curvature drive configuration (wheel)
+   * 
+   * @param xSpeed      The forward throttle speed [-1, 1]
+   * @param zRotation   The amount of rotation to turn [-1, 1] with positive being
+   *                    right
+   * @param isQuickTurn If true enables turning in place and running one side
+   *                    backwards to turn faster
    */
-  public void tankDrive(double left, double right) {
-    drive.tankDrive(left, right);
+  public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
+    drive.curvatureDrive(xSpeed, zRotation, isQuickTurn);
+  }
+
+  /**
+   * 
+   * Drives the Robot using an arcade drive configuration (single joystick with
+   * twist)
+   * 
+   * @param xSpeed      The forward throttle speed [-1, 1]
+   * @param zRotation   The amount of rotation to turn [-1, 1] with positive being
+   *                    right
+   * @param isQuickTurn If true, decreases sensitivity at lower inputs
+   */
+  public void arcadeDrive(double xSpeed, double zRotation, boolean squaredInputs) {
+    drive.arcadeDrive(xSpeed, zRotation, squaredInputs);
+  }
+
+  /**
+   * 
+   * Drives the Robot using an arcade drive configuration (single joystick with
+   * twist). Squares inputs for smoothing.
+   * 
+   * @param xSpeed    The forward throttle speed [-1, 1]
+   * @param zRotation The amount of rotation to turn [-1, 1] with positive being
+   *                  right
+   */
+  public void arcadeDrive(double xSpeed, double zRotation) {
+    arcadeDrive(xSpeed, zRotation, true);
+  }
+
+  /**
+   * Stops the motors on the drive base (sets them to 0).
+   */
+  public void stop() {
+    drive.stopMotor();
+  }
+
+  public abstract void initBrakeMode();
+
+  public abstract void initCoastMode();
+
+  /**
+   * Sets the velocities of the left and right motors of the robot.
+   * 
+   * @param leftVel  Velocity for left motors in inches/sec
+   * @param rightVel Velocity for right motors in inches/sec
+   */
+  public abstract void setVelocityControl(double leftVel, double rightVel);
+
+  /**
+   * Sets the PIDControllers setpoints for the left and right side motors to the
+   * given positions in inches forward.
+   * 
+   * @param deltaLeft  The desired change in left position in inches
+   * @param deltaRight The desired change in right position in inches
+   */
+  public abstract void setEncodersPositionControl(double deltaLeft, double deltaRight);
+
+  protected abstract int inchesToTicks(double inches);
+
+  protected abstract double ticksToInches(int ticks);
+
+  public abstract int getLeftPositionTicks();
+
+  public abstract int getRightPositionTicks();
+
+  public double getLeftPositionInches() {
+    return ticksToInches(getLeftPositionTicks());
+  }
+
+  public double getRightPositionInches() {
+    return ticksToInches(getRightPositionTicks());
+  }
+
+  /**
+   * @return Velocity of the left motors in ticks per second
+   */
+  public abstract int getLeftVelocityTicks();
+
+  /**
+   * @return Velocity of the right motors in ticks per second
+   */
+  public abstract int getRightVelocityTicks();
+
+  /**
+   * @return Velocity of the left motors in inches per second
+   */
+  public double getLeftVelocityInches() {
+    return ticksToInches(getLeftVelocityTicks());
+  }
+
+  /**
+   * @return Velocity of the right motors in inches per second
+   */
+  public double getRightVelocityInches() {
+    return ticksToInches(getRightVelocityTicks());
   }
 
 }
