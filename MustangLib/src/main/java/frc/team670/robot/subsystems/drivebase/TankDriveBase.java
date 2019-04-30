@@ -22,25 +22,20 @@ import frc.team670.robot.commands.XboxRocketLeagueDrive;
  */
 public abstract class TankDriveBase extends Subsystem {
 
-  protected SpeedControllerGroup leftMotors, rightMotors;
+  private SpeedControllerGroup leftMotors, rightMotors;
   protected DifferentialDrive drive; 
 
   /**
    * 
    * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
    * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
-   * @param inverted Invert the motors (make what would have been the fron the back)
+   * @param inverted Invert the motors (make what would have been the front the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    * @param deadband A minimum motor input to move the drivebase
    * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
    */
   public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
-    this.leftMotors = generateControllerGroup(leftMotors);
-    this.rightMotors = generateControllerGroup(rightMotors);
-    drive = new DifferentialDrive(this.leftMotors, this.rightMotors);
-    drive.setRightSideInverted(rightSideInverted);
-    drive.setDeadband(deadband);
-    drive.setSafetyEnabled(safetyEnabled);
+    setMotorControllers(leftMotors, rightMotors, inverted, rightSideInverted, deadband, safetyEnabled);
   }
 
   /**
@@ -62,6 +57,50 @@ public abstract class TankDriveBase extends Subsystem {
   public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
     this(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
   }
+
+  /**
+   * Usethis constructor as the super() in a sublcass, then call setMotorControllers if you need to run setup on Motor Controllers
+   */
+  public TankDriveBase() {}
+
+  /**
+   * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
+   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param inverted Invert the motors (make what would have been the front the back)
+   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
+   * @param deadband A minimum motor input to move the drivebase
+   * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
+   */
+  protected void setMotorControllers(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled) {
+    this.leftMotors = generateControllerGroup(leftMotors);
+    this.rightMotors = generateControllerGroup(rightMotors);
+    drive = new DifferentialDrive(this.leftMotors, this.rightMotors);
+    drive.setRightSideInverted(rightSideInverted);
+    drive.setDeadband(deadband);
+    drive.setSafetyEnabled(safetyEnabled);
+  }
+
+  /**
+   * This method is called by the constructor or in a subclass if motor setup needs to be performed. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
+   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   */
+  protected void setMotorControllers(SpeedController[] leftMotors, SpeedController[] rightMotors) {
+    setMotorControllers(leftMotors, rightMotors, true, true, 0.02, true);
+  }
+
+  /**
+   * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
+   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param inverted Invert the motors (make what would have been the front the back)
+   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
+   */
+  public void setMotorControllers(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
+    setMotorControllers(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
+  }
+
 
   private SpeedControllerGroup generateControllerGroup(SpeedController[] motors) {
     if(motors.length > 0) {
@@ -165,7 +204,6 @@ public abstract class TankDriveBase extends Subsystem {
 
   /**
    * Sets the velocities of the left and right motors of the robot.
-   * 
    * @param leftVel  Velocity for left motors in inches/sec
    * @param rightVel Velocity for right motors in inches/sec
    */
@@ -180,13 +218,13 @@ public abstract class TankDriveBase extends Subsystem {
    */
   public abstract void setEncodersPositionControl(double deltaLeft, double deltaRight);
 
-  protected abstract int inchesToTicks(double inches);
+  public abstract double inchesToTicks(double inches);
 
-  protected abstract double ticksToInches(int ticks);
+  public abstract double ticksToInches(double ticks);
 
-  public abstract int getLeftPositionTicks();
+  public abstract double getLeftPositionTicks();
 
-  public abstract int getRightPositionTicks();
+  public abstract double getRightPositionTicks();
 
   public double getLeftPositionInches() {
     return ticksToInches(getLeftPositionTicks());
@@ -199,12 +237,12 @@ public abstract class TankDriveBase extends Subsystem {
   /**
    * @return Velocity of the left motors in ticks per second
    */
-  public abstract int getLeftVelocityTicks();
+  public abstract double getLeftVelocityTicks();
 
   /**
    * @return Velocity of the right motors in ticks per second
    */
-  public abstract int getRightVelocityTicks();
+  public abstract double getRightVelocityTicks();
 
   /**
    * @return Velocity of the left motors in inches per second
