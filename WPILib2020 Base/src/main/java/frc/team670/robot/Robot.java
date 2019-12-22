@@ -18,7 +18,7 @@ import frc.team670.robot.constants.RobotConstants;
 import frc.team670.robot.subsystems.DriveBase;
 import frc.team670.robot.subsystems.MustangLEDs_2019;
 import frc.team670.robot.utils.Logger;
-
+import frc.team670.robot.dataCollection.MustangSensors;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -34,6 +34,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 public class Robot extends TimedRobot {
   public static DriveBase driveBase = new DriveBase();
   public static MustangLEDs_2019 leds = new MustangLEDs_2019();
+  public static MustangSensors sensors = new MustangSensors();
   public static OI oi;
   private Notifier updateArbitraryFeedForwards;
 
