@@ -29,3 +29,9 @@
 * `sudo nano /etc/rc.local`
 * Add this to the end of the script: `sudo bash /home/pi/startup.sh &`
 
+## Current DS, Raspi IP & Camera Ports
+DS IP: 10.6.70.5
+Raspi IP: 10.6.70.26
+Front Camera Port: 5800
+Back Camera Port: 5801
+
