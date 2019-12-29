@@ -7,7 +7,15 @@
 ## Create a Gstreamer Startup script
 * `CAMERA_FRONT` & `CAMERA_BACK` = Ports for front and back usb cameras (Ex: /dev/video0)
 * `PORT_FOR_FRONT` & `PORT_FOR_BACK` = Server ports on which the camera streaming for each camera has to run
-  * For a list of available ports, refer to: 
+  * For a list of available ports, refer to: https://wpilib.screenstepslive.com/s/currentCS/m/troubleshooting/l/705152-fms-whitepaper
+   * UDP/TCP 1180 - 1190: Camera Data
+   * TCP 1735: SmartDashboard
+   * UDP 1130: DS-to-Robot control data
+   * UDP 1140: Robot-to-DS status data
+   * HTTP 80: Camera/web interface
+   * HTTP 443: Camera/web interface (secure)
+   * UDP/TCP 554: Real-Time Streaming Protocol for h.264 camera streaming
+   * UDP/TCP 5800-5810: Team Use
 * `DS_IP_ADDR` = The ip address of your driverstation
   * Set the Driver Station IP as a static ip in Control Panel > Network & Internet > Network & Sharing Center > Change Adapter Settings > Properties of WiFi > Internet Protocol Version 4 (TCP/IPv4)
 * To set the properties of the webcam, `v4l2-ctl -d ${CAMERA} -c brightness=100 -c contrast=50 -c white_balance_temperature_auto=1 -c backlight_compensation=1 -c exposure_auto=1 -c exposure_absolute=20`
