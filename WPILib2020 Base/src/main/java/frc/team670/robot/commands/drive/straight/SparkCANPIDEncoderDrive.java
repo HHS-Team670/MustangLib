@@ -12,14 +12,22 @@ import frc.team670.robot.Robot;
 import frc.team670.robot.subsystems.DriveBase;
 import frc.team670.robot.utils.Logger;
 
+/** Command for driving using SparkCANEncoders with PID */
 public class SparkCANPIDEncoderDrive extends Command {
 
   private double rotationsToTravel;
-  private int leftStartingPosition, rightStartingPosition, leftEndingPosition, rightEndingPosition, leftCurrentPosition, rightCurrentPosition;
+  private int leftStartingPosition, rightStartingPosition, leftEndingPosition, rightEndingPosition, leftCurrentPosition,
+      rightCurrentPosition;
   private final double THRESHOLD = 1; // TODO Define threshold
 
+  /**
+   * Creates instance of SparkCANPIDEncoderDrive
+   * 
+   * @param inchesToTravel the number of inches the robot will travel using
+   *                       SparkCANEncoders
+   */
   public SparkCANPIDEncoderDrive(int inchesToTravel) {
-    requires (Robot.driveBase);
+    requires(Robot.driveBase);
     rotationsToTravel = DriveBase.convertInchesToDriveBaseRotations(inchesToTravel);
   }
 
@@ -40,7 +48,7 @@ public class SparkCANPIDEncoderDrive extends Command {
     rightCurrentPosition = Robot.driveBase.getRightSparkEncoderPosition();
 
     Robot.driveBase.setSparkEncodersControl(rotationsToTravel, rotationsToTravel); // Could be put into initialize
-    
+
     // Also possibly takes in rotations not tick values
     Logger.consoleLog("lefCurrentPosition:%s rightCurrentPosition:%s ", leftCurrentPosition, rightCurrentPosition);
 
@@ -50,8 +58,10 @@ public class SparkCANPIDEncoderDrive extends Command {
   @Override
   protected boolean isFinished() {
 
-    if (Math.abs(Robot.driveBase.getLeftSparkEncoderPosition() - (rotationsToTravel + leftStartingPosition)) <= THRESHOLD &&
-     Math.abs(Robot.driveBase.getRightSparkEncoderPosition() - (rotationsToTravel + rightStartingPosition)) <= THRESHOLD ){
+    if (Math
+        .abs(Robot.driveBase.getLeftSparkEncoderPosition() - (rotationsToTravel + leftStartingPosition)) <= THRESHOLD
+        && Math.abs(Robot.driveBase.getRightSparkEncoderPosition()
+            - (rotationsToTravel + rightStartingPosition)) <= THRESHOLD) {
       return true;
     }
     return false;

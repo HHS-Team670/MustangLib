@@ -13,11 +13,18 @@ import frc.team670.robot.Robot;
 import frc.team670.robot.subsystems.DriveBase;
 import frc.team670.robot.utils.Logger;
 
+/** Command for driving using DIOEncoders */
 public class DIOEncoderDrive extends Command {
   private PIDController leftPIDController;
   private PIDController rightPIDController;
   private int P, I, D, FF, ticksToTravel, tolerance = 300;
 
+  /**
+   * Creates instance of DIOEncoderDrive
+   * 
+   * @param inchesToTravel the number of inches the robot will travel using
+   *                       DIOEncoders
+   */
   public DIOEncoderDrive(int inchesToTravel) {
     requires(Robot.driveBase);
     ticksToTravel = DriveBase.convertInchesToDriveBaseTicks(inchesToTravel);

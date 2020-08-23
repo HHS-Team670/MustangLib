@@ -20,6 +20,9 @@ import frc.team670.robot.utils.functions.MathUtils;
 import frc.team670.robot.Robot;
 import jaci.pathfinder.Pathfinder;
 
+/**
+ * Command for pivoting the NavX using PID
+ */
 public class NavXChangeableAnglePivot extends Command {
 
   private DriveBase driveBase;
@@ -29,12 +32,19 @@ public class NavXChangeableAnglePivot extends Command {
   private PIDController pivotController;
   private boolean reversed;
 
-  private static final double P = 0.0165, I = 0.0, D = 0.0; //0.2
+  private static final double P = 0.0165, I = 0.0, D = 0.0; // 0.2
   private static final double ABSOLUTE_TOLERANCE = 2;
 
   private int onTargetCount;
 
-
+  /**
+   * Creates an instance of NavXPivot
+   * 
+   * @param angle the angle the NavX will pivot
+   * @param driveBase the driveBase NavX will connect to
+   * @param sensors the sensors NavX will connect to
+   * @param reversed if the NavX is reversed or not
+   */
   public NavXChangeableAnglePivot(MutableDouble angle, DriveBase driveBase, MustangSensors sensors, boolean reversed) {
     requires(driveBase);
     this.driveBase = driveBase;
@@ -42,7 +52,7 @@ public class NavXChangeableAnglePivot extends Command {
     this.angle = angle;
     this.reversed = reversed;
 
-    pivotController = new PIDController(P, I, D,sensors.getZeroableNavXPIDSource(), new NullPIDOutput());
+    pivotController = new PIDController(P, I, D, sensors.getZeroableNavXPIDSource(), new NullPIDOutput());
 
     pivotController.setInputRange(-180, 180);
     pivotController.setOutputRange(-0.17, 0.17);
@@ -51,27 +61,27 @@ public class NavXChangeableAnglePivot extends Command {
     setTimeout(1.6);
   }
 
-  // Called just before this Command runs the first time
+  /** Called just before this Command runs the first time */
   @Override
   protected void initialize() {
     // sensors.zeroYaw();
     System.out.println(sensors.getYawDouble());
     onTargetCount = 0;
-    if(sensors.isNavXNull()){
+    if (sensors.isNavXNull()) {
       // cancel();
       finalAngle = startAngle;
       System.out.println("Null N avX");
       return;
     }
 
-    if(Math.abs(angle.getValue()) < 1) {
+    if (Math.abs(angle.getValue()) < 1) {
       // cancel();
       finalAngle = startAngle;
       System.out.println("Angle less than one");
       return;
     }
 
-    if(MathUtils.doublesEqual(RobotConstants.VISION_ERROR_CODE, -Math.abs(angle.getValue()))) {
+    if (MathUtils.doublesEqual(RobotConstants.VISION_ERROR_CODE, -Math.abs(angle.getValue()))) {
       finalAngle = startAngle;
       System.out.println("Invalid Vision Data");
       return;
@@ -89,24 +99,24 @@ public class NavXChangeableAnglePivot extends Command {
     pivotController.enable();
   }
 
-  // Called repeatedly when this Command is scheduled to run
+  /** Called repeatedly when this Command is scheduled to run */
   @Override
   protected void execute() {
     double output = pivotController.get();
     // output += output < 0 ? -0.03 : 0.03; // Arbitrary feedforward
-	  System.out.println("Output: " + output);
-	  driveBase.tankDrive(output, -output, false);
+    System.out.println("Output: " + output);
+    driveBase.tankDrive(output, -output, false);
   }
 
   // Make this return true when this Command no longer needs to run execute()
   @Override
   protected boolean isFinished() {
     // if(pivotController.onTarget()) {
-		//   onTargetCount ++;
-	  // } else {
-		//   onTargetCount = 0;
-	  // }
-	  // return (onTargetCount > 3);
+    // onTargetCount ++;
+    // } else {
+    // onTargetCount = 0;
+    // }
+    // return (onTargetCount > 3);
     return pivotController.onTarget() || isTimedOut();
   }
 
@@ -115,7 +125,7 @@ public class NavXChangeableAnglePivot extends Command {
   protected void end() {
     driveBase.stop();
     System.out.println(sensors.getYawDouble());
-    Logger.consoleLog("CurrentAngle: %s, TargetAngle: %s", sensors.getYawDouble(), finalAngle);  
+    Logger.consoleLog("CurrentAngle: %s, TargetAngle: %s", sensors.getYawDouble(), finalAngle);
     boolean isReversed = XboxRocketLeagueDrive.isDriveReversed();
     if (isReversed) {
       Robot.leds.setReverseData(true);
@@ -129,6 +139,6 @@ public class NavXChangeableAnglePivot extends Command {
   @Override
   protected void interrupted() {
     end();
-		Logger.consoleLog();
+    Logger.consoleLog();
   }
 }

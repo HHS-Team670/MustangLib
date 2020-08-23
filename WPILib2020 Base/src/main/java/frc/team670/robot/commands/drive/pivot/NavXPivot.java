@@ -15,7 +15,7 @@ import frc.team670.robot.utils.Logger;
 import jaci.pathfinder.Pathfinder;
 
 /**
- * An example command.  You can replace me with your own command.
+ * Command for pivoting the NavX
  */
 public class NavXPivot extends Command {
 
@@ -26,78 +26,90 @@ public class NavXPivot extends Command {
 
 	private int onTargetCount;
 
-  public NavXPivot(double angle) {
+	/**
+	 * Creates an instance of NavXPivot
+	 * 
+	 * @param angle the angle the NavX will pivot
+	 */
+	public NavXPivot(double angle) {
 
-	this.angle = angle;
-	
-	pivotController = new PIDController(P, I, D, Robot.sensors.getZeroableNavXPIDSource(), new NullPIDOutput());
+		this.angle = angle;
 
-	pivotController.setInputRange(-180, 180);
-	pivotController.setOutputRange(-1, 1);
-	pivotController.setAbsoluteTolerance(5);
-	pivotController.setContinuous(true);
+		pivotController = new PIDController(P, I, D, Robot.sensors.getZeroableNavXPIDSource(), new NullPIDOutput());
 
-	requires(Robot.driveBase);
-  }
+		pivotController.setInputRange(-180, 180);
+		pivotController.setOutputRange(-1, 1);
+		pivotController.setAbsoluteTolerance(5);
+		pivotController.setContinuous(true);
 
-  // Called just before this Command runs the first time
-  @Override
-  protected void initialize() {
-
-	if(Robot.sensors.isNavXNull()){
-		super.cancel();
-		return;
+		requires(Robot.driveBase);
 	}
 
-	startAngle = Robot.sensors.getYawDouble();
-	finalAngle = Pathfinder.boundHalfDegrees(startAngle + angle);
+	/**
+	 * Called just before this Command runs the first time
+	 */
+	protected void initialize() {
 
-	// Logger.consoleLog("StartAngle:%s FinalAngle:%s DegreesToTravel:%s", 
-	// 		startAngle, finalAngle, angle);
+		if (Robot.sensors.isNavXNull()) {
+			super.cancel();
+			return;
+		}
 
-	pivotController.setSetpoint(finalAngle);
+		startAngle = Robot.sensors.getYawDouble();
+		finalAngle = Pathfinder.boundHalfDegrees(startAngle + angle);
 
-	pivotController.enable();
-  }
+		// Logger.consoleLog("StartAngle:%s FinalAngle:%s DegreesToTravel:%s",
+		// startAngle, finalAngle, angle);
 
-  // Called repeatedly when this Command is scheduled to run
-  @Override
-  protected void execute() {
-	
-	double output = pivotController.get();
-	// System.out.println("Output: " + output);
-	Robot.driveBase.tankDrive(output, -output, false);
+		pivotController.setSetpoint(finalAngle);
 
-	// Logger.consoleLog("Output:%s CurrentAngle:%s", output, Robot.sensors.getYawDouble());
+		pivotController.enable();
+	}
 
-  }
+	/**
+	 * Called repeatedly when this Command is scheduled to run
+	 */
+	@Override
+	protected void execute() {
 
-  // Make this return true when this Command no longer needs to run execute()
-  @Override
-  protected boolean isFinished() {
-	//   if(pivotController.onTarget()) {
-	// 	  onTargetCount ++;
-	//   } else {
-	// 	  onTargetCount = 0;
-	//   }
-	// return (onTargetCount > 10);
-	return pivotController.onTarget();
-  }
+		double output = pivotController.get();
+		// System.out.println("Output: " + output);
+		Robot.driveBase.tankDrive(output, -output, false);
 
+		// Logger.consoleLog("Output:%s CurrentAngle:%s", output,
+		// Robot.sensors.getYawDouble());
 
-  // Called once after isFinished returns true
-  @Override
-  protected void end() {
+	}
+
+	/**
+	 * Returns true when this Command no longer needs to run execute()
+	 */
+	@Override
+	protected boolean isFinished() {
+		// if(pivotController.onTarget()) {
+		// onTargetCount ++;
+		// } else {
+		// onTargetCount = 0;
+		// }
+		// return (onTargetCount > 10);
+		return pivotController.onTarget();
+	}
+
+	/** Called once after isFinished returns true */
+	@Override
+	protected void end() {
 		Robot.driveBase.stop();
 		Logger.consoleLog("CurrentAngle: %s, TargetAngle", Robot.sensors.getYawDouble(), finalAngle);
-  }
+	}
 
-  // Called when another command which requires one or more of the same
-  // subsystems is scheduled to run
-  @Override
-  protected void interrupted() {
+	/**
+	 * Called when another command which requires one or more of the same subsystems
+	 * is scheduled to run
+	 */
+	@Override
+	protected void interrupted() {
 		end();
 		Logger.consoleLog();
 	}
-	
+
 }

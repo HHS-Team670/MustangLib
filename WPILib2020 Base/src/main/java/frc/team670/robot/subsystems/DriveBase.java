@@ -680,6 +680,9 @@ public class DriveBase extends Subsystem {
     return rightMustangEncoder.getVelocityInches();
   }
 
+  /**
+   * Sens the data from encoders to Dashboard
+   */
   public void sendEncoderDataToDashboard() {
     // if (leftDIOEncoder != null) {
     //   SmartDashboard.putNumber("Left DIO Encoder: ", leftMustangEncoder.getPositionInches());
@@ -749,6 +752,9 @@ public class DriveBase extends Subsystem {
     m_odometry.resetPosition(pose);
   }
 
+  /**
+   * Resets the Odometry of driveBase
+   */
   public void resetOdometry(){
     m_odometry = new DifferentialDriveOdometry(RobotConstants.kDriveKinematics);
     zeroHeading();

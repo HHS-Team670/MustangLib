@@ -40,7 +40,6 @@ public class MustangLEDs_2019 {
 	// final byte[] bounceBackground = {'7','L'};
 	// final byte[] cylonBounce = {'8','L'};
 	// final byte[] rainbow = {'9','L'};
-	
 
 	// variables for data which will be sent over server
 	byte[] stateData = stillDrive;
@@ -52,7 +51,12 @@ public class MustangLEDs_2019 {
 	// Thread init
 	clientManagement client = new clientManagement();
 
-	public void socketSetup(int server) { // Activates a single client once comms are established
+	/**
+	 * Activates a single client once comms are established
+	 * 
+	 * @param server
+	 */
+	public void socketSetup(int server) {
 
 		try {
 			serverSocket = null;
@@ -65,7 +69,12 @@ public class MustangLEDs_2019 {
 
 	}
 
-	public void changeAlliance(boolean b) { //sets alliance data, is the first byte array sent over server
+	/**
+	 * Sets alliance data, is the first byte array sent over server
+	 * 
+	 * @param b true if we are blue alliance
+	 */
+	public void changeAlliance(boolean b) {
 		if (b) {
 			allianceData = blueAlliance;
 		} else {
@@ -73,6 +82,7 @@ public class MustangLEDs_2019 {
 		}
 
 	}
+
 	public void setClimbingData(boolean trigger) { // Updates if we are climbing
 		if (trigger == true) {
 			stateData = climbing;

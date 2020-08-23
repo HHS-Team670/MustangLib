@@ -3,15 +3,16 @@ package frc.team670.robot.utils;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Notifier;
 
+/** The controller joystick used to control the robot */
 public class MustangController extends Joystick {
- 
+
     private Notifier rumbler;
     private boolean isRumbling;
     private long targetRumbleTime;
 
-   public enum DPadState {
+    public enum DPadState {
         NEUTRAl, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT;
-   }
+    }
 
     public static class XboxButtons {
         // Controller Buttons
@@ -59,11 +60,11 @@ public class MustangController extends Joystick {
         targetRumbleTime = System.currentTimeMillis() - 10;
         rumbler = new Notifier(new Runnable() {
             public void run() {
-                if(isRumbling) {
+                if (isRumbling) {
                     checkRumble();
                 }
             }
-          });
+        });
         rumbler.startPeriodic(0.125);
     }
 
@@ -71,8 +72,10 @@ public class MustangController extends Joystick {
     public double getLeftStickX() {
         double value = super.getRawAxis(XboxButtons.LEFT_STICK_X);
         // with deadband - value to exceed is 0.06299
-        if (value > 0.063 || value < 0) return super.getRawAxis(XboxButtons.LEFT_STICK_X);
-        else return 0;
+        if (value > 0.063 || value < 0)
+            return super.getRawAxis(XboxButtons.LEFT_STICK_X);
+        else
+            return 0;
     }
 
     public double getLeftStickY() {
@@ -143,12 +146,12 @@ public class MustangController extends Joystick {
      * Sets the rumble on the controller
      * 
      * @param power The desired power of the rumble [0, 1]
-     * @param time The time to rumble for in seconds
+     * @param time  The time to rumble for in seconds
      */
     public void rumble(double power, double time) {
         setRumblePower(power);
         isRumbling = true;
-        targetRumbleTime = System.currentTimeMillis() + (long)(time * 1000);
+        targetRumbleTime = System.currentTimeMillis() + (long) (time * 1000);
     }
 
     private void setRumblePower(double power) {
@@ -157,46 +160,39 @@ public class MustangController extends Joystick {
     }
 
     private void checkRumble() {
-        if(System.currentTimeMillis() >= targetRumbleTime) {
+        if (System.currentTimeMillis() >= targetRumbleTime) {
             setRumblePower(0);
             isRumbling = false;
         }
     }
 
-    // gets angle of the DPad on the XBox controller pressed with increments of 45 degree angle. 
+    // gets angle of the DPad on the XBox controller pressed with increments of 45
+    // degree angle.
     // returns neutal or -1 when nothing is pressed
     public DPadState getDPadState() {
-        
+
         int angle = super.getPOV();
 
-        if(angle == 0) {
+        if (angle == 0) {
             return DPadState.UP;
-        } 
-        else if(angle == 45){
+        } else if (angle == 45) {
             return DPadState.UP_RIGHT;
-        }
-        else if(angle == 90) {
+        } else if (angle == 90) {
             return DPadState.RIGHT;
-        }
-        else if(angle == 135){
+        } else if (angle == 135) {
             return DPadState.DOWN_RIGHT;
-        }
-        else if(angle == 180) {
+        } else if (angle == 180) {
             return DPadState.DOWN;
-        }
-        else if(angle == 225){
+        } else if (angle == 225) {
             return DPadState.DOWN_LEFT;
-        }
-        else if(angle == 270) {
+        } else if (angle == 270) {
             return DPadState.LEFT;
-        }
-        else if(angle == 315){
+        } else if (angle == 315) {
             return DPadState.UP_LEFT;
-        } 
-        else {
+        } else {
             return DPadState.NEUTRAl;
         }
-        
-       }
+
+    }
 
 }
