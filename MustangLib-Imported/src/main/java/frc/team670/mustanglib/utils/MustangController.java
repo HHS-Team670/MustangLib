@@ -3,6 +3,9 @@ package frc.team670.mustanglib.utils;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.XboxController;
 
+/**
+ * Represents a MustangController, built over Wpilibs XboxController
+ */
 public class MustangController extends XboxController {
 
     private Notifier rumbler;
