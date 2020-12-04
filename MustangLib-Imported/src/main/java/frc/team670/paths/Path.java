@@ -9,14 +9,17 @@ package frc.team670.paths;
 
 import java.util.List;
 
+import com.revrobotics.CANEncoder;
+
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import frc.team670.robot.constants.RobotConstants;
-import frc.team670.robot.subsystems.DriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
+import frc.team670.mustanglib.constants.RobotConstants;
 
 /**
  * Generic representation of a path that the robot can drive.
@@ -28,7 +31,7 @@ public class Path {
     private static final DifferentialDriveVoltageConstraint AUTO_VOLTAGE_CONSTRAINT = getAutoVoltageConstraint();
     private static final TrajectoryConfig CONFIG = getConfig();
     private Trajectory trajectory;
-    private DriveBase driveBase;
+    private TankDriveBase driveBase;
     private List<Pose2d> waypointsList;
 
     /**
@@ -36,7 +39,7 @@ public class Path {
      * @param waypoints a list of waypoints
      * @param driveBase the drivebase which has to follow the path
      */
-    public Path(List<Pose2d> waypoints, DriveBase driveBase) {
+    public Path(List<Pose2d> waypoints, TankDriveBase driveBase) {
         this.driveBase = driveBase;
         this.waypointsList = waypoints;
         trajectoryFromWaypoints(waypoints);
@@ -64,10 +67,10 @@ public class Path {
      * Zeros the heading and resets the pose to the drivebase's current pose. 
      * This shouldn't be called often -- should only be called at autonomous init.
      */
-    public void reset() {
+    public void reset(CANEncoder left1Encoder, CANEncoder right1Encoder) {
         driveBase.zeroHeading();
         // Resets odometry to the drivebase's current pose
-        driveBase.resetOdometry(driveBase.getPose());
+        driveBase.resetOdometry(driveBase.getPose(), left1Encoder, right1Encoder);
     }
 
     private static DifferentialDriveVoltageConstraint getAutoVoltageConstraint() {

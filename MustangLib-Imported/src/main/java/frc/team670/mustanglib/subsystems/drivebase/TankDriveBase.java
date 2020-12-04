@@ -7,13 +7,22 @@
 
 package frc.team670.mustanglib.subsystems.drivebase;
 
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANError;
+
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveOdometry;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
+import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangController;
 import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague.XboxRocketLeagueDrive;
+import frc.team670.mustanglib.constants.RobotConstants;
+import frc.team670.mustanglib.dataCollection.sensors.NavX;
 
 /**
  * 
@@ -26,6 +35,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   private SpeedControllerGroup leftMotors, rightMotors;
   protected DifferentialDrive drive; 
+  private NavX navXMicro;
+  private DifferentialDriveOdometry m_odometry;
 
   /**
    * 
@@ -36,8 +47,12 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param deadband A minimum motor input to move the drivebase
    * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
    */
-  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
+  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled, NavX navXMicro){
     setMotorControllers(leftMotors, rightMotors, inverted, rightSideInverted, deadband, safetyEnabled);
+    // initialized NavX and sets Odometry
+    this.navXMicro = navXMicro;
+    m_odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()),
+            new Pose2d(0, 0, new Rotation2d()));
     
   }
 
@@ -46,8 +61,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
    * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
    */
-  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors) {
-    this(leftMotors, rightMotors, true, true, 0.02, true);
+  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, NavX navXMicro) {
+    this(leftMotors, rightMotors, true, true, 0.02, true, navXMicro);
   }
 
   /**
@@ -57,8 +72,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param inverted Invert the motors (make what would have been the fron the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
-  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
-    this(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
+  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, NavX navXMicro) {
+    this(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true, navXMicro);
   }
 
   /**
@@ -261,6 +276,55 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
     return ticksToInches(getRightVelocityTicks());
   }
 
+  /**
+   * Returns the currently-estimated pose of the robot.
+   *
+   * @return The pose.
+   */
+  public Pose2d getPose() {
+    return m_odometry.getPoseMeters();
+  }
+
+  /**
+   * Returns the heading of the robot.
+   *
+   * @return the robot's heading in degrees, in range [-180, 180]
+   */
+  public double getHeading() {
+    return Math.IEEEremainder(navXMicro.getAngle(), 360) * (RobotConstants.kNavXReversed ? -1. : 1.);
+  }
+
+   /**
+   * Resets the odometry to the specified pose.
+   *
+   * @param pose The pose to which to set the odometry.
+   */
+  public void resetOdometry(Pose2d pose, CANEncoder left1Encoder, CANEncoder right1Encoder) {
+    zeroHeading();
+    m_odometry.resetPosition(pose, Rotation2d.fromDegrees(getHeading()));
+    CANError lE = left1Encoder.setPosition(0);
+    CANError rE = right1Encoder.setPosition(0);
+    Logger.consoleLog("Encoder return value %s %s", lE, rE);
+    Logger.consoleLog("Encoder positions %s %s", left1Encoder.getPosition(), right1Encoder.getPosition());
+    int counter = 0;
+    while((left1Encoder.getPosition() != 0 || right1Encoder.getPosition() != 0) && counter <30){
+      lE = left1Encoder.setPosition(0);
+      rE = right1Encoder.setPosition(0);
+      counter++;
+    }
+    Logger.consoleLog("Encoder return value %s %s", lE, rE);
+    Logger.consoleLog("Encoder positions %s %s", left1Encoder.getPosition(), right1Encoder.getPosition());
+    Logger.consoleLog("Drivebase pose reset %s", pose);
+    Logger.consoleLog("Drivebase get position after reset %s %s", left1Encoder.getPosition(), right1Encoder.getPosition());
+  }
+
+    /**
+   * Zeroes the heading of the robot.
+   */
+  public void zeroHeading() {
+    navXMicro.reset();
+  }
+  
   /**
    * Used to initialized teleop command for the driveBase
    */
