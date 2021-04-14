@@ -32,7 +32,7 @@ public class SingleJoystickDrive extends CommandBase implements MustangCommand {
     // Called just before this Command runs the first time
     @Override
     public void execute() {
-        driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist());
+        driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist(), true);
     }
 
     @Override
