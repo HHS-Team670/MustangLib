@@ -88,20 +88,20 @@ public class MustangScheduler {
                 Map<MustangSubsystemBase, MustangSubsystemBase.HealthState> requirements = ((MustangCommand) (m_command))
                         .getHealthRequirements();
 
-                if (requirements != null) {
-                    for (MustangSubsystemBase s : requirements.keySet()) {
-                        MustangSubsystemBase.HealthState healthReq = requirements.get(s);
-                        if (s != null && healthReq != null) {
-                            HealthState currentHealth = s.getHealth(false);
-                            if (currentHealth.getId() > healthReq.getId()) {
-                                MustangNotifications.reportWarning(
-                                        "%s not run because of health issue! Required health: %s, Actual health: %s",
-                                        m_command.getName(), healthReq, currentHealth);
-                                return;
-                            }
-                        }
-                    }
-                }
+                // if (requirements != null) {
+                //     for (MustangSubsystemBase s : requirements.keySet()) {
+                //         MustangSubsystemBase.HealthState healthReq = requirements.get(s);
+                //         if (s != null && healthReq != null) {
+                //             HealthState currentHealth = s.getHealth(false);
+                //             if (currentHealth.getId() > healthReq.getId()) {
+                //                 MustangNotifications.reportWarning(
+                //                         "%s not run because of health issue! Required health: %s, Actual health: %s",
+                //                         m_command.getName(), healthReq, currentHealth);
+                //                 return;
+                //             }
+                //         }
+                //     }
+                // }
                 this.currentCommand = m_command;
                 scheduler.schedule(currentCommand);
                 Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
@@ -135,20 +135,20 @@ public class MustangScheduler {
             Map<MustangSubsystemBase, MustangSubsystemBase.HealthState> requirements = ((MustangCommand) (m_command))
                     .getHealthRequirements();
 
-            if (requirements != null) {
-                for (MustangSubsystemBase s : requirements.keySet()) {
-                    MustangSubsystemBase.HealthState healthReq = requirements.get(s);
-                    if (s != null && healthReq != null) {
-                        HealthState currentHealth = s.getHealth(false);
-                        if (currentHealth.getId() > healthReq.getId()) {
-                            MustangNotifications.reportError(
-                                    "%s not run because of health issue! Required health: %s, Actual health: %s",
-                                    m_command.getName(), healthReq, currentHealth);
-                            return;
-                        }
-                    }
-                }
-            }
+            // if (requirements != null) {
+            //     for (MustangSubsystemBase s : requirements.keySet()) {
+            //         MustangSubsystemBase.HealthState healthReq = requirements.get(s);
+            //         if (s != null && healthReq != null) {
+            //             HealthState currentHealth = s.getHealth(false);
+            //             if (currentHealth.getId() > healthReq.getId()) {
+            //                 MustangNotifications.reportError(
+            //                         "%s not run because of health issue! Required health: %s, Actual health: %s",
+            //                         m_command.getName(), healthReq, currentHealth);
+            //                 return;
+            //             }
+            //         }
+            //     }
+            // }
             this.currentCommand = m_command;
             scheduler.setDefaultCommand(subsystem, currentCommand);
             Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
@@ -157,4 +157,9 @@ public class MustangScheduler {
         }
     }
 
+    // public void scheduleOrCancel (CommandBase mustangCommand) {
+    // 	if (RobotContainer.getDriverController().getAButton()) {
+    // 		scheduler.schedule(mustangCommand);
+    //     }
+    // }
 }

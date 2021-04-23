@@ -137,6 +137,10 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
         return (controller == null || controller.getLastError() != ErrorCode.OK);
     }
 
+    public MustangCommand getDefaultMustangCommand(){
+        return (MustangCommand)(super.getDefaultCommand());
+    }
+
     public abstract void mustangPeriodic();
 
 }
