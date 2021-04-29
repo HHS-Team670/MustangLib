@@ -19,7 +19,7 @@ public final class SparkMAXLite extends CANSparkMax {
     /**
      * Creates a SparkMAX on a given ID, which is controlling a specified kind of motor.
      * 
-     * @param MotorConfig.Motor_Type type Which specific motor this controller will
+     * @param type type Which specific motor this controller will
      *                               be using. For example, NEO or BAG
      */
     public SparkMAXLite(int id, MotorConfig.Motor_Type type) {
@@ -57,8 +57,8 @@ public final class SparkMAXLite extends CANSparkMax {
     }
 
     /**
-     * @param ControlType mode for this motor controller
-     * @param double      value output of the controller, for the appropriate mode
+     * @param mode mode for this motor controller
+     * @param value      value output of the controller, for the appropriate mode
      */
     public void set(ControlType mode, double value) {
         if (value != lastSet || mode != lastControlType) {

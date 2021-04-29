@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
+import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangController;
 import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague.XboxRocketLeagueDrive;
@@ -29,8 +30,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   /**
    * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    * @param inverted Invert the motors (make what would have been the front the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    * @param deadband A minimum motor input to move the drivebase
@@ -43,8 +44,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   /**
    * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    */
   public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors) {
     this(leftMotors, rightMotors, true, true, 0.02, true);
@@ -52,8 +53,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   /**
    * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    * @param inverted Invert the motors (make what would have been the fron the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
@@ -68,8 +69,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   /**
    * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    * @param inverted Invert the motors (make what would have been the front the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    * @param deadband A minimum motor input to move the drivebase
@@ -86,8 +87,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   /**
    * This method is called by the constructor or in a subclass if motor setup needs to be performed. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    */
   protected void setMotorControllers(SpeedController[] leftMotors, SpeedController[] rightMotors) {
     setMotorControllers(leftMotors, rightMotors, true, true, 0.02, true);
@@ -95,8 +96,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   /**
    * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length > 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length > 0
+   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
+   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    * @param inverted Invert the motors (make what would have been the front the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
@@ -175,9 +176,10 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param xSpeed      The forward throttle speed [-1, 1]
    * @param zRotation   The amount of rotation to turn [-1, 1] with positive being
    *                    right
-   * @param isQuickTurn If true, decreases sensitivity at lower inputs
+   * @param squaredInputs if squared, output much more smoother (quadratic function)
    */
   public void arcadeDrive(double xSpeed, double zRotation, boolean squaredInputs) {
+    Logger.consoleLog("ArcadeDrive xSpeed: %s, ArcadeDrive zRotation: %s", xSpeed, zRotation);
     drive.arcadeDrive(xSpeed, zRotation, squaredInputs);
   }
 

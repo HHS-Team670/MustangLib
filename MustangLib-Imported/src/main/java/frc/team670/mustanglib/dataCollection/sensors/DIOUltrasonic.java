@@ -12,8 +12,8 @@ public class DIOUltrasonic {
     public static final double ULTRASONIC_ERROR_CODE = 99999;
 
     /**
-     * @param horizontalOffset horizontal offset from the center of the robot on the
-     *                         side it is on. Left is negative, right is positive.
+     * @param tPin the trigger pin for ultrasonic
+     * @param ePin the echo pin for ultrasonic
      */
     public DIOUltrasonic(int tPin, int ePin) {
         triggerPin = new DigitalOutput(tPin);
@@ -26,7 +26,6 @@ public class DIOUltrasonic {
      * Gets the ultrasonic distance in inches adjusted for the angle to target and
      * offset of the ultrasonic from the center of the robot.
      * 
-     * @param angle The angle to the target from the robot.
      */
     public double getDistance() {
         double distance = getUnadjustedDistance();

@@ -115,7 +115,7 @@ public class MustangScheduler {
      * Initial check that runs when the command initializes to check if it is a
      * MustangCommand that has been scheduled using MustangScheduler
      * 
-     * @param Command command The command which has been scheduled
+     * @param command command The command which has been scheduled
      */
     public void check(Command command) throws RuntimeException {
         if (command == null) {

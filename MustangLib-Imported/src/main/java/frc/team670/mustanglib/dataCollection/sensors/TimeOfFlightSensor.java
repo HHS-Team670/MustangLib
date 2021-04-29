@@ -26,8 +26,7 @@ public class TimeOfFlightSensor {
     private final static int TOF_ADDR = 0x29;
 
     /**
-     * @param horizontalOffset horizontal offset from the center of the robot on the
-     *                         side it is on. Left is negative, right is positive.
+     * @param port Port the sensor is connected to
      */
     public TimeOfFlightSensor(I2C.Port port) {
         sensor = new I2C(port, TOF_ADDR);
