@@ -4,7 +4,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
-import frc.team670.mustanglib.constants.RobotConstants;
+import frc.team670.mustanglib.constants.RobotConstantsBase;
 import frc.team670.mustanglib.utils.Logger;
 
 /**

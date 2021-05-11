@@ -7,6 +7,7 @@
 
 package frc.team670.mustanglib.subsystems.drivebase;
 
+import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -276,9 +277,11 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   public abstract MustangController getMustangController();
 
-  public abstract double zeroHeading();
+  public abstract void zeroHeading();
     
   public abstract Pose2d getPose();
+
+  public abstract PIDController getRightPIDController();
 
   public abstract void resetOdometry(Pose2d pose);
 

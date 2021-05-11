@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.trajectory.Trajectory;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryConfig;
 import edu.wpi.first.wpilibj.trajectory.TrajectoryGenerator;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveVoltageConstraint;
-import frc.team670.mustanglib.constants.RobotConstants;
+import frc.team670.mustanglib.constants.RobotConstantsBase;
 import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
 
 /**
@@ -72,24 +72,24 @@ public class Path {
     }
 
     private static DifferentialDriveVoltageConstraint getLeftAutoVoltageConstraint() {
-        return new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(RobotConstants.leftKsVolts,
-                RobotConstants.leftKvVoltSecondsPerMeter, RobotConstants.leftKaVoltSecondsSquaredPerMeter),
-                RobotConstants.kDriveKinematics, 10);
+        return new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(RobotConstantsBase.leftKsVolts,
+                RobotConstantsBase.leftKvVoltSecondsPerMeter, RobotConstantsBase.leftKaVoltSecondsSquaredPerMeter),
+                RobotConstantsBase.kDriveKinematics, 10);
     }
 
     private static DifferentialDriveVoltageConstraint getRightAutoVoltageConstraint() {
-        return new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(RobotConstants.rightKsVolts,
-                RobotConstants.rightKvVoltSecondsPerMeter, RobotConstants.rightKaVoltSecondsSquaredPerMeter),
-                RobotConstants.kDriveKinematics, 10);
+        return new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(RobotConstantsBase.rightKsVolts,
+                RobotConstantsBase.rightKvVoltSecondsPerMeter, RobotConstantsBase.rightKaVoltSecondsSquaredPerMeter),
+                RobotConstantsBase.kDriveKinematics, 10);
     }
 
     private static TrajectoryConfig getConfig() {
-        return new TrajectoryConfig(RobotConstants.kMaxSpeedMetersPerSecond,
-                RobotConstants.kMaxAccelerationMetersPerSecondSquared)
+        return new TrajectoryConfig(RobotConstantsBase.kMaxSpeedMetersPerSecond,
+                RobotConstantsBase.kMaxAccelerationMetersPerSecondSquared)
                         // Add kinematics to ensure max speed is actually obeyed
-                        .setKinematics(RobotConstants.kDriveKinematics)
+                        .setKinematics(RobotConstantsBase.kDriveKinematics)
                         // Apply the voltage constraint
-                        .addConstraint(RobotConstants.kAutoPathConstraints).addConstraint(AUTO_VOLTAGE_CONSTRAINT);
+                        .addConstraint(RobotConstantsBase.kAutoPathConstraints).addConstraint(AUTO_VOLTAGE_CONSTRAINT);
     }
 
     /**

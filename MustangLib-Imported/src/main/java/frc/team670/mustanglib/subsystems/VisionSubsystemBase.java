@@ -8,7 +8,7 @@ import edu.wpi.first.networktables.NetworkTableType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.team670.mustanglib.constants.RobotConstants;
+import frc.team670.mustanglib.constants.RobotConstantsBase;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
@@ -17,7 +17,7 @@ import frc.team670.mustanglib.utils.MustangNotifications;
  * 
  * @author lakshbhambhani, katia, pallavi
  */
-public class VisionSubsystem extends MustangSubsystemBase {
+public class VisionSubsystemBase extends MustangSubsystemBase {
 
     private Solenoid cameraLEDs;
 
@@ -36,7 +36,7 @@ public class VisionSubsystem extends MustangSubsystemBase {
     /**
      * Used to create a mustangCoprocessor object based on the key of the table that returns the values from vision processing
      */
-    private VisionSubsystem(String key, double[] minHSV, double[] maxHSV, double[] shape, int PCMModulePort, int visionLEDPCMPort) {
+    public VisionSubsystemBase(double[] minHSV, double[] maxHSV, double[] shape, int PCMModulePort, int visionLEDPCMPort) {
         cameraLEDs = new Solenoid(PCMModulePort, visionLEDPCMPort);
         SmartDashboard.putBoolean("LEDs on", false);
         

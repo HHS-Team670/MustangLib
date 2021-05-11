@@ -3,7 +3,7 @@ package frc.team670.mustanglib.constants;
 import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.wpilibj.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 
-public class RobotConstants {
+public class RobotConstantsBase {
 
     /**
      * The number of ticks per rotation of a drivebase wheel for the DIO Encoders

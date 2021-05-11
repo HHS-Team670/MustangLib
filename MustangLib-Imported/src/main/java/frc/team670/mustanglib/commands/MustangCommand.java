@@ -6,7 +6,7 @@ import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
 import frc.team670.mustanglib.commands.RamseteCommand;
-import frc.team670.mustanglib.constants.RobotConstants;
+import frc.team670.mustanglib.constants.RobotConstantsBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
 import frc.team670.paths.Path;
@@ -30,20 +30,20 @@ public interface MustangCommand{
      * @return A RamseteCommand which will drive the given trajectory
      */
     default RamseteCommand getTrajectoryFollowerCommand(Path path, TankDriveBase driveBase) {
-        PIDController leftPIDController = new PIDController(RobotConstants.leftKPDriveVel,
-                RobotConstants.leftKIDriveVel, RobotConstants.leftKDDriveVel);
-        PIDController rightPIDController = new PIDController(RobotConstants.rightKPDriveVel,
-                RobotConstants.rightKIDriveVel, RobotConstants.rightKDDriveVel);
+        PIDController leftPIDController = new PIDController(RobotConstantsBase.leftKPDriveVel,
+                RobotConstantsBase.leftKIDriveVel, RobotConstantsBase.leftKDDriveVel);
+        PIDController rightPIDController = new PIDController(RobotConstantsBase.rightKPDriveVel,
+                RobotConstantsBase.rightKIDriveVel, RobotConstantsBase.rightKDDriveVel);
 
        
 
         RamseteCommand ramseteCommand = new RamseteCommand(path.getTrajectory(), driveBase::getPose,
-                new RamseteController(RobotConstants.kRamseteB, RobotConstants.kRamseteZeta),
-                new SimpleMotorFeedforward(RobotConstants.leftKsVolts, RobotConstants.leftKvVoltSecondsPerMeter,
-                        RobotConstants.leftKaVoltSecondsSquaredPerMeter),
-                new SimpleMotorFeedforward(RobotConstants.rightKsVolts, RobotConstants.rightKvVoltSecondsPerMeter,
-                        RobotConstants.rightKaVoltSecondsSquaredPerMeter),
-                RobotConstants.kDriveKinematics, driveBase::getWheelSpeeds, leftPIDController, rightPIDController,
+                new RamseteController(RobotConstantsBase.kRamseteB, RobotConstantsBase.kRamseteZeta),
+                new SimpleMotorFeedforward(RobotConstantsBase.leftKsVolts, RobotConstantsBase.leftKvVoltSecondsPerMeter,
+                        RobotConstantsBase.leftKaVoltSecondsSquaredPerMeter),
+                new SimpleMotorFeedforward(RobotConstantsBase.rightKsVolts, RobotConstantsBase.rightKvVoltSecondsPerMeter,
+                        RobotConstantsBase.rightKaVoltSecondsSquaredPerMeter),
+                RobotConstantsBase.kDriveKinematics, driveBase::getWheelSpeeds, leftPIDController, rightPIDController,
                 driveBase::tankDriveVoltage, driveBase);
 
         // Reset odometry to the starting pose of the trajectory. We are currently doing

@@ -10,10 +10,6 @@ package frc.team670.mustanglib;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.wpi.first.wpilibj.GenericHID;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
-
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -27,20 +23,10 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
  * scheduler calls). Instead, the structure of the robot (including subsystems,
  * commands, and button mappings) should be declared here.
  */
-public abstract class RobotContainer {
+public abstract class RobotContainerBase {
 
   // The robot's subsystems and commands are defined here...
-  private static List<MustangSubsystemBase> allSubsystems = new ArrayList<MustangSubsystemBase>();
-
-  
-
-  /**
-   * The container for the robot. Contains subsystems, OI devices, and commands.
-   */
-  public RobotContainer() {
-    // Configure the button bindings
-    configureButtonBindings();
-  }
+  public static List<MustangSubsystemBase> allSubsystems = new ArrayList<MustangSubsystemBase>();
 
   public static void addSubsystem(MustangSubsystemBase... subsystems) {
     for (MustangSubsystemBase m_subsystemBase : subsystems) {
@@ -64,10 +50,6 @@ public abstract class RobotContainer {
       s.pushHealthToDashboard();
     }
   }
-  /**
-   * Use this method to define your button command mappings. 
-   */
-  public abstract void configureButtonBindings();
 
   public abstract void robotInit();
 

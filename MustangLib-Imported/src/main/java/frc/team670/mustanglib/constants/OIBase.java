@@ -2,7 +2,11 @@ package frc.team670.mustanglib.constants;
 
 import frc.team670.mustanglib.utils.MustangController;
 
-public class OI {
+public abstract class OIBase {
+
+  public OIBase(){
+    configureButtonBindings();
+  }
 
     /**
    * Notifies the driver controller by rumbling it
@@ -17,6 +21,8 @@ public class OI {
   public void rumbleController(MustangController controller, double power, double time) {
     controller.rumble(power, time);
   }
+
+  public abstract void configureButtonBindings();
 
 
 }
