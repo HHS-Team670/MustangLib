@@ -157,6 +157,14 @@ public class MustangScheduler {
         }
     }
 
+    public void unregisterSubsystem(MustangSubsystemBase... subsystems){
+        scheduler.unregisterSubsystem(subsystems);
+    }
+
+    public void registerSubsystem(MustangSubsystemBase... subsystems){
+        scheduler.registerSubsystem(subsystems);
+    }
+
     // public void scheduleOrCancel (CommandBase mustangCommand) {
     // 	if (RobotContainer.getDriverController().getAButton()) {
     // 		scheduler.schedule(mustangCommand);

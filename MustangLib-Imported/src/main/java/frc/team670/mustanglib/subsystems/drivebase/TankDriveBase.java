@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
+import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangController;
@@ -280,4 +281,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
   public abstract Pose2d getPose();
 
   public abstract void resetOdometry(Pose2d pose);
+
+  public abstract DifferentialDriveWheelSpeeds getWheelSpeeds();
+
+  public abstract void tankDriveVoltage(double leftVoltage, double rightVoltage);
 }

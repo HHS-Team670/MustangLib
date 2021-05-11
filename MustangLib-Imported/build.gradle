@@ -27,6 +27,7 @@ dependencies {
     nativeDesktopZip wpi.deps.vendor.jni(wpi.platforms.desktop)
 
     testImplementation 'junit:junit:4.12'
+    implementation group: 'gov.nist.math', name: 'jama', version: '1.0.3'
 
 }
 

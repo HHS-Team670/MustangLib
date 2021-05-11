@@ -5,15 +5,16 @@ import java.util.Map;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.controller.RamseteController;
 import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
+import frc.team670.mustanglib.commands.RamseteCommand;
 import frc.team670.mustanglib.constants.RobotConstants;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
+import frc.team670.paths.Path;
 
 /**
  * Represents a robot action with defined health requirements for every subsystem it uses.
  * 
- * @author ctychen, lakshbhambhani
+ * @author lakshbhambhani
  */
 public interface MustangCommand{
 
