@@ -8,11 +8,15 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import edu.wpi.first.wpilibj.controller.PIDController;
+
+import java.util.function.BiConsumer;
+
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.SpeedControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.controller.*;
+import edu.wpi.first.wpilibj.kinematics.*;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangController;
@@ -279,13 +283,25 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
 
   public abstract void zeroHeading();
     
+  //following for Mustang Command to get ramsete command
   public abstract Pose2d getPose();
 
+  public abstract PIDController getLeftPIDController();
   public abstract PIDController getRightPIDController();
+
+  public abstract RamseteController getRamseteController();
+
+  public abstract SimpleMotorFeedforward getLeftSimpleMotorFeedforward();
+  public abstract SimpleMotorFeedforward getRightSimpleMotorFeedforward();
+
+  public abstract DifferentialDriveKinematics getKDriveKinematics();
 
   public abstract void resetOdometry(Pose2d pose);
 
   public abstract DifferentialDriveWheelSpeeds getWheelSpeeds();
+  //public abstract Supplier<DifferentialDriveWheelSpeeds> getWheelSpeeds();
 
-  public abstract void tankDriveVoltage(double leftVoltage, double rightVoltage);
+  // public abstract void tankDriveVoltage(double leftVoltage, double rightVoltage);
+  public abstract double tankDriveVoltage(double leftVoltage, double rightVoltage);
+
 }
