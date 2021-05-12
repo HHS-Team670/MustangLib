@@ -49,14 +49,9 @@ public interface MustangCommand{
         //PIDController leftPIDController = driveBase::getLeftPIDController;
         //PIDController rightPIDController =  driveBase::getRightPIDController;
 
-        RamseteController ramseteController =         new RamseteController(RobotConstantsBase.kRamseteB, RobotConstantsBase.kRamseteZeta);
-
 RamseteCommand ramseteCommand = new RamseteCommand(
         path.getTrajectory(), 
-        //path.getStartingPose(),
         driveBase::getPose,
-        //driveBase::getRamseteController,
-        //ramseteController,
         new RamseteController(RobotConstantsBase.kRamseteB, RobotConstantsBase.kRamseteZeta),
         driveBase.getLeftSimpleMotorFeedforward(),
         driveBase.getRightSimpleMotorFeedforward(),

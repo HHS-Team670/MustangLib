@@ -289,8 +289,6 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
   public abstract PIDController getLeftPIDController();
   public abstract PIDController getRightPIDController();
 
-  public abstract RamseteController getRamseteController();
-
   public abstract SimpleMotorFeedforward getLeftSimpleMotorFeedforward();
   public abstract SimpleMotorFeedforward getRightSimpleMotorFeedforward();
 
