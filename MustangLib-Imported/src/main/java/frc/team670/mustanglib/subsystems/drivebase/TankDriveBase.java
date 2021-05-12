@@ -302,6 +302,6 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
   //public abstract Supplier<DifferentialDriveWheelSpeeds> getWheelSpeeds();
 
   // public abstract void tankDriveVoltage(double leftVoltage, double rightVoltage);
-  public abstract double tankDriveVoltage(double leftVoltage, double rightVoltage);
+  public abstract void tankDriveVoltage(double leftVoltage, double rightVoltage);
 
 }
