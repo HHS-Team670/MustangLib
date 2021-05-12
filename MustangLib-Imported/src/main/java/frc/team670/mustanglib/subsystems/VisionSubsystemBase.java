@@ -21,7 +21,7 @@ public class VisionSubsystemBase extends MustangSubsystemBase {
 
     private Solenoid cameraLEDs;
 
-    private final String VISION_TRIGGER_KEY = "vision-enable";
+    private final String VISION_TRIGGER_KEY = "vision-enabled";
     private final String VISION_VALUES_KEY = "vision-values";
 
     private final String VISION_MIN_HSV_KEY = "vision-minHSV";
