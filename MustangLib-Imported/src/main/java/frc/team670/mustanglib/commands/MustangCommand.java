@@ -58,12 +58,12 @@ RamseteCommand ramseteCommand = new RamseteCommand(
         //driveBase::getRamseteController,
         //ramseteController,
         new RamseteController(RobotConstantsBase.kRamseteB, RobotConstantsBase.kRamseteZeta),
-        driveBase::getLeftSimpleMotorFeedforward,
-        driveBase::getRightSimpleMotorFeedforward,
-        driveBase:: getKDriveKinematics, 
+        driveBase.getLeftSimpleMotorFeedforward(),
+        driveBase.getRightSimpleMotorFeedforward(),
+        driveBase.getKDriveKinematics(), 
         driveBase::getWheelSpeeds, 
-        driveBase::getLeftPIDController, 
-        driveBase::getRightPIDController,
+        driveBase.getLeftPIDController(), 
+        driveBase.getRightPIDController(),
         driveBase::tankDriveVoltage, 
         driveBase);
 
