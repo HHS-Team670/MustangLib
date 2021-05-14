@@ -5,7 +5,7 @@ import frc.team670.mustanglib.utils.MustangController;
 public abstract class OIBase {
 
   public OIBase(){
-    configureButtonBindings();
+    // configureButtonBindings();
   }
 
     /**

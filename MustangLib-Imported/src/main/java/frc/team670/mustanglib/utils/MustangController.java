@@ -76,6 +76,7 @@ public class MustangController extends XboxController {
     }
 
     public double getLeftStickY() {
+        System.out.println("getLeftStickY");
         return super.getRawAxis(XboxButtons.LEFT_STICK_Y);
     }
 

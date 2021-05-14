@@ -37,6 +37,8 @@ public class XboxTankDrive extends CommandBase implements MustangCommand {
     // Called once when the command executes
     @Override
     public void execute() {
+        System.out.println("Drivebase: " + driveBase);
+        System.out.println("controller: " + controller);
         driveBase.tankDrive(-1 * controller.getLeftStickY(),
                 -1 * controller.getRightStickY());
     }

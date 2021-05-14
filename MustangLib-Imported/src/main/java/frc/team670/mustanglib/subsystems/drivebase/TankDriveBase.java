@@ -147,6 +147,7 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    *                   squares this value to linearize it.
    */
   public void tankDrive(double leftSpeed, double rightSpeed) {
+    System.out.println("tankDrive");
     tankDrive(leftSpeed, rightSpeed, true);
   }
   /**
@@ -158,6 +159,7 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param squaredInputs If true, decreases sensitivity at lower inputs
    */
   public void tankDrive(double leftSpeed, double rightSpeed, boolean squaredInputs) {
+    System.out.println("drive tankDrive: " + drive);
     drive.tankDrive(leftSpeed, rightSpeed, squaredInputs);
   }
 
