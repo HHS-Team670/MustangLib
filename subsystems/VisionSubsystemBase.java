@@ -2,6 +2,8 @@ package frc.team670.mustanglib.subsystems;
 
 import java.util.ArrayList;
 
+import org.ejml.dense.row.mult.SubmatrixOps_DDRM;
+
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -37,6 +39,7 @@ public class VisionSubsystemBase extends MustangSubsystemBase {
     public VisionSubsystemBase(double[] minHSV, double[] maxHSV, int PCMModulePort, int visionLEDPCMPort, VisionShapePointList shapePointList) {
         cameraLEDs = PCMModulePort == -1 ? null : new Solenoid(PCMModulePort, visionLEDPCMPort);
         SmartDashboard.putBoolean("LEDs on", false);
+        SmartDashboard.putBoolean("vision-frame-updated", false);
         
         for(int i = 0; i < VISION_HSV_SUB_KEY.length; i++) {
             SmartDashboard.putNumber(VISION_MIN_HSV_BASE_KEY + VISION_HSV_SUB_KEY[i], minHSV[i]);
