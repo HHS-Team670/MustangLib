@@ -1,16 +1,16 @@
 package frc.team670.mustanglib.subsystems;
 
+import com.revrobotics.CANEncoder;
+import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMax.SoftLimitDirection;
+import com.revrobotics.ControlType;
+
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
-
-import com.revrobotics.CANEncoder;
-import com.revrobotics.ControlType;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.CANPIDController;
 
 /**
  * Superclass for any rotating subsystem which uses a SparkMax to control the
@@ -98,7 +98,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
         // Smart Motion Coefficients
         this.MAX_ROT_RPM = config.getMaxRotatorRPM(); // rpm
-        this.MAX_SUB_RPM=getMaxSubsystemRPM(config.getMaxRotatorRPM());
+        this.MAX_SUB_RPM = getMaxSubsystemRPM(config.getMaxRotatorRPM());
         this.MAX_ACC = config.getMaxAcceleration();
         this.ALLOWED_ERR = config.getAllowedError();
 
