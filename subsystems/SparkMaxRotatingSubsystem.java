@@ -98,6 +98,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
         // Smart Motion Coefficients
         this.MAX_ROT_RPM = config.getMaxRotatorRPM(); // rpm
+        this.MAX_SUB_RPM=getMaxSubsystemRPM(config.getMaxRotatorRPM());
         this.MAX_ACC = config.getMaxAcceleration();
         this.ALLOWED_ERR = config.getAllowedError();
 
@@ -124,6 +125,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
             rotator.setSoftLimit(SoftLimitDirection.kForward, config.setSoftLimits()[0]);
             rotator.setSoftLimit(SoftLimitDirection.kReverse, config.setSoftLimits()[1]);
         }
+        //getMaxSubsystemRPM(config.getMaxRotatorRPM());
 
         clearSetpoint();
 
@@ -138,8 +140,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
         return this.rotator_encoder.getPosition();
     }
 
-    public double getMaxSubsystemRPM(){
-        return config.getMaxRotatorRPM()/this.ROTATOR_GEAR_RATIO;
+    public double getMaxSubsystemRPM(double rotRPM){
+        return rotRPM/this.ROTATOR_GEAR_RATIO;
     }
 
     /**
