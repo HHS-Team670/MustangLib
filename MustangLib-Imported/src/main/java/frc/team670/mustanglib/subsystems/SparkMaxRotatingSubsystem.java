@@ -34,7 +34,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * Configuration for this RotatingSubsystem's properties. Use this to keep track
      * of PID and SmartMotion constants
      */
-    public abstract class Config {
+    public static abstract class Config {
 
         public abstract int getDeviceID();
 
@@ -61,6 +61,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
         public abstract double getMinOutput();
 
         public abstract double getMaxRotatorRPM();
+
+        public abstract double getMaxSubsystemRPM();
 
         public abstract double getMinRPM();
 
@@ -136,10 +138,6 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      */
     public double getUnadjustedPosition() {
         return this.rotator_encoder.getPosition();
-    }
-
-    public double getMaxSubsystemRPM(){
-        return config.getMaxRotatorRPM()/this.ROTATOR_GEAR_RATIO;
     }
 
     /**
