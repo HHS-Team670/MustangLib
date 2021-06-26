@@ -62,7 +62,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
         public abstract double getMaxRotatorRPM();
 
-        public abstract double getMinRPM();
+        public abstract double getMinRotatorRPM();
 
         public abstract double getMaxAcceleration();
 
