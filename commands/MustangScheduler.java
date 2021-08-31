@@ -155,7 +155,7 @@ public class MustangScheduler {
                 }
             }
             this.currentCommand = m_command;
-            scheduler.setDefaultCommand(subsystem, currentCommand);
+            // scheduler.setDefaultCommand(subsystem, currentCommand); //TODO: JUST FOR TESTING CONNECTION ISSUES
             Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
         } finally {
             this.currentCommand = null;

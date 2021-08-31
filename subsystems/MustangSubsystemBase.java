@@ -87,7 +87,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public abstract HealthState checkHealth();
 
     public void initDefaultCommand(MustangCommand command) {
-        CommandScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
+        // CommandScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
     }
 
     @Override
@@ -99,7 +99,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
                         .notify("Health state for " + this.getName() + " is: " + lastHealth + ". Enabling Periodic");
                 failedLastTime = false;
             }
-            mustangPeriodic();
+            // mustangPeriodic(); //TODO: Just for testing connection issues
         } else {
             if (!failedLastTime) {
                 MustangNotifications.reportError(
