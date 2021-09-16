@@ -1,6 +1,8 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
 import edu.wpi.first.wpilibj.I2C;
+import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.MustangNotifications;
 
 import java.util.TimerTask;
 
@@ -8,11 +10,13 @@ import java.util.TimerTask;
  * I2C VL6180X Time of Flight sensor. Based on
  * //https://github.com/adafruit/Adafruit_VL6180X/blob/master/Adafruit_VL6180X.cpp.
  * 
- * @author riyagupta, meganchoy
+ * @author riyagupta, meganchoy, akshatadsule, lakshbhambhani
  */
 public class TimeOfFlightSensor {
+    private I2C multiplexer;
     private I2C sensor;
-    private java.util.Timer updater;
+
+    private static java.util.Timer updater;
     private int range = ERROR;
     private boolean isHealthy;
 
@@ -24,12 +28,28 @@ public class TimeOfFlightSensor {
     private static final int ERROR = 300;
 
     private final static int TOF_ADDR = 0x29;
+    private final static int MULTI_ADDR = 0x70;
+
+
+    private boolean isMultiplexer;
+    private int address;
 
     /**
      * @param port Port the sensor is connected to
      */
-    public TimeOfFlightSensor(I2C.Port port) {
+    public TimeOfFlightSensor(I2C.Port port, boolean isMultiplexer, int address) {
+        if(isMultiplexer){
+            multiplexer = new I2C(port, MULTI_ADDR);
+            if(!(address <= 7 && address >= 0)) {
+                MustangNotifications.reportError("TOF Sensor address out of range. Expected 0-7. Given: %s", address);
+            }
+        }
         sensor = new I2C(port, TOF_ADDR);
+        
+        this.address = address;
+        this.isMultiplexer = isMultiplexer;
+
+        
         updater = new java.util.Timer();
         isHealthy = true;
         initSensor();
@@ -129,6 +149,7 @@ public class TimeOfFlightSensor {
         rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
         rawData[2] = (byte) data;
 
+        if(isMultiplexer) selectTOF();
         if (!sensor.writeBulk(rawData, 3)) {
             isHealthy = true;
             return false;
@@ -147,6 +168,7 @@ public class TimeOfFlightSensor {
         rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
         rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
 
+        if(isMultiplexer) selectTOF();
         if (!sensor.transaction(rawData, 2, data, 1)) {
             isHealthy = true;
             return data[0] & 0xFF;
@@ -161,15 +183,15 @@ public class TimeOfFlightSensor {
      */
     private void update() {
         // wait for device to be ready for range measurement
-        while ((readShortInt(VL6180X_REG_RESULT_RANGE_STATUS) & 0x01) == 0)
-            ;
+        // Logger.consoleLog("Indexer read: %s");
+
+        while ((readShortInt(VL6180X_REG_RESULT_RANGE_STATUS) & 0x01) == 0);
 
         // Start a range measurement
         write(VL6180X_REG_SYSRANGE_START, 0x01);
 
         // Poll until bit 2 is set
-        while ((readShortInt(VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) & 0x04) == 0)
-            ;
+        while ((readShortInt(VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) & 0x04) == 0);
 
         // read range in mm
         range = readShortInt(VL6180X_REG_RESULT_RANGE_VAL);
@@ -177,5 +199,21 @@ public class TimeOfFlightSensor {
         // clear interrupt
         write(VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07);
     }
+
+    /**
+   * Selects the given port on the multiplexer
+   * @param address The address which should be selected. This should be in the range 0-7
+   */
+  private void selectTOF() {
+    // ensure address is between 0-7
+   
+
+    // Convert to binary to get what pins should be enabled
+    byte[] rawData = new byte[1];
+    rawData[0] = (byte)(1 << address);
+
+    multiplexer.writeBulk(rawData, 1);
+
+  }
 
 }
