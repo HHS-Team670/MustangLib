@@ -1,10 +1,11 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
-import edu.wpi.first.wpilibj.I2C;
-import frc.team670.mustanglib.utils.Logger;
-import frc.team670.mustanglib.utils.MustangNotifications;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
+
+import edu.wpi.first.wpilibj.I2C;
+import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
  * I2C VL6180X Time of Flight sensor. Based on
@@ -13,8 +14,10 @@ import java.util.TimerTask;
  * @author riyagupta, meganchoy, akshatadsule, lakshbhambhani
  */
 public class TimeOfFlightSensor {
-    private I2C multiplexer;
+    private static I2C multiplexer;
+
     private I2C sensor;
+    private static List<TimeOfFlightSensor> ToFSensors = new ArrayList<>();
 
     private static java.util.Timer updater;
     private int range = ERROR;
@@ -39,7 +42,10 @@ public class TimeOfFlightSensor {
      */
     public TimeOfFlightSensor(I2C.Port port, boolean isMultiplexer, int address) {
         if(isMultiplexer){
-            multiplexer = new I2C(port, MULTI_ADDR);
+            if (multiplexer == null) {
+                multiplexer = new I2C(port, MULTI_ADDR);
+            }
+            ToFSensors.add(this);
             if(!(address <= 7 && address >= 0)) {
                 MustangNotifications.reportError("TOF Sensor address out of range. Expected 0-7. Given: %s", address);
             }
@@ -49,11 +55,13 @@ public class TimeOfFlightSensor {
         this.address = address;
         this.isMultiplexer = isMultiplexer;
 
-        
-        updater = new java.util.Timer();
+        if (updater == null) {
+            updater = new java.util.Timer();
+            start();
+        }
         isHealthy = true;
         initSensor();
-        start();
+        
     }
 
     private void initSensor() {
@@ -131,7 +139,9 @@ public class TimeOfFlightSensor {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                update();
+                for (TimeOfFlightSensor ToFSensor: ToFSensors) {
+                   ToFSensor.update();
+                }
             }
         };
         updater.scheduleAtFixedRate(task, 0, period);
@@ -181,7 +191,7 @@ public class TimeOfFlightSensor {
     /**
      * Gets the time of flight distance unadjusted for offset and angle to target
      */
-    private void update() {
+    protected void update() {
         // wait for device to be ready for range measurement
         // Logger.consoleLog("Indexer read: %s");
 
@@ -207,6 +217,7 @@ public class TimeOfFlightSensor {
   private void selectTOF() {
     // ensure address is between 0-7
    
+    //TODO: add something to keep track of most recently used sensor
 
     // Convert to binary to get what pins should be enabled
     byte[] rawData = new byte[1];
