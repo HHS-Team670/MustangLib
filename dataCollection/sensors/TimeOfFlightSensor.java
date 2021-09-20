@@ -14,10 +14,7 @@ import frc.team670.mustanglib.utils.MustangNotifications;
  * @author riyagupta, meganchoy, akshatadsule, lakshbhambhani
  */
 public class TimeOfFlightSensor {
-    private static I2C multiplexer;
-
     private I2C sensor;
-    private static List<TimeOfFlightSensor> ToFSensors = new ArrayList<>();
 
     private static java.util.Timer updater;
     private int range = ERROR;
@@ -31,37 +28,54 @@ public class TimeOfFlightSensor {
     private static final int ERROR = 300;
 
     private final static int TOF_ADDR = 0x29;
-    private final static int MULTI_ADDR = 0x70;
-
 
     private boolean isMultiplexer;
     private int address;
 
+    private int threshold = -1;
+
+    /**
+     * @param port Port the sensor is connected to
+     * @param address the address of the sensor on the multiplexer
+     */
+    public TimeOfFlightSensor(I2C.Port port, int address) {
+        this(port, address, -1);
+    }
+
+    /**
+     * @param port Port the sensor is connected to
+     * @param address the address of the sensor on the multiplexer
+     */
+    public TimeOfFlightSensor(I2C.Port port, int address, int threshold) {
+        this.address = address;
+        this.isMultiplexer = true;
+        this.threshold = threshold;
+        
+        if(isMultiplexer && !(address <= 7 && address >= 0)) {
+            MustangNotifications.reportError("TOF Sensor address out of range. Expected 0-7. Given: %s", address);
+        }
+        
+        sensor = new I2C(port, TOF_ADDR);
+        updater = new java.util.Timer();
+    
+        isHealthy = true;
+        initSensor();
+    }
+
     /**
      * @param port Port the sensor is connected to
      */
-    public TimeOfFlightSensor(I2C.Port port, boolean isMultiplexer, int address) {
-        if(isMultiplexer){
-            if (multiplexer == null) {
-                multiplexer = new I2C(port, MULTI_ADDR);
-            }
-            ToFSensors.add(this);
-            if(!(address <= 7 && address >= 0)) {
-                MustangNotifications.reportError("TOF Sensor address out of range. Expected 0-7. Given: %s", address);
-            }
-        }
+    public TimeOfFlightSensor(I2C.Port port) {
         sensor = new I2C(port, TOF_ADDR);
         
-        this.address = address;
-        this.isMultiplexer = isMultiplexer;
+        this.address = -1;
+        this.isMultiplexer = false;
 
-        if (updater == null) {
-            updater = new java.util.Timer();
-            start();
-        }
+        updater = new java.util.Timer();
+    
         isHealthy = true;
         initSensor();
-        
+        start();
     }
 
     private void initSensor() {
@@ -139,9 +153,7 @@ public class TimeOfFlightSensor {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                for (TimeOfFlightSensor ToFSensor: ToFSensors) {
-                   ToFSensor.update();
-                }
+                update();
             }
         };
         updater.scheduleAtFixedRate(task, 0, period);
@@ -159,7 +171,7 @@ public class TimeOfFlightSensor {
         rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
         rawData[2] = (byte) data;
 
-        if(isMultiplexer) selectTOF();
+        // if(isMultiplexer) selectTOF();
         if (!sensor.writeBulk(rawData, 3)) {
             isHealthy = true;
             return false;
@@ -178,7 +190,7 @@ public class TimeOfFlightSensor {
         rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
         rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
 
-        if(isMultiplexer) selectTOF();
+        // if(isMultiplexer) selectTOF();
         if (!sensor.transaction(rawData, 2, data, 1)) {
             isHealthy = true;
             return data[0] & 0xFF;
@@ -188,13 +200,16 @@ public class TimeOfFlightSensor {
         return ERROR;
     }
 
+    public int getAddress(){
+        return address;
+    }
+
     /**
      * Gets the time of flight distance unadjusted for offset and angle to target
      */
     protected void update() {
         // wait for device to be ready for range measurement
         // Logger.consoleLog("Indexer read: %s");
-
         while ((readShortInt(VL6180X_REG_RESULT_RANGE_STATUS) & 0x01) == 0);
 
         // Start a range measurement
@@ -210,21 +225,12 @@ public class TimeOfFlightSensor {
         write(VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07);
     }
 
-    /**
-   * Selects the given port on the multiplexer
-   * @param address The address which should be selected. This should be in the range 0-7
-   */
-  private void selectTOF() {
-    // ensure address is between 0-7
-   
-    //TODO: add something to keep track of most recently used sensor
+    public boolean isObjectWithinThreshold() {
+        return getDistance() <= threshold;
+    }
 
-    // Convert to binary to get what pins should be enabled
-    byte[] rawData = new byte[1];
-    rawData[0] = (byte)(1 << address);
-
-    multiplexer.writeBulk(rawData, 1);
-
-  }
+    public void setThreshold(int threshold){
+        this.threshold = threshold;
+    }
 
 }
