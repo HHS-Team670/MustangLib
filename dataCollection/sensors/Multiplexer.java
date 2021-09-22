@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.I2C;
+import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
  * 
@@ -21,7 +22,10 @@ public class Multiplexer {
      * @param port Port the sensor is connected to
      */
     public Multiplexer(I2C.Port port) {
-
+        if(multiplexer != null){
+            MustangNotifications.reportError("Please instantiate only 1 multiplexer");
+            return;
+        }
         multiplexer = new I2C(port, MULTI_ADDR); 
 
         updater = new java.util.Timer();
@@ -31,6 +35,8 @@ public class Multiplexer {
     public void attachSensor(TimeOfFlightSensor... newSensors){
         for (TimeOfFlightSensor sensor : newSensors) {
             sensors.add(sensor);
+            selectTOF(sensor.getAddress());
+            sensor.initSensor();
         }
     }
 

@@ -59,7 +59,7 @@ public class TimeOfFlightSensor {
         updater = new java.util.Timer();
     
         isHealthy = true;
-        initSensor();
+        // initSensor();
     }
 
     /**
@@ -78,7 +78,7 @@ public class TimeOfFlightSensor {
         start();
     }
 
-    private void initSensor() {
+    public void initSensor() {
         write(0x0207, 0x01);
         write(0x0208, 0x01);
         write(0x0096, 0x00);
@@ -165,38 +165,50 @@ public class TimeOfFlightSensor {
     }
 
     private boolean write(int registerAddress, int data) {
-        byte[] rawData = new byte[3];
+        try{
+            byte[] rawData = new byte[3];
 
-        rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
-        rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
-        rawData[2] = (byte) data;
-
-        // if(isMultiplexer) selectTOF();
-        if (!sensor.writeBulk(rawData, 3)) {
-            isHealthy = true;
-            return false;
+            rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
+            rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
+            rawData[2] = (byte) data;
+    
+            // if(isMultiplexer) selectTOF();
+            if (!sensor.writeBulk(rawData, 3)) {
+                isHealthy = true;
+                return false;
+            }
+    
+            isHealthy = false;
+            return true;
         }
-
-        isHealthy = false;
+        catch (Exception e){
+            MustangNotifications.reportError("Write for sensor %s could not be performed. Check connection", address);
+        }
         return true;
     }
 
     private int readShortInt(int registerAddress) {
-        byte[] data = new byte[1];
+        try{
+            byte[] data = new byte[1];
 
-        // This sensor needs 2 bytes so cannot just use read method on I2C class
-        byte[] rawData = new byte[2];
-
-        rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
-        rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
-
-        // if(isMultiplexer) selectTOF();
-        if (!sensor.transaction(rawData, 2, data, 1)) {
-            isHealthy = true;
-            return data[0] & 0xFF;
+            // This sensor needs 2 bytes so cannot just use read method on I2C class
+            byte[] rawData = new byte[2];
+    
+            rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
+            rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
+    
+            // if(isMultiplexer) selectTOF();
+            if (!sensor.transaction(rawData, 2, data, 1)) {
+                isHealthy = true;
+                return data[0] & 0xFF;
+            }
+    
+            isHealthy = false;
+            return ERROR;
         }
-
-        isHealthy = false;
+        catch(Exception e){
+            MustangNotifications.reportError("Read for sensor %s could not be performed. Check connection", address);
+        }
         return ERROR;
     }
 

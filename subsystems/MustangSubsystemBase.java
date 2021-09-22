@@ -99,7 +99,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
                         .notify("Health state for " + this.getName() + " is: " + lastHealth + ". Enabling Periodic");
                 failedLastTime = false;
             }
-            // mustangPeriodic(); //TODO: Just for testing connection issues
+            mustangPeriodic(); //TODO: Just for testing connection issues
         } else {
             if (!failedLastTime) {
                 MustangNotifications.reportError(
