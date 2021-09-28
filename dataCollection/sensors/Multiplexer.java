@@ -1,7 +1,7 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.I2C;
@@ -16,7 +16,7 @@ public class Multiplexer {
     private static I2C multiplexer;
     private static java.util.Timer updater;
     private final static int MULTI_ADDR = 0x70;
-    public static List<TimeOfFlightSensor> sensors = new ArrayList<TimeOfFlightSensor>();
+    Map<String, TimeOfFlightSensor> sensors = new HashMap<>();
 
     /**
      * @param port Port the sensor is connected to
@@ -32,15 +32,13 @@ public class Multiplexer {
         start();
     }
 
-    public void attachSensor(TimeOfFlightSensor... newSensors){
-        for (TimeOfFlightSensor sensor : newSensors) {
-            sensors.add(sensor);
-            selectTOF(sensor.getAddress());
-            sensor.initSensor();
-        }
+    public void attachSensor(TimeOfFlightSensor newSensor, String key){
+        sensors.put(key, newSensor);
+        selectTOF(newSensor.getAddress());
+        newSensor.initSensor();
     }
 
-    public List<TimeOfFlightSensor> getSensors(){
+    public Map<String, TimeOfFlightSensor> getSensors(){
         return sensors;
     }
 
@@ -59,7 +57,7 @@ public class Multiplexer {
     }
 
     private void update(){
-        for (TimeOfFlightSensor sensor : sensors) {
+        for (TimeOfFlightSensor sensor : sensors.values()) {
             selectTOF(sensor.getAddress());
             sensor.update();
         }
