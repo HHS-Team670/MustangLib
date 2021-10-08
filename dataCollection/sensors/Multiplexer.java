@@ -32,7 +32,7 @@ public class Multiplexer {
         start();
     }
 
-    public void attachSensor(TimeOfFlightSensor newSensor, String key){
+    public synchronized void attachSensor(TimeOfFlightSensor newSensor, String key){
         sensors.put(key, newSensor);
         selectTOF(newSensor.getAddress());
         newSensor.initSensor();
@@ -56,7 +56,7 @@ public class Multiplexer {
         updater.scheduleAtFixedRate(task, 0, period);
     }
 
-    private void update(){
+    private synchronized void update(){
         for (TimeOfFlightSensor sensor : sensors.values()) {
             selectTOF(sensor.getAddress());
             sensor.update();
