@@ -56,6 +56,12 @@ public class NavX {
         mAHRS.registerCallback(new Callback(), null);
     }
 
+    public NavX(I2C.Port port) {
+        mAHRS = new AHRS(port);
+        resetState();
+        mAHRS.registerCallback(new Callback(), null);
+    }
+
     /**
      * Resets and recalibrates the NavX (yaw will go back to zero and offset
      * cleared). Call this right at the beginning of the match.
