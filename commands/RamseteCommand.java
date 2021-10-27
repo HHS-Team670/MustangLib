@@ -163,9 +163,9 @@ public class RamseteCommand extends CommandBase {
       rightOutput = rightSpeedSetpoint;
     }
 
-    Logger.consoleLog("LeftspeedSetPoint: %s, Left Speed: %s, LeftOutput: %s, rightSpeedSetPoint: %s Right Speed: %s rightOutput: %s", leftSpeedSetpoint, m_speeds.get().leftMetersPerSecond, leftOutput, rightSpeedSetpoint, m_speeds.get().rightMetersPerSecond, rightOutput);
-    Logger.consoleLog("Trajectory %s", m_trajectory.sample(curTime));
-    Logger.consoleLog("Pose: %s", m_pose.get().toString());
+    // Logger.consoleLog("LeftspeedSetPoint: %s, Left Speed: %s, LeftOutput: %s, rightSpeedSetPoint: %s Right Speed: %s rightOutput: %s", leftSpeedSetpoint, m_speeds.get().leftMetersPerSecond, leftOutput, rightSpeedSetpoint, m_speeds.get().rightMetersPerSecond, rightOutput);
+    // Logger.consoleLog("Trajectory %s", m_trajectory.sample(curTime));
+    // Logger.consoleLog("Pose: %s", m_pose.get().toString());
 
     m_output.accept(leftOutput, rightOutput);
 
