@@ -1,5 +1,7 @@
 package frc.team670.mustanglib.subsystems;
 
+import java.awt.Color;
+
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -50,5 +52,9 @@ public class LEDSubsystem extends SubsystemBase {
         rainbowFirstPixelHue += 3;
         // Check bounds
         rainbowFirstPixelHue %= 180;
+    }
+
+    private void setColor(Color color) {
+        ledBuffer.setRGB(ledBuffer.getLength(), color.getRed(), color.getGreen(), color.getBlue());
     }
 }
