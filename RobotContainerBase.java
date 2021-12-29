@@ -40,13 +40,13 @@ public abstract class RobotContainerBase {
   public static void checkSubsystemsHealth() {
     for (MustangSubsystemBase s : allSubsystems) {
       s.getHealth(true);
-      if (s.getHealth(true).equals(HealthState.GREEN)) {
+      if (s.getHealth(false).equals(HealthState.GREEN)) {
         MustangScheduler.getInstance().registerSubsystem(s);
         if(s.getDefaultMustangCommand() != null){
           MustangScheduler.getInstance().setDefaultCommand(s, s.getDefaultMustangCommand());
         }
       }
-      else if (s.getHealth(true).equals(HealthState.RED)) {
+      else if (s.getHealth(false).equals(HealthState.RED)) {
         MustangScheduler.getInstance().cancel(s.getDefaultMustangCommand());
         MustangScheduler.getInstance().unregisterSubsystem(s);
       }
