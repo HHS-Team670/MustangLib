@@ -143,19 +143,19 @@ public class MustangScheduler {
                     MustangSubsystemBase.HealthState healthReq = requirements.get(s);
                     if (s != null && healthReq != null) {
                         HealthState currentHealth = s.getHealth(false);
-                        // if (currentHealth.getId() > healthReq.getId()) {
-                        //     MustangNotifications.reportError(
-                        //             "%s not run because of health issue! Required health: %s, Actual health: %s",
-                        //             m_command.getName(), healthReq, currentHealth);
-                        //     RobotContainer.getDriverController().rumble(0.75, 1);
-                        //     scheduleOrCancel(m_command);
-                        //     return;
-                        // }
+                        if (currentHealth.getId() > healthReq.getId()) {
+                            MustangNotifications.reportError(
+                                    "%s not run because of health issue! Required health: %s, Actual health: %s",
+                                    m_command.getName(), healthReq, currentHealth);
+                            RobotContainer.getDriverController().rumble(0.75, 1);
+                            scheduleOrCancel(m_command);
+                            return;
+                        }
                     }
                 }
             }
             this.currentCommand = m_command;
-            // scheduler.setDefaultCommand(subsystem, currentCommand); //TODO: JUST FOR TESTING CONNECTION ISSUES
+            scheduler.setDefaultCommand(subsystem, currentCommand);
             Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
         } finally {
             this.currentCommand = null;

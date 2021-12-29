@@ -139,7 +139,7 @@ public abstract class RotatingSubsystem extends SubsystemBase implements Tunable
         return rotator.getClosedLoopTarget();
     }
 
-    protected int getPositionTicks(){
+    protected double getPositionTicks(){
         return rotator.getSelectedSensorPosition(0);
     }
 
