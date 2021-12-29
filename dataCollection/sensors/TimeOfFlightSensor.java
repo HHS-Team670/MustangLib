@@ -1,18 +1,22 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
-import edu.wpi.first.wpilibj.I2C;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.TimerTask;
+
+import edu.wpi.first.wpilibj.I2C;
+import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
  * I2C VL6180X Time of Flight sensor. Based on
  * //https://github.com/adafruit/Adafruit_VL6180X/blob/master/Adafruit_VL6180X.cpp.
  * 
- * @author riyagupta, meganchoy
+ * @author riyagupta, meganchoy, akshatadsule, lakshbhambhani
  */
 public class TimeOfFlightSensor {
     private I2C sensor;
-    private java.util.Timer updater;
+
+    private static java.util.Timer updater;
     private int range = ERROR;
     private boolean isHealthy;
 
@@ -25,18 +29,56 @@ public class TimeOfFlightSensor {
 
     private final static int TOF_ADDR = 0x29;
 
+    private boolean isMultiplexer;
+    private int address;
+
+    private int threshold = -1;
+
+    /**
+     * @param port Port the sensor is connected to
+     * @param address the address of the sensor on the multiplexer
+     */
+    public TimeOfFlightSensor(I2C.Port port, int address) {
+        this(port, address, -1);
+    }
+
+    /**
+     * @param port Port the sensor is connected to
+     * @param address the address of the sensor on the multiplexer
+     */
+    public TimeOfFlightSensor(I2C.Port port, int address, int threshold) {
+        this.address = address;
+        this.isMultiplexer = true;
+        this.threshold = threshold;
+        
+        if(isMultiplexer && !(address <= 7 && address >= 0)) {
+            MustangNotifications.reportError("TOF Sensor address out of range. Expected 0-7. Given: %s", address);
+        }
+        
+        sensor = new I2C(port, TOF_ADDR);
+        updater = new java.util.Timer();
+    
+        isHealthy = true;
+        // initSensor();
+    }
+
     /**
      * @param port Port the sensor is connected to
      */
     public TimeOfFlightSensor(I2C.Port port) {
         sensor = new I2C(port, TOF_ADDR);
+        
+        this.address = -1;
+        this.isMultiplexer = false;
+
         updater = new java.util.Timer();
+    
         isHealthy = true;
         initSensor();
         start();
     }
 
-    private void initSensor() {
+    public void initSensor() {
         write(0x0207, 0x01);
         write(0x0208, 0x01);
         write(0x0096, 0x00);
@@ -123,59 +165,84 @@ public class TimeOfFlightSensor {
     }
 
     private boolean write(int registerAddress, int data) {
-        byte[] rawData = new byte[3];
+        try{
+            byte[] rawData = new byte[3];
 
-        rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
-        rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
-        rawData[2] = (byte) data;
-
-        if (!sensor.writeBulk(rawData, 3)) {
-            isHealthy = true;
-            return false;
+            rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
+            rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
+            rawData[2] = (byte) data;
+    
+            // if(isMultiplexer) selectTOF();
+            if (!sensor.writeBulk(rawData, 3)) {
+                isHealthy = true;
+                return false;
+            }
+    
+            isHealthy = false;
+            return true;
         }
-
-        isHealthy = false;
+        catch (Exception e){
+            MustangNotifications.reportError("Write for sensor %s could not be performed. Check connection", address);
+        }
         return true;
     }
 
     private int readShortInt(int registerAddress) {
-        byte[] data = new byte[1];
+        try{
+            byte[] data = new byte[1];
 
-        // This sensor needs 2 bytes so cannot just use read method on I2C class
-        byte[] rawData = new byte[2];
-
-        rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
-        rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
-
-        if (!sensor.transaction(rawData, 2, data, 1)) {
-            isHealthy = true;
-            return data[0] & 0xFF;
+            // This sensor needs 2 bytes so cannot just use read method on I2C class
+            byte[] rawData = new byte[2];
+    
+            rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
+            rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
+    
+            // if(isMultiplexer) selectTOF();
+            if (!sensor.transaction(rawData, 2, data, 1)) {
+                isHealthy = true;
+                return data[0] & 0xFF;
+            }
+    
+            isHealthy = false;
+            return ERROR;
         }
-
-        isHealthy = false;
+        catch(Exception e){
+            MustangNotifications.reportError("Read for sensor %s could not be performed. Check connection", address);
+        }
         return ERROR;
+    }
+
+    public int getAddress(){
+        return address;
     }
 
     /**
      * Gets the time of flight distance unadjusted for offset and angle to target
      */
-    private void update() {
+    protected void update() {
         // wait for device to be ready for range measurement
-        while ((readShortInt(VL6180X_REG_RESULT_RANGE_STATUS) & 0x01) == 0)
-            ;
+        // Logger.consoleLog("Indexer read: %s");
+        while ((readShortInt(VL6180X_REG_RESULT_RANGE_STATUS) & 0x01) == 0);
 
         // Start a range measurement
         write(VL6180X_REG_SYSRANGE_START, 0x01);
 
         // Poll until bit 2 is set
-        while ((readShortInt(VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) & 0x04) == 0)
-            ;
+        while ((readShortInt(VL6180X_REG_RESULT_INTERRUPT_STATUS_GPIO) & 0x04) == 0);
 
         // read range in mm
         range = readShortInt(VL6180X_REG_RESULT_RANGE_VAL);
 
         // clear interrupt
         write(VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07);
+    }
+
+    public boolean isObjectWithinThreshold() {
+        return getDistance() <= threshold;
+    }
+
+    public void setThreshold(int threshold){
+        this.threshold = threshold;
     }
 
 }

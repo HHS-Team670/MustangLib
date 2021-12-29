@@ -4,10 +4,12 @@ import com.kauailabs.navx.AHRSProtocol.AHRSUpdateBase;
 import com.kauailabs.navx.frc.AHRS;
 import com.kauailabs.navx.frc.ITimestampedDataSubscriber;
 
+import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.PIDSource;
 import edu.wpi.first.wpilibj.PIDSourceType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 
 /**
@@ -44,13 +46,13 @@ public class NavX {
     protected long mLastSensorTimestampMs;
     private double offSet;
 
-    public NavX(SPI.Port spi_port_id) {
-        mAHRS = new AHRS(spi_port_id, (byte) 200);
+    public NavX(SerialPort.Port port) {
+        mAHRS = new AHRS(port);
         resetState();
         mAHRS.registerCallback(new Callback(), null);
     }
 
-    public NavX(SerialPort.Port port) {
+    public NavX(I2C.Port port) {
         mAHRS = new AHRS(port);
         resetState();
         mAHRS.registerCallback(new Callback(), null);
