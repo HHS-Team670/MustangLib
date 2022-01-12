@@ -1,0 +1,30 @@
+package frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague;
+
+import java.util.Map;
+
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.team670.mustanglib.commands.MustangCommand;
+import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
+import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.robot.subsystems.DriveBase;
+
+public class ToggleIdleMode extends InstantCommand implements MustangCommand{
+
+    private DriveBase driveBase;
+
+    public ToggleIdleMode(DriveBase driveBase) {
+        super();
+        this.driveBase = driveBase;
+    }
+
+    public void initialize() {
+        driveBase.switchIdleMode();
+      }
+
+    @Override
+    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+    
+}
