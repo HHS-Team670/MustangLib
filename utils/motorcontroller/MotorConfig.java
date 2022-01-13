@@ -13,7 +13,7 @@ public class MotorConfig {
 
     public enum Motor_Type {
 
-        NEO, NEO_550, REDLINE_775PRO, BAG;
+        NEO, NEO_550, REDLINE_775PRO, BAG, SIM;
 
     }
 
@@ -23,6 +23,7 @@ public class MotorConfig {
             put(Motor_Type.NEO_550, 25);
             put(Motor_Type.REDLINE_775PRO, 30);
             put(Motor_Type.BAG, 30);
+            put(Motor_Type.SIM, 20);
         }
     };
 
@@ -32,6 +33,7 @@ public class MotorConfig {
             put(Motor_Type.NEO_550, MotorType.kBrushless);
             put(Motor_Type.REDLINE_775PRO, MotorType.kBrushed);
             put(Motor_Type.BAG, MotorType.kBrushed);
+            put(Motor_Type.SIM, MotorType.kBrushed);
         }
     };
 }

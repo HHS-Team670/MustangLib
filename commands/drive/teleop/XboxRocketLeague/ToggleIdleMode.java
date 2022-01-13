@@ -6,6 +6,7 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.mustanglib.utils.Logger;
 import frc.team670.robot.subsystems.DriveBase;
 
 public class ToggleIdleMode extends InstantCommand implements MustangCommand{
@@ -14,11 +15,12 @@ public class ToggleIdleMode extends InstantCommand implements MustangCommand{
 
     public ToggleIdleMode(DriveBase driveBase) {
         super();
+        Logger.consoleLog("Switching idle mode");
         this.driveBase = driveBase;
     }
 
     public void initialize() {
-        driveBase.switchIdleMode();
+        driveBase.toggleIdleMode();
       }
 
     @Override
