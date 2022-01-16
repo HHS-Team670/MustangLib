@@ -3,14 +3,14 @@ package frc.team670.mustanglib.utils.motorcontroller;
 import java.util.Arrays;
 import java.util.List;
 
-import com.revrobotics.CANError;
+import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.ExternalFollower;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
-import com.revrobotics.ControlType;
+import com.revrobotics.CANSparkMax.ControlType;
 
 /**
  * Utility class for configuring a SparkMAX to default settings and resetting to
@@ -71,7 +71,7 @@ public class SparkMAXFactory {
     public static SparkMAXLite buildSparkMAX(int deviceID, Config config, MotorConfig.Motor_Type motorType) {
         SparkMAXLite sparkMax = new SparkMAXLite(deviceID, motorType);
         sparkMax.restoreFactoryDefaults();
-        sparkMax.set(ControlType.kDutyCycle, 0.0);
+        sparkMax.set(ControlType.kDutyCycle, 0);
         sparkMax.setInverted(config.INVERTED);
         sparkMax.setSmartCurrentLimit(MotorConfig.MOTOR_MAX_CURRENT.get(motorType));
         sparkMax.enableVoltageCompensation(12);
@@ -125,11 +125,11 @@ public class SparkMAXFactory {
         SparkMAXLite sparkMaxLeader = buildSparkMAX(motor1DeviceID, leaderConfig, motorType);
         SparkMAXLite sparkMaxFollower = buildSparkMAX(motor2DeviceID, leaderConfig, motorType);
 
-        CANError sparkMaxLeaderError = sparkMaxLeader.getLastError();
-        CANError sparkMaxFollowerError = sparkMaxFollower.getLastError();
+        REVLibError sparkMaxLeaderError = sparkMaxLeader.getLastError();
+        REVLibError sparkMaxFollowerError = sparkMaxFollower.getLastError();
 
-        boolean isMotor1Error = sparkMaxLeaderError != CANError.kOk && sparkMaxLeaderError != null;
-        boolean isMotor2Error = sparkMaxFollowerError != CANError.kOk && sparkMaxFollowerError != null;
+        boolean isMotor1Error = sparkMaxLeaderError != REVLibError.kOk && sparkMaxLeaderError != null;
+        boolean isMotor2Error = sparkMaxFollowerError != REVLibError.kOk && sparkMaxFollowerError != null;
 
         if (isMotor1Error && isMotor2Error) {
             MustangNotifications.reportError("SparkMaxControllerID %s and SparkMaxControllerID %s are broken",

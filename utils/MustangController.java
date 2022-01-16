@@ -80,11 +80,11 @@ public class MustangController extends XboxController {
     }
 
     public double getLeftTriggerAxis() {
-        return super.getTriggerAxis(Hand.kLeft);
+        return super.getLeftTriggerAxis();
     }
 
     public double getRightTriggerAxis() {
-        return super.getTriggerAxis(Hand.kRight);
+        return super.getRightTriggerAxis();
     }
 
     public double getRightStickX() {
@@ -96,19 +96,19 @@ public class MustangController extends XboxController {
     }
 
     public boolean getLeftBumper() {
-        return super.getBumper(Hand.kLeft);
+        return super.getLeftBumper();
     }
 
     public boolean getRightBumper() {
-        return super.getBumper(Hand.kRight);
+        return super.getRightBumper();
     }
 
     public boolean getLeftJoystickButton() {
-        return super.getStickButton(Hand.kLeft);
+        return super.getLeftStickButton();
     }
 
     public boolean getRightJoystickButton() {
-        return super.getStickButton(Hand.kRight);
+        return super.getRightStickButton();
     }
 
     public int getPOVValue() {

@@ -221,7 +221,7 @@ public class Logger {
      */
     public static void consoleLog(String message, Object... parameters) {
         // logs to the console as well as our log file on RR disk.
-        LOGGER.log(Level.INFO, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getInstance().getMatchTime(),
+        LOGGER.log(Level.INFO, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(),
                 currentMethod(2), String.format(message, parameters)));
     }
 
@@ -233,7 +233,7 @@ public class Logger {
     public static void consoleError(String message, Object... parameters)
     {
         // logs to the console as well as our log file on RR disk.
-        LOGGER.log(Level.SEVERE, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getInstance().getMatchTime(), currentMethod(2), String.format(message, parameters)));
+        LOGGER.log(Level.SEVERE, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(), currentMethod(2), String.format(message, parameters)));
     }
 
     /**
@@ -244,7 +244,7 @@ public class Logger {
     public static void consoleWarning(String message, Object... parameters)
     {
         // logs to the console as well as our log file on RR disk.
-        LOGGER.log(Level.WARNING, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getInstance().getMatchTime(), currentMethod(2), String.format(message, parameters)));
+        LOGGER.log(Level.WARNING, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(), currentMethod(2), String.format(message, parameters)));
     }
 
     /**
@@ -253,7 +253,7 @@ public class Logger {
     public static void consoleLog() {
         // logs to the console as well as our log file on RR disk.
         LOGGER.log(Level.INFO,
-                String.format("robot: MatchTime:%s: %s", DriverStation.getInstance().getMatchTime(), currentMethod(2)));
+                String.format("robot: MatchTime:%s: %s", DriverStation.getMatchTime(), currentMethod(2)));
     }
 
     /**

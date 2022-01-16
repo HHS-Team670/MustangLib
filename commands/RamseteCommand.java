@@ -13,14 +13,14 @@ import java.util.function.Supplier;
 import frc.team670.mustanglib.utils.Logger;
 
 import edu.wpi.first.wpilibj.Timer;
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.DifferentialDriveWheelSpeeds;
-import edu.wpi.first.wpilibj.trajectory.Trajectory;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 
@@ -163,9 +163,9 @@ public class RamseteCommand extends CommandBase {
       rightOutput = rightSpeedSetpoint;
     }
 
-    Logger.consoleLog("LeftspeedSetPoint: %s, Left Speed: %s, LeftOutput: %s, rightSpeedSetPoint: %s Right Speed: %s rightOutput: %s", leftSpeedSetpoint, m_speeds.get().leftMetersPerSecond, leftOutput, rightSpeedSetpoint, m_speeds.get().rightMetersPerSecond, rightOutput);
-    Logger.consoleLog("Trajectory %s", m_trajectory.sample(curTime));
-    Logger.consoleLog("Pose: %s", m_pose.get().toString());
+    // Logger.consoleLog("LeftspeedSetPoint: %s, Left Speed: %s, LeftOutput: %s, rightSpeedSetPoint: %s Right Speed: %s rightOutput: %s", leftSpeedSetpoint, m_speeds.get().leftMetersPerSecond, leftOutput, rightSpeedSetpoint, m_speeds.get().rightMetersPerSecond, rightOutput);
+    // Logger.consoleLog("Trajectory %s", m_trajectory.sample(curTime));
+    // Logger.consoleLog("Pose: %s", m_pose.get().toString());
 
     m_output.accept(leftOutput, rightOutput);
 

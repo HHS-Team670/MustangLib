@@ -2,14 +2,14 @@ package frc.team670.mustanglib.commands;
 
 import java.util.Map;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
-import edu.wpi.first.wpilibj.controller.RamseteController;
-import edu.wpi.first.wpilibj.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.RamseteController;
+import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import frc.team670.mustanglib.commands.RamseteCommand;
 import frc.team670.mustanglib.constants.RobotConstantsBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
-import frc.team670.paths.Path;
+import frc.team670.mustanglib.path.Path;
 
 /**
  * Represents a robot action with defined health requirements for every subsystem it uses.

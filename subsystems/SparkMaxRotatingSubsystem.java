@@ -196,7 +196,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
     protected double getMotorRotationsFromAngle(double angle) {
         double rotations = (angle / 360) * this.ROTATOR_GEAR_RATIO
                 + ((int) (getUnadjustedPosition() / this.ROTATOR_GEAR_RATIO)) * this.ROTATOR_GEAR_RATIO;
-        Logger.consoleLog("Indexer motor rotations from angle is %s", rotations);
+        // Logger.consoleLog("Indexer motor rotations from angle is %s", rotations);
         return rotations;
     }
 
