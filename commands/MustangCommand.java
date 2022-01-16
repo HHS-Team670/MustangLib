@@ -5,6 +5,7 @@ import java.util.Map;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
+import edu.wpi.first.math.trajectory.Trajectory;
 import frc.team670.mustanglib.commands.RamseteCommand;
 import frc.team670.mustanglib.constants.RobotConstantsBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -29,11 +30,11 @@ public interface MustangCommand{
      * @param driveBase
      * @return A RamseteCommand which will drive the given trajectory
      */
-    default RamseteCommand getTrajectoryFollowerCommand(Path path, TankDriveBase driveBase) {
+    default RamseteCommand getTrajectoryFollowerCommand(Trajectory trajectory, TankDriveBase driveBase) {
 
 
         RamseteCommand ramseteCommand = new RamseteCommand(
-                path.getTrajectory(), 
+                trajectory, 
                 driveBase::getPose,
                 new RamseteController(RobotConstantsBase.kRamseteB, RobotConstantsBase.kRamseteZeta),
                 driveBase.getLeftSimpleMotorFeedforward(),
