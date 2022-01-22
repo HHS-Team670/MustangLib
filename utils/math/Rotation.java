@@ -2,7 +2,7 @@ package frc.team670.mustanglib.utils.math;
 
 import java.text.DecimalFormat;
 
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 public class Rotation {
 	private static final double kEpsilon = 1E-9;

@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
-import com.revrobotics.CANError;
+import com.revrobotics.REVLibError;
 
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
@@ -124,7 +124,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      *         is connected successfully and without errors.
      */
     public boolean isSparkMaxErrored(SparkMAXLite sparkMax) {
-        return (sparkMax == null || sparkMax.getLastError() != CANError.kOk);
+        return (sparkMax == null || sparkMax.getLastError() != REVLibError.kOk);
     }
 
     /**

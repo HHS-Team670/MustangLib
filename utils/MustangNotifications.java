@@ -28,7 +28,7 @@ public class MustangNotifications {
      * @return boolean atCompetition true if at competition
      */
     public static boolean atCompetition() {
-        return (DriverStation.getInstance().isFMSAttached() && !overrideAtCompetition);
+        return (DriverStation.isFMSAttached() && !overrideAtCompetition);
     }
 
     /**

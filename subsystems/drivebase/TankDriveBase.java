@@ -7,16 +7,16 @@
 
 package frc.team670.mustanglib.subsystems.drivebase;
 
-import edu.wpi.first.wpilibj.controller.PIDController;
+import edu.wpi.first.math.controller.PIDController;
 
 import java.util.function.BiConsumer;
 
-import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.geometry.Pose2d;
-import edu.wpi.first.wpilibj.controller.*;
-import edu.wpi.first.wpilibj.kinematics.*;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.controller.*;
+import edu.wpi.first.math.kinematics.*;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangController;
@@ -32,7 +32,7 @@ import frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague.XboxRocketL
  */
 public abstract class TankDriveBase extends MustangSubsystemBase {
 
-  private SpeedControllerGroup leftMotors, rightMotors;
+  private MotorControllerGroup leftMotors, rightMotors;
   protected DifferentialDrive drive; 
 
   /**
@@ -44,7 +44,7 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param deadband A minimum motor input to move the drivebase
    * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
    */
-  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
+  public TankDriveBase(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
     setMotorControllers(leftMotors, rightMotors, inverted, rightSideInverted, deadband, safetyEnabled);
     
   }
@@ -54,7 +54,7 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
    * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    */
-  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors) {
+  public TankDriveBase(MotorController[] leftMotors, MotorController[] rightMotors) {
     this(leftMotors, rightMotors, true, true, 0.02, true);
   }
 
@@ -65,7 +65,7 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param inverted Invert the motors (make what would have been the fron the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
-  public TankDriveBase(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
+  public TankDriveBase(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted) {
     this(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
   }
 
@@ -83,11 +83,11 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param deadband A minimum motor input to move the drivebase
    * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
    */
-  protected void setMotorControllers(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled) {
+  protected void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled) {
     this.leftMotors = generateControllerGroup(leftMotors);
     this.rightMotors = generateControllerGroup(rightMotors);
     drive = new DifferentialDrive(this.leftMotors, this.rightMotors);
-    drive.setRightSideInverted(rightSideInverted);
+    rightMotors[0].setInverted(true);
     drive.setDeadband(deadband);
     drive.setSafetyEnabled(safetyEnabled);
   }
@@ -97,7 +97,7 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
    * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
    */
-  protected void setMotorControllers(SpeedController[] leftMotors, SpeedController[] rightMotors) {
+  protected void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors) {
     setMotorControllers(leftMotors, rightMotors, true, true, 0.02, true);
   }
 
@@ -108,22 +108,22 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param inverted Invert the motors (make what would have been the front the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
-  public void setMotorControllers(SpeedController[] leftMotors, SpeedController[] rightMotors, boolean inverted, boolean rightSideInverted) {
+  public void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted) {
     setMotorControllers(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
   }
 
 
-  private SpeedControllerGroup generateControllerGroup(SpeedController[] motors) {
+  private MotorControllerGroup generateControllerGroup(MotorController[] motors) {
     if(motors.length > 0) {
-      SpeedControllerGroup group;
+      MotorControllerGroup group;
       if(motors.length > 1) {
-        SpeedController[] otherMotors = new SpeedController[motors.length - 1];
+        MotorController[] otherMotors = new MotorController[motors.length - 1];
         for(int i = 1; i < motors.length; i++) {
           otherMotors[i-1] = motors[i];
         }
-        group = new SpeedControllerGroup(motors[0], otherMotors);
+        group = new MotorControllerGroup(motors[0], otherMotors);
       } else {
-        group = new SpeedControllerGroup(motors[0]);
+        group = new MotorControllerGroup(motors[0]);
       }
       return group;
     }

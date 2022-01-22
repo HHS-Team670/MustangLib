@@ -5,12 +5,8 @@ import com.kauailabs.navx.frc.AHRS;
 import com.kauailabs.navx.frc.ITimestampedDataSubscriber;
 
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.PIDSource;
-import edu.wpi.first.wpilibj.PIDSourceType;
-import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.I2C.Port;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
  * Driver for a NavX board. Basically a wrapper for the AHRS class. Much of this
@@ -135,20 +131,6 @@ public class NavX {
     }
 
     /**
-     * Gets the NavX as a PIDSource that responds to the NavX being zeroed.
-     */
-    public synchronized ZeroableNavX_Yaw_PIDSource getZeroableNavXYawPIDSource() {
-        return new ZeroableNavX_Yaw_PIDSource();
-    }
-
-    /**
-     * Gets the NavX's pitch as a PIDSource
-     */
-    public synchronized NavX_Pitch_PIDSource getNavXPitchPIDSource() {
-        return new NavX_Pitch_PIDSource();
-    }
-
-    /**
      * Gets the NavX object itself so be careful with it and don't reset it. This
      * will be field centric.
      */
@@ -178,54 +160,6 @@ public class NavX {
      */
     public double getRoll() {
         return mAHRS.getRoll();
-    }
-
-    public class ZeroableNavX_Yaw_PIDSource implements PIDSource {
-
-        private PIDSourceType type;
-
-        public ZeroableNavX_Yaw_PIDSource() {
-            type = PIDSourceType.kDisplacement;
-        }
-
-        @Override
-        public void setPIDSourceType(PIDSourceType pidSource) {
-            type = pidSource;
-        }
-
-        @Override
-        public PIDSourceType getPIDSourceType() {
-            return type;
-        }
-
-        @Override
-        public double pidGet() {
-            return getYawDouble();
-        }
-
-    }
-
-    public class NavX_Pitch_PIDSource implements PIDSource {
-        private PIDSourceType type;
-
-        public NavX_Pitch_PIDSource() {
-            type = PIDSourceType.kDisplacement;
-        }
-
-        @Override
-        public void setPIDSourceType(PIDSourceType pidSource) {
-            type = pidSource;
-        }
-
-        @Override
-        public PIDSourceType getPIDSourceType() {
-            return type;
-        }
-
-        @Override
-        public double pidGet() {
-            return getPitch();
-        }
     }
 
 }
