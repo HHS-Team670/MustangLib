@@ -1,7 +1,7 @@
 package frc.team670.mustanglib.utils.motorcontroller;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
+import com.revrobotics.REVLibError;
 
 /**
  * Wrapper class for a SparkMAX for reducing CAN bus overhead by skipping
@@ -67,5 +67,15 @@ public final class SparkMAXLite extends CANSparkMax {
             super.getPIDController().setReference(value, kdutycycle);
         }
     }
+
+    /**
+     * 
+     * @return true if there is an issue with this SparkMax, false if the SparkMax
+     *         is connected successfully and without errors.
+     */
+    public boolean isErrored() {
+        return (this == null || this.getLastError() != REVLibError.kOk);
+    }
+
 
 }

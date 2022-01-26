@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 
 public class SingleJoystickDrive extends CommandBase implements MustangCommand {
 
-    private TankDriveBase driveBase;
+    private DriveBase driveBase;
     private Joystick leftJoystick;
 
-    public SingleJoystickDrive(TankDriveBase driveBase, Joystick leftJoystick) {
+    public SingleJoystickDrive(DriveBase driveBase, Joystick leftJoystick) {
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;

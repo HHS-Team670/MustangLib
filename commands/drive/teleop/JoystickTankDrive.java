@@ -15,14 +15,14 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 
 public class JoystickTankDrive extends CommandBase implements MustangCommand {
 
-    private TankDriveBase driveBase;
+    private DriveBase driveBase;
     private Joystick leftJoystick, rightJoystick;
 
-    public JoystickTankDrive(TankDriveBase driveBase, Joystick leftJoystick, Joystick rightJoystick) {
+    public JoystickTankDrive(DriveBase driveBase, Joystick leftJoystick, Joystick rightJoystick) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
         super();

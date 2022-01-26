@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import frc.team670.mustanglib.commands.MustangCommand;
-import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.MustangController;
@@ -30,10 +30,10 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
 
   private static boolean isReversed;
 
-  private TankDriveBase driveBase;
+  private DriveBase driveBase;
   private MustangController controller;
 
-  public XboxRocketLeagueDrive(TankDriveBase driveBase, MustangController controller) {
+  public XboxRocketLeagueDrive(DriveBase driveBase, MustangController controller) {
     isReversed = false;
     addRequirements(driveBase);
     this.driveBase = driveBase;

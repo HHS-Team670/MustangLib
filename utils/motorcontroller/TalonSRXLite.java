@@ -1,6 +1,7 @@
 package frc.team670.mustanglib.utils.motorcontroller;
 
 import com.ctre.phoenix.motorcontrol.can.TalonSRX;
+import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 
 /**
@@ -38,6 +39,15 @@ public class TalonSRXLite extends TalonSRX {
             lastControlMode = mode;
             super.set(mode, value);
         }
+    }
+
+    /**
+     * 
+     * @return true if there is an issue with this controller, false if it is
+     *         connected successfully and without errors
+     */
+    public boolean isPhoenixControllerErrored() {
+        return (this == null || this.getLastError() != ErrorCode.OK);
     }
 
 }

@@ -14,14 +14,14 @@ import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.TankDriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 
 public class TimedDrive extends WaitCommand implements MustangCommand {
 
-  private TankDriveBase driveBase;
+  private DriveBase driveBase;
   private double power;
 
-  public TimedDrive(double seconds, double power, TankDriveBase driveBase) {
+  public TimedDrive(double seconds, double power, DriveBase driveBase) {
     super(seconds);
     this.power = power;
     this.driveBase = driveBase;

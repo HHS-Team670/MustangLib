@@ -9,8 +9,6 @@ package frc.team670.mustanglib.subsystems.drivebase;
 
 import edu.wpi.first.math.controller.PIDController;
 
-import java.util.function.BiConsumer;
-
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
@@ -18,10 +16,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.controller.*;
 import edu.wpi.first.math.kinematics.*;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
-import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangController;
-import frc.team670.mustanglib.commands.MustangScheduler;
-import frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague.XboxRocketLeagueDrive;
 
 /**
  * 
@@ -30,90 +25,11 @@ import frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague.XboxRocketL
  * 
  * @author shaylandias, lakshbhambhani
  */
-public abstract class TankDriveBase extends MustangSubsystemBase {
+public abstract class DriveBase extends MustangSubsystemBase {
 
-  private MotorControllerGroup leftMotors, rightMotors;
   protected DifferentialDrive drive; 
 
-  /**
-   * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
-   * @param inverted Invert the motors (make what would have been the front the back)
-   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
-   * @param deadband A minimum motor input to move the drivebase
-   * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
-   */
-  public TankDriveBase(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
-    setMotorControllers(leftMotors, rightMotors, inverted, rightSideInverted, deadband, safetyEnabled);
-    
-  }
-
-  /**
-   * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
-   */
-  public TankDriveBase(MotorController[] leftMotors, MotorController[] rightMotors) {
-    this(leftMotors, rightMotors, true, true, 0.02, true);
-  }
-
-  /**
-   * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
-   * @param inverted Invert the motors (make what would have been the fron the back)
-   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
-   */
-  public TankDriveBase(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted) {
-    this(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
-  }
-
-  /**
-   * Usethis constructor as the super() in a sublcass, then call setMotorControllers if you need to run setup on Motor Controllers
-   */
-  public TankDriveBase() {}
-
-  /**
-   * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
-   * @param inverted Invert the motors (make what would have been the front the back)
-   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
-   * @param deadband A minimum motor input to move the drivebase
-   * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
-   */
-  protected void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled) {
-    this.leftMotors = generateControllerGroup(leftMotors);
-    this.rightMotors = generateControllerGroup(rightMotors);
-    drive = new DifferentialDrive(this.leftMotors, this.rightMotors);
-    rightMotors[0].setInverted(true);
-    drive.setDeadband(deadband);
-    drive.setSafetyEnabled(safetyEnabled);
-  }
-
-  /**
-   * This method is called by the constructor or in a subclass if motor setup needs to be performed. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
-   */
-  protected void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors) {
-    setMotorControllers(leftMotors, rightMotors, true, true, 0.02, true);
-  }
-
-  /**
-   * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
-   * @param inverted Invert the motors (make what would have been the front the back)
-   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
-   */
-  public void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors, boolean inverted, boolean rightSideInverted) {
-    setMotorControllers(leftMotors, rightMotors, inverted, rightSideInverted, 0.02, true);
-  }
-
-
-  private MotorControllerGroup generateControllerGroup(MotorController[] motors) {
+  protected MotorControllerGroup generateControllerGroup(MotorController[] motors) {
     if(motors.length > 0) {
       MotorControllerGroup group;
       if(motors.length > 1) {
@@ -186,7 +102,6 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
    * @param squaredInputs if squared, output much more smoother (quadratic function)
    */
   public void arcadeDrive(double xSpeed, double zRotation, boolean squaredInputs) {
-    Logger.consoleLog("ArcadeDrive xSpeed: %s, ArcadeDrive zRotation: %s", xSpeed, zRotation);
     drive.arcadeDrive(xSpeed, zRotation, squaredInputs);
   }
 
@@ -213,6 +128,8 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
   public abstract void initBrakeMode();
 
   public abstract void initCoastMode();
+
+  public abstract void toggleIdleMode();
 
   /**
    * Sets the velocities of the left and right motors of the robot.
@@ -299,9 +216,7 @@ public abstract class TankDriveBase extends MustangSubsystemBase {
   public abstract void resetOdometry(Pose2d pose);
 
   public abstract DifferentialDriveWheelSpeeds getWheelSpeeds();
-  //public abstract Supplier<DifferentialDriveWheelSpeeds> getWheelSpeeds();
 
-  // public abstract void tankDriveVoltage(double leftVoltage, double rightVoltage);
   public abstract void tankDriveVoltage(double leftVoltage, double rightVoltage);
 
 }
