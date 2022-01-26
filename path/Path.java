@@ -61,18 +61,6 @@ public class Path {
         trajectoryFromWaypoints(waypoints, config);
     }
 
-        /**
-     * Used to create a path object based on a list of way points and the drivebase
-     * slower trajectory to compensate while intaking
-     * @param waypoints a list of waypoints
-     * @param driveBase the drivebase which has to follow the path
-     * @param kAutoPathConstraints 
-     *
-     */
-    public Path(List<Pose2d> waypoints, DriveBase driveBase, DifferentialDriveKinematicsConstraint kAutoPathConstraints, boolean reversed) {
-        this(waypoints, driveBase, kAutoPathConstraints, RobotConstants.kMaxSpeedMetersPerSecond2, RobotConstants.kMaxAccelerationMetersPerSecondSquared2, RobotConstants.endVelocityMetersPerSecond2, reversed);
-    }
-
     private void trajectoryFromWaypoints(List<Pose2d> waypoints){
         this.trajectory = TrajectoryGenerator.generateTrajectory(waypoints, CONFIG);
     }
