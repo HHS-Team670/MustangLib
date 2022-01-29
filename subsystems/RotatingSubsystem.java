@@ -84,7 +84,10 @@ public abstract class RotatingSubsystem extends SubsystemBase implements Tunable
     public boolean getTimeout(){
         return timeout;
     }
-
+    //TODO
+    /**
+     * Sets blah state to Coast
+     */
     public void enableCoastMode() {
         rotator.setNeutralMode(NeutralMode.Coast);
     }
