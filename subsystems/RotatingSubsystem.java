@@ -43,15 +43,9 @@ public abstract class RotatingSubsystem extends SubsystemBase implements Tunable
 
             rotatorTalon.configSelectedFeedbackSensor(FeedbackDevice.CTRE_MagEncoder_Relative);
 
-            if (rotatorTalon != null) {
-                this.rotator = rotatorTalon;
-                this.rotatorSensorCollection = rotatorTalon.getSensorCollection();
-                this.arbitraryFeedForwardConstant = arbitraryFeedForwardConstant;
-                this.timeout = timeout;
+            setpoint = RotatingSubsystem.NO_SETPOINT;
 
-                setpoint = RotatingSubsystem.NO_SETPOINT;
-
-                int pulseWidthPos = getRotatorPulseWidth() & 4095;
+            int pulseWidthPos = getRotatorPulseWidth() & 4095;
 
             if (pulseWidthPos < quadEncoderMin) {
               pulseWidthPos += 4096;
@@ -74,7 +68,6 @@ public abstract class RotatingSubsystem extends SubsystemBase implements Tunable
             rotatorTalon.configForwardSoftLimitEnable(true);
             rotatorTalon.configReverseSoftLimitEnable(true);
             
-            }
         }
     }
 
