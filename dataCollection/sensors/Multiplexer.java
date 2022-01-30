@@ -32,20 +32,34 @@ public class Multiplexer {
         start();
     }
 
+    /**
+     * put into map of sensors with individual key; selects the given port on the multiplexer that is avaliable (memory) and assigns it to given TOF sensor
+     * @param newSensor TimeOfFlightSensor 
+     * @param key String name/id of sensor
+     */
     public synchronized void attachSensor(TimeOfFlightSensor newSensor, String key){
         sensors.put(key, newSensor);
         selectTOF(newSensor.getAddress());
         newSensor.initSensor();
     }
 
+    /**
+     * @return map of sensors
+     */
     public Map<String, TimeOfFlightSensor> getSensors(){
         return sensors;
     }
 
+    /**
+     * start timertask with period 100 (long)
+     */
     private void start() {
         start(100);
     }
 
+    /**
+     * schedule timer 
+     */
     private void start(int period) {
         TimerTask task = new TimerTask() {
             @Override

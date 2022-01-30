@@ -83,7 +83,7 @@ public class NavX {
     // }
 
     /**
-     * The Field Centric Yaw
+     * @return The Field Centric Yaw
      */
     private synchronized double getRawYawDegrees() {
         return mYawDegrees;
@@ -103,29 +103,37 @@ public class NavX {
         }
         return rtrnAngle;
     }
-
+    /**
+     * @return The total accumulated yaw angle (z-axis, in degrees) reported by sensor
+     */
     public synchronized double getAngle() {
         return mAHRS.getAngle();
     }
 
     /**
-     * The rate of change of the NavX angle in degrees per second.
+     * @return The rate of change of the NavX angle in degrees per second.
      */
     public synchronized double getYawRateDegreesPerSec() {
         return mYawRateDegreesPerSecond;
     }
 
     /**
-     * The rate of change of the NavX angle in radians per second.
+     * @return The rate of change of the NavX angle in radians per second.
      */
     public synchronized double getYawRateRadiansPerSec() {
         return 180.0 / Math.PI * getYawRateDegreesPerSec();
     }
 
+    /**
+     * @return The current raw (unprocessed) X-axis acceleration rate (in G)
+     */
     public synchronized double getRawAccelX() {
         return mAHRS.getRawAccelX();
     }
 
+    /**
+     * Set offset angle as Field Centric Yaw
+     */
     private synchronized void setOffSetAngle() {
         offSet = getRawYawDegrees();
     }
