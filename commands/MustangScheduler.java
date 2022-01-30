@@ -61,6 +61,9 @@ public class MustangScheduler {
         scheduler.cancel((Command[]) commandsToCancel);
     }
 
+    /** 
+     * @return the Command
+     */
     public Command getCurrentlyScheduled() {
         return this.currentCommand;
     }
