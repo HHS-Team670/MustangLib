@@ -22,8 +22,7 @@ public abstract class HDrive extends DriveBase {
 
   private MotorControllerGroup leftMotors, rightMotors;
   private MotorController centerDrive;
-  protected DifferentialDrive drive; 
-
+  
   /**
    * 
    * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0

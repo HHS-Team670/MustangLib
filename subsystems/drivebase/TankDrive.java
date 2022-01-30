@@ -21,7 +21,6 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 public abstract class TankDrive extends DriveBase {
 
   private MotorControllerGroup leftMotors, rightMotors;
-  protected DifferentialDrive drive; 
 
   /**
    * 
