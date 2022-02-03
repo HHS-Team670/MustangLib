@@ -15,6 +15,7 @@ public final class SparkMAXLite extends CANSparkMax {
     protected ControlType lastControlType = null;
     protected CANSparkMax leader = null;
     protected MotorConfig.Motor_Type motorType = null;
+    protected SparkMaxPIDController controller;
 
     /**
      * Creates a SparkMAX on a given ID, which is controlling a specified kind of motor.
@@ -25,6 +26,7 @@ public final class SparkMAXLite extends CANSparkMax {
     public SparkMAXLite(int id, MotorConfig.Motor_Type type) {
         super(id, MotorConfig.MOTOR_TYPE.get(type));
         this.motorType = type;
+        controller = super.getPIDController();
     }
 
     public double getLastSet() {
@@ -64,7 +66,7 @@ public final class SparkMAXLite extends CANSparkMax {
         if (value != lastSet || kdutycycle != lastControlType) {
             this.lastSet = value;
             this.lastControlType = kdutycycle;
-            super.getPIDController().setReference(value, kdutycycle);
+            controller.setReference(value, kdutycycle);
         }
     }
 
