@@ -10,7 +10,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public class BeamBreak {
 
-    private static DigitalInput dio;
+    private DigitalInput dio;
+    private int port;
 
     /**
      * Constructs a BeamBreak sensor
@@ -19,6 +20,7 @@ public class BeamBreak {
      */
     public BeamBreak(int dioPort) {
         dio = new DigitalInput(dioPort);
+        this.port = dioPort;
     }
 
     /**
@@ -32,7 +34,7 @@ public class BeamBreak {
      * Writes the state of this beam break sensor to SmartDashboard
      */
     public void sendBeamBreakDataToDashboard() {
-        SmartDashboard.putBoolean("Beam Break on" + dio + ":", isTriggered());
+        SmartDashboard.putBoolean("Beam Break on " + port + ":", isTriggered());
     }
 
 }
