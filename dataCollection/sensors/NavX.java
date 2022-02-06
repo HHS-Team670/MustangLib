@@ -64,6 +64,14 @@ public class NavX {
         offSet = 0;
     }
 
+    /** 
+     * Resets to a specific angle
+     */
+    public synchronized void reset(double angle) {
+        reset();
+        mAHRS.setAngleAdjustment(angle);
+    }
+
     /**
      * Zeroes the yaw for getYawDouble()
      */
