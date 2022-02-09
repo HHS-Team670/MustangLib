@@ -32,6 +32,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
     private static NetworkTable table = instance.getTable("/SmartDashboard");
 
+    private boolean debugSubsystemFields = false;
+
     /**
      * Creates a new MustangSubsystemBase. By default, the subsystem's initial
      * health state is UNKNOWN (ID 0).
@@ -82,6 +84,13 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     }
 
     /**
+     * @param toggle true if subsystem needs to be debugged
+     */
+    public void debugSubsystem(boolean toggle){
+        debugSubsystemFields = toggle;
+    }
+
+    /**
      * Calculates the current state of the subsystem.
      */
     public abstract HealthState checkHealth();
@@ -100,6 +109,9 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
                 failedLastTime = false;
             }
             mustangPeriodic();
+            if(debugSubsystemFields){
+                debugSubsystem();
+            }
         } else {
             if (!failedLastTime) {
                 MustangNotifications.reportError(
@@ -122,5 +134,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     }
 
     public abstract void mustangPeriodic();
+
+    public abstract void debugSubsystem();
 
 }
