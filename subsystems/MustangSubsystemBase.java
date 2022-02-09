@@ -1,19 +1,13 @@
 package frc.team670.mustanglib.subsystems;
 
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
-import com.ctre.phoenix.ErrorCode;
-import com.ctre.phoenix.motorcontrol.can.BaseMotorController;
-import com.revrobotics.REVLibError;
-
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.utils.MustangNotifications;
-import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
 /**
  * Basic framework for a subsystem of the robot with defined levels of system
@@ -83,6 +77,10 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
         return this.lastHealthState;
     }
 
+    public void setDebugSubsystem(boolean toggle) {
+        this.debugSubsystemFields = toggle;
+    }
+
     /**
      * @param toggle true if subsystem needs to be debugged
      */
@@ -124,13 +122,13 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public void pushHealthToDashboard() {
         NetworkTableEntry subsystem = table.getEntry(this.getName());
         subsystem.forceSetString(getHealth(false).toString());
-        if(getHealth(false).toString().equals("YELLOW") || getHealth(false).toString().equals("RED")){
+        if (getHealth(false).toString().equals("YELLOW") || getHealth(false).toString().equals("RED")) {
             // RobotContainer.notifyDriverController(1.0, 0.3);
         }
     }
 
-    public MustangCommand getDefaultMustangCommand(){
-        return (MustangCommand)(super.getDefaultCommand());
+    public MustangCommand getDefaultMustangCommand() {
+        return (MustangCommand) (super.getDefaultCommand());
     }
 
     public abstract void mustangPeriodic();
