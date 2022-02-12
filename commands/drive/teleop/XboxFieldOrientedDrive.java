@@ -42,45 +42,13 @@ public class XboxFieldOrientedDrive extends CommandBase implements MustangComman
         double xSpeed = xbox.getLeftStickX();
         double ySpeed = xbox.getLeftStickY();   
 
-        if (xbox.getAButton()) {
-            ySpeed = maxSpeed;
-        }
-        if (xbox.getBButton()) {
-            xSpeed = maxSpeed;
-        }
-        if (xbox.getYButton()) {
-            ySpeed = -maxSpeed;
-        } 
-        if (xbox.getXButton()) {
-            xSpeed = -maxSpeed;
-        }
-        if (xbox.getLeftBumper()) {
-            xSpeed = 0;
-            ySpeed = 0;
-        }
-        
-        
-        
         // get angle formed by field and robot heading
         double navXAngle = navX.getYawDouble(); 
-
-        // twist from triggers
-        // double zRotation = -1 * (xbox.getLeftTriggerAxis()
-        // - xbox.getRightTriggerAxis());
-
-        
 
         // twist from right joystick
         double zRotation = xbox.getRightStickX();
         double[] speeds = getComponentSpeeds(xSpeed, ySpeed, navXAngle);
 
-        //TODO: when centerDrive is going forward/backward, direction is swapped, but normal in strafe.
-
-        // if (speeds[1] > 0) {
-        //     zRotation += 0.25;
-        // } else if (speeds[1] < 0) {
-        //     zRotation -= 0.25;
-        // }
         driveBase.setCenterDrive(speeds[1]);
         driveBase.curvatureDrive(speeds[0], zRotation, true);
     }
