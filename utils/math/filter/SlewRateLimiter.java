@@ -48,8 +48,11 @@ public class SlewRateLimiter {
         double currentTime = WPIUtilJNI.now() * 1e-6;
         double elapsedTime = currentTime - m_prevTime;
 
-        m_prevVal +=
-        MathUtil.clamp(input - m_prevVal, -m_decelRateLimit * elapsedTime, m_accelRateLimit * elapsedTime);
+        if(input * m_prevVal > 0) { // accelerating
+            m_prevVal += MathUtil.clamp(input - m_prevVal, -m_accelRateLimit * elapsedTime, m_accelRateLimit * elapsedTime);
+        } else { // decellerating
+            m_prevVal += MathUtil.clamp(input - m_prevVal, -m_decelRateLimit * elapsedTime, m_decelRateLimit * elapsedTime);
+        }
         m_prevTime = currentTime;
         return m_prevVal;
     }
