@@ -1,7 +1,6 @@
-package frc.team670.mustanglib.subsystems.servo;
+package frc.team670.mustanglib.utils.servo;
 
 import edu.wpi.first.wpilibj.Servo;
-
 
 /**
  * Represents a Linear Servo
@@ -19,7 +18,7 @@ public class LinearServo {
      */
     public LinearServo(int channel, ServoType type) {
         actuator = new Servo(channel);
-        ServoConfig config = type.config;
+        ServoPWMConfig config = type.config;
         actuator.setBounds(config.max, config.deadbandMax, config.center, config.deadbandMin, config.min);
     }
 
@@ -27,14 +26,14 @@ public class LinearServo {
      * Extends the servo to its maximum length
      */
     public void extend() {
-        actuator.setSpeed(1);
+        actuator.set(1);
     }
 
     /**
      * Retracts the servo to its minimum length
      */
     public void retract() {
-        actuator.setSpeed(0);
+        actuator.set(0);
     }  
 
     /**
@@ -42,9 +41,9 @@ public class LinearServo {
      * @param distance Distance to extends the servo to. Must be between [0, 1]
      */
     public void setExtent(double distance) {
-        if(Math.abs(distance) > 1) {
+        if(distance > 1 || distance < 0) {
             throw new IllegalArgumentException("Distance must be between [0, 1]");
         }
-        actuator.setSpeed(distance);
+        actuator.set(distance);
     }
 }
