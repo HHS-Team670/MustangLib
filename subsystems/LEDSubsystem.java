@@ -6,9 +6,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
 public class LEDSubsystem extends MustangSubsystemBase {
-    private static final int length = 300;
+    private static final int length = 70;
     private AddressableLED led;
-    private Status status;
+    private Status status = Status.BLANK;
 
     public LEDSubsystem(int port) {
         this.led = new AddressableLED(port);
@@ -33,7 +33,7 @@ public class LEDSubsystem extends MustangSubsystemBase {
 
     @Override
     public HealthState checkHealth() {
-        return null;
+        return HealthState.GREEN;
     }
 
     public enum Status {
