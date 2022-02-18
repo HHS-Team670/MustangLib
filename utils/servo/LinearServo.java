@@ -3,7 +3,7 @@ package frc.team670.mustanglib.utils.servo;
 import edu.wpi.first.wpilibj.Servo;
 
 /**
- * Represents a Linear Servo
+ * Interfaces with a Linear Servo through PWM
  * 
  * @author AkshatAdsule
  */
@@ -18,7 +18,7 @@ public class LinearServo {
      */
     public LinearServo(int channel, ServoType type) {
         actuator = new Servo(channel);
-        ServoPWMConfig config = type.config;
+        PWMConfig config = type.config;
         actuator.setBounds(config.max, config.deadbandMax, config.center, config.deadbandMin, config.min);
     }
 
@@ -38,7 +38,7 @@ public class LinearServo {
 
     /**
      * Extends the servo to a specified length
-     * @param distance Distance to extends the servo to. Must be between [0, 1]
+     * @param distance Distance to extend the servo to. Must be between [0, 1]
      */
     public void setExtent(double distance) {
         if(distance > 1 || distance < 0) {
