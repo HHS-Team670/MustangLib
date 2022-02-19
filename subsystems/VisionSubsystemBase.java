@@ -21,7 +21,7 @@ import frc.team670.robot.constants.RobotConstants;
  * 
  * @author Katia Bravo
  */
-public class VisionSubsystemBase extends MustangSubsystemBase{
+public abstract class VisionSubsystemBase extends MustangSubsystemBase{
 
     private PowerDistribution cameraLEDs;
     private PhotonCamera camera;
@@ -44,24 +44,21 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
      * 
      * @return distance, in inches, from the camera to the target
      */
-    private void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg ) {
-        try{
-            var result = camera.getLatestResult();
+    private void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
+        var result = camera.getLatestResult();
 
-            if(result.hasTargets()){
-                hasTarget = true;
-                angle = camera.getLatestResult().getTargets().get(0).getYaw();
-                distance = PhotonUtils.calculateDistanceToTargetMeters(
-                        cameraHeight, targetHeight,
-                        Units.degreesToRadians(cameraAngleDeg),
-                        Units.degreesToRadians(result.getBestTarget().getPitch()));                
-                visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
-            } else {
-                hasTarget = false;
-                // Logger.consoleLog("NO TARGET DETECTED");
-            }
-            
-        } catch(Exception e){ }
+        if(result.hasTargets()){
+            hasTarget = true;
+            angle = camera.getLatestResult().getTargets().get(0).getYaw();
+            distance = PhotonUtils.calculateDistanceToTargetMeters(
+                    cameraHeight, targetHeight,
+                    Units.degreesToRadians(cameraAngleDeg),
+                    Units.degreesToRadians(result.getBestTarget().getPitch()));                
+            visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
+        } else {
+            hasTarget = false;
+            // Logger.consoleLog("NO TARGET DETECTED");
+        }
     }
 
     public void adjustDistance(double adjustment) {
@@ -84,16 +81,7 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
         return hasTarget ? angle : RobotConstants.VISION_ERROR_CODE;
     }
 
-    public VisionMeasurement getVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset) {
-        if (hasTarget){
-            Translation2d camToTargetTranslation = PhotonUtils.estimateCameraToTargetTranslation(distance, Rotation2d.fromDegrees(angle));
-            Transform2d camToTargetTrans = PhotonUtils.estimateCameraToTarget(camToTargetTranslation, targetPose, Rotation2d.fromDegrees(heading));
-            Pose2d targetOffset = cameraOffset.transformBy(camToTargetTrans.inverse());
-            Pose2d newPose = targetOffset.transformBy(changeInPose(heading));
-            return new VisionMeasurement(newPose, visionCapTime);
-        }
-        return null;
-    }
+    public abstract VisionMeasurement getVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset);
 
     public void setStartPoseRad(double x, double y, double angle) {
         startPose = new Pose2d(x, y, new Rotation2d(angle));
@@ -117,6 +105,11 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
 
     public void testLEDS() {
         cameraLEDs.setSwitchableChannel(SmartDashboard.getBoolean("LEDs on", true));
+    }
+
+    @Override
+    public HealthState checkHealth() {
+        return HealthState.GREEN;
     }
 
     public class VisionMeasurement{
