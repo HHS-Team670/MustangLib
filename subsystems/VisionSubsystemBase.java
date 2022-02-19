@@ -43,7 +43,7 @@ public abstract class VisionSubsystemBase extends SubsystemBase {
      * 
      * @return distance, in inches, from the camera to the target
      */
-    public void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
+    protected void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
         var result = camera.getLatestResult();
 
         if(result.hasTargets()){
