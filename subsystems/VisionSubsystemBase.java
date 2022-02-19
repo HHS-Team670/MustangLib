@@ -48,7 +48,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      * 
      * @return distance, in inches, from the camera to the target
      */
-    private void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
+    public void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
         var result = camera.getLatestResult();
 
         if(result.hasTargets()){
