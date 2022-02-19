@@ -1,6 +1,6 @@
 package frc.team670.mustanglib.subsystems;
 
-import java.util.Timer;
+import edu.wpi.first.wpilibj.Timer;
 import java.util.logging.Logger;
 
 import org.photonvision.PhotonCamera;
