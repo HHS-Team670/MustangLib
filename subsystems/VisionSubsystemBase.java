@@ -22,8 +22,8 @@ import frc.team670.robot.constants.RobotConstants;
  */
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
-    protected PowerDistribution cameraLEDs;
     protected PhotonCamera camera;
+    protected PowerDistribution pd;
     protected Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
     protected double distance;
@@ -84,10 +84,6 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     public void setStartPoseRad(double x, double y, double angle) {
         startPose = new Pose2d(x, y, new Rotation2d(angle));
-    }
-
-    public void setStartPoseDeg(double x, double y, double degrees) {
-        startPose = new Pose2d(x, y, Rotation2d.fromDegrees(degrees));
     }
 
     public double getVisionCaptureTime() {
