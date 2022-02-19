@@ -94,11 +94,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         return visionCapTime;
     }
 
-    public void setCamerLEDS(int module, PowerDistribution.ModuleType moduleType) {
-        cameraLEDs = new PowerDistribution(module, moduleType);
-    }
-
-    public void LEDSwitch(boolean on) {
+    public void switchLEDS(boolean on) {
         pd.setSwitchableChannel(on);
     }
 
