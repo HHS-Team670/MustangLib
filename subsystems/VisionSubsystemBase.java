@@ -113,14 +113,6 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
         cameraLEDs = new PowerDistribution(module, moduleType);
     }
 
-    public void turnOnLEDs() {
-        cameraLEDs.setSwitchableChannel(true);
-    }
-
-    public void turnOffLEDs() {
-        cameraLEDs.setSwitchableChannel(false);
-    }
-
     public void LEDSwitch(boolean on) {
         cameraLEDs.setSwitchableChannel(on);
     }
