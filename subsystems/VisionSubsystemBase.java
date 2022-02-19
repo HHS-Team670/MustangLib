@@ -23,14 +23,13 @@ import frc.team670.robot.constants.RobotConstants;
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     private PhotonCamera camera;
+    private PowerDistribution pd;
     private Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
-    private double distance;
-    private double angle;
-    private double visionCapTime;
-    private boolean hasTarget;
-
-    private PowerDistribution pd;
+    protected double distance;
+    protected double angle;
+    protected double visionCapTime;
+    protected boolean hasTarget;
 
     public VisionSubsystemBase(PowerDistribution pd){
         this.pd = pd;
@@ -48,7 +47,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      * 
      * @return distance, in inches, from the camera to the target
      */
-    public void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
+    protected void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
         var result = camera.getLatestResult();
 
         if(result.hasTargets()){
@@ -91,12 +90,12 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         startPose = new Pose2d(x, y, new Rotation2d(angle));
     }
 
-    public void setStartPoseDeg(double x, double y, double degrees) {
-        startPose = new Pose2d(x, y, Rotation2d.fromDegrees(degrees));
-    }
-
     public double getVisionCaptureTime() {
         return visionCapTime;
+    }
+
+    public void setCamerLEDS(int module, PowerDistribution.ModuleType moduleType) {
+        cameraLEDs = new PowerDistribution(module, moduleType);
     }
 
     public void LEDSwitch(boolean on) {
