@@ -43,16 +43,29 @@ public class TalonSRXChecker extends MotorChecker<TalonSRX> {
         }
     }
 
+    /**
+     * set motor's mode to mode PercentOutput and value to double output
+     * @param motor
+     * @param output
+     */
     @Override
     public void setOutput(TalonSRX motor, double output) {
         motor.set(ControlMode.PercentOutput, output);
     }
 
+    /**
+     * 
+     * @param motor
+     * @return motor's stator/output current (in amps)
+     */
     @Override
     public double getCurrent(TalonSRX motor) {
         return motor.getStatorCurrent();
     }
-
+    /**
+     * 
+     * instantiate TalonSRXChecker
+     */
     public static boolean checkMotors(MustangSubsystemBase subsystem, ArrayList<MotorConfig<TalonSRX>> motorsToCheck,
             Config checkerConfig) {
         TalonSRXChecker checker = new TalonSRXChecker();
