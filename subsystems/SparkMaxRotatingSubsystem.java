@@ -1,12 +1,11 @@
 package frc.team670.mustanglib.subsystems;
 
-import com.revrobotics.CANEncoder;
-import com.revrobotics.CANPIDController;
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.ControlType;
+import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkMaxPIDController;
 
-import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
@@ -21,8 +20,8 @@ import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase implements TunableSubsystem {
 
     protected SparkMAXLite rotator;
-    protected CANEncoder rotator_encoder;
-    protected CANPIDController rotator_controller;
+    protected RelativeEncoder rotator_encoder;
+    protected SparkMaxPIDController rotator_controller;
     protected double setpoint;
     protected double tempSetpoint;
     protected double kP, kI, kD, kFF, kIz, MAX_OUTPUT, MIN_OUTPUT;
@@ -150,7 +149,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param setpoint The target position for this subsystem, in motor rotations
      */
     protected void setSystemMotionTarget(double setpoint) {
-        rotator_controller.setReference(setpoint, ControlType.kSmartMotion);
+        rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
         this.setpoint = setpoint;
     }
 
@@ -163,7 +162,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      */
     protected void setTemporaryMotionTarget(double setpoint) {
         tempSetpoint = setpoint;
-        rotator_controller.setReference(setpoint, ControlType.kSmartMotion);
+        rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
     }
 
     /**
@@ -259,18 +258,18 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * Clears the setpoint of this subsystem
      */
     public void clearSetpoint() {
-        rotator_controller.setReference(0, ControlType.kDutyCycle);
+        rotator_controller.setReference(0, CANSparkMax.ControlType.kDutyCycle);
     }
 
     public SparkMAXLite getRotator() {
         return this.rotator;
     }
 
-    public CANEncoder getRotatorEncoder() {
+    public RelativeEncoder getRotatorEncoder() {
         return this.rotator_encoder;
     }
 
-    public CANPIDController getRotatorController() {
+    public SparkMaxPIDController getRotatorController() {
         return this.rotator_controller;
     }
 }
