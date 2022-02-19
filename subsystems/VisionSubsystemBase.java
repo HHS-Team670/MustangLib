@@ -23,11 +23,11 @@ import frc.team670.robot.constants.RobotConstants;
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     private PhotonCamera camera;
-    private Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
+    protected Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
-    private double distance;
-    private double angle;
-    private double visionCapTime;
+    protected double distance;
+    protected double angle;
+    protected double visionCapTime;
     private boolean hasTarget;
 
     private PowerDistribution pd;
@@ -53,7 +53,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
         if(result.hasTargets()){
             hasTarget = true;
-            angle = camera.getLatestResult().getTargets().get(0).getYaw();
+            angle = result.getTargets().get(0).getYaw();
             distance = PhotonUtils.calculateDistanceToTargetMeters(
                     cameraHeight, targetHeight,
                     Units.degreesToRadians(cameraAngleDeg),
@@ -99,8 +99,12 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         return visionCapTime;
     }
 
-    public void LEDSwitch(boolean on) {
+    public void switchLEDs(boolean on) {
         pd.setSwitchableChannel(on);
+    }
+
+    public boolean LEDsTurnedOn(){
+        return pd.getSwitchableChannel();
     }
 
     public void testLEDS() {
@@ -109,7 +113,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     @Override
     public HealthState checkHealth() {
-        return HealthState.GREEN;
+        return HealthState.RED;
     }
 
     public class VisionMeasurement{
