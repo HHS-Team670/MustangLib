@@ -1,7 +1,7 @@
-package frc.team670.robot.subsystems;
+package frc.team670.mustanglib.subsystems;
 
-import java.lang.System.Logger;
 import java.util.Timer;
+import java.util.logging.Logger;
 
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
@@ -9,9 +9,9 @@ import org.photonvision.PhotonUtils;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.robot.constants.RobotConstants;
 
 
