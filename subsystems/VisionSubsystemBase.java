@@ -23,14 +23,13 @@ import frc.team670.robot.constants.RobotConstants;
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     private PhotonCamera camera;
+    private PowerDistribution pd;
     protected Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
     protected double distance;
     protected double angle;
     protected double visionCapTime;
     private boolean hasTarget;
-
-    private PowerDistribution pd;
 
     public VisionSubsystemBase(PowerDistribution pd){
         this.pd = pd;
@@ -48,7 +47,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      * 
      * @return distance, in inches, from the camera to the target
      */
-    public void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
+    protected void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
         var result = camera.getLatestResult();
 
         if(result.hasTargets()){
@@ -87,19 +86,19 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     public abstract VisionMeasurement getVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset);
 
-    public void setStartPoseRad(double x, double y, double angle) {
-        startPose = new Pose2d(x, y, new Rotation2d(angle));
+    public void setStartPoseDeg(double x, double y, double angle) {
+        startPose = new Pose2d(x, y, Rotation2d.fromDegrees(angle));
     }
 
-    public void setStartPoseDeg(double x, double y, double degrees) {
-        startPose = new Pose2d(x, y, Rotation2d.fromDegrees(degrees));
+    public void setStartPoseRad(double x, double y, double angle) {
+        startPose = new Pose2d(x, y, new Rotation2d(angle));
     }
 
     public double getVisionCaptureTime() {
         return visionCapTime;
     }
 
-    public void switchLEDs(boolean on) {
+    public void switchLEDS(boolean on) {
         pd.setSwitchableChannel(on);
     }
 
