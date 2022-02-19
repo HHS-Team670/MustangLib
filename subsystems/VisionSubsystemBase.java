@@ -88,15 +88,15 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase{
     }
 
     public void setStartPoseDeg(double x, double y, double degrees) {
-        startPose = new Pose2d(x, y, new Rotation2d.fromDegrees(degrees));
+        startPose = new Pose2d(x, y, Rotation2d.fromDegrees(degrees));
     }
 
     public double getVisionCaptureTime() {
         return visionCapTime;
     }
 
-    public void setCamerLEDS(int module, PneumaticsModuleType moduleType) {
-        cameraLEDs = new PowerDistribution(module, moduleType);
+    public void setCamerLEDS(int module, PowerDistribution.ModuleType moduleType) {
+        cameraLEDs = new PowerDistribution​(module, moduleType);
     }
 
     public void LEDSwitch(boolean on) {
