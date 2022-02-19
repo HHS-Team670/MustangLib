@@ -20,7 +20,7 @@ import frc.team670.robot.constants.RobotConstants;
  * 
  * @author Katia Bravo
  */
-public abstract class VisionSubsystemBase extends MustangSubsystemBase{
+public abstract class VisionSubsystemBase extends SubsystemBase {
 
     private PowerDistribution cameraLEDs;
     private PhotonCamera camera;
