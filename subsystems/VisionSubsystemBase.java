@@ -22,14 +22,14 @@ import frc.team670.robot.constants.RobotConstants;
  */
 public abstract class VisionSubsystemBase extends SubsystemBase {
 
-    private PowerDistribution cameraLEDs;
-    private PhotonCamera camera;
-    private Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
+    protected PowerDistribution cameraLEDs;
+    protected PhotonCamera camera;
+    protected Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
-    private double distance;
-    private double angle;
-    private double visionCapTime;
-    private boolean hasTarget;
+    protected double distance;
+    protected double angle;
+    protected double visionCapTime;
+    protected boolean hasTarget;
 
     public void setCameraName(String cameraName) {
         camera = new PhotonCamera(cameraName);
@@ -43,7 +43,7 @@ public abstract class VisionSubsystemBase extends SubsystemBase {
      * 
      * @return distance, in inches, from the camera to the target
      */
-    private void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
+    public void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
         var result = camera.getLatestResult();
 
         if(result.hasTargets()){
