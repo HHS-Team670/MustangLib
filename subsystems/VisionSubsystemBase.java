@@ -10,10 +10,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
-import frc.team670.robot.constants.FieldConstants;
 import frc.team670.robot.constants.RobotConstants;
 
 
@@ -25,7 +23,7 @@ import frc.team670.robot.constants.RobotConstants;
  */
 public class VisionSubsystemBase extends MustangSubsystemBase{
 
-    private Solenoid cameraLEDs;
+    private PowerDistribution cameraLEDs;
     private PhotonCamera camera;
     private Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
@@ -46,7 +44,7 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
      * 
      * @return distance, in inches, from the camera to the target
      */
-    private void processImage() {
+    private void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg ) {
         try{
             var result = camera.getLatestResult();
 
@@ -54,11 +52,10 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
                 hasTarget = true;
                 angle = camera.getLatestResult().getTargets().get(0).getYaw();
                 distance = PhotonUtils.calculateDistanceToTargetMeters(
-                        RobotConstants.CAMERA_HEIGHT_METERS,
-                        FieldConstants.HIGH_HUB_HEIGHT,
-                        Units.degreesToRadians(RobotConstants.CAMERA_ANGLE_DEGREES),
+                        cameraHeight, targetHeight,
+                        Units.degreesToRadians(cameraAngleDeg),
                         Units.degreesToRadians(result.getBestTarget().getPitch()));                
-                visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis()/1000;
+                visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
             } else {
                 hasTarget = false;
                 // Logger.consoleLog("NO TARGET DETECTED");
@@ -89,7 +86,16 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
         return hasTarget ? angle : RobotConstants.VISION_ERROR_CODE;
     }
 
-    public VisionMeasurement getVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset) {}
+    public VisionMeasurement getVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset) {
+        if (hasTarget){
+            Translation2d camToTargetTranslation = PhotonUtils.estimateCameraToTargetTranslation(distance, Rotation2d.fromDegrees(angle));
+            Transform2d camToTargetTrans = PhotonUtils.estimateCameraToTarget(camToTargetTranslation, targetPose, Rotation2d.fromDegrees(heading));
+            Pose2d targetOffset = cameraOffset.transformBy(camToTargetTrans.inverse());
+            Pose2d newPose = targetOffset.transformBy(changeInPose(heading));
+            return new VisionMeasurement(newPose, visionCapTime);
+        }
+        return null;
+    }
 
     public void setStartPoseRad(double x, double y, double angle) {
         startPose = new Pose2d(x, y, new Rotation2d(angle));
@@ -103,24 +109,24 @@ public class VisionSubsystemBase extends MustangSubsystemBase{
         return visionCapTime;
     }
 
-    public void setCamerLEDS(int module, PneumaticsModuleType moduleType, int channel) {
-        camera = new Solenoid(module, moduleType, channel);
+    public void setCamerLEDS(int module, PneumaticsModuleType moduleType) {
+        cameraLEDs = new PowerDistribution(module, moduleType);
     }
 
     public void turnOnLEDs() {
-        cameraLEDs.set(true);
+        cameraLEDs.setSwitchableChannel(true);
     }
 
     public void turnOffLEDs() {
-        cameraLEDs.set(false);
+        cameraLEDs.setSwitchableChannel(false);
     }
 
     public void LEDSwitch(boolean on) {
-        cameraLEDs.set(on);
+        cameraLEDs.setSwitchableChannel(on);
     }
 
     public void testLEDS() {
-        cameraLEDs.set(SmartDashboard.getBoolean("LEDs on", true));
+        cameraLEDs.setSwitchableChannel(SmartDashboard.getBoolean("LEDs on", true));
     }
 
     public class VisionMeasurement{
