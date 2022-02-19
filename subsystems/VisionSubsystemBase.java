@@ -20,9 +20,8 @@ import frc.team670.robot.constants.RobotConstants;
  * 
  * @author Katia Bravo
  */
-public abstract class VisionSubsystemBase extends SubsystemBase {
+public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
-    private PowerDistribution cameraLEDs;
     private PhotonCamera camera;
     private Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
@@ -30,6 +29,12 @@ public abstract class VisionSubsystemBase extends SubsystemBase {
     private double angle;
     private double visionCapTime;
     private boolean hasTarget;
+
+    private PowerDistribution pd;
+
+    public VisionSubsystemBase(PowerDistribution pd){
+        this.pd = pd;
+    }
 
     public void setCameraName(String cameraName) {
         camera = new PhotonCamera(cameraName);
@@ -94,16 +99,12 @@ public abstract class VisionSubsystemBase extends SubsystemBase {
         return visionCapTime;
     }
 
-    public void setCamerLEDS(int module, PowerDistribution.ModuleType moduleType) {
-        cameraLEDs = new PowerDistribution​(module, moduleType);
-    }
-
     public void LEDSwitch(boolean on) {
-        cameraLEDs.setSwitchableChannel(on);
+        pd.setSwitchableChannel(on);
     }
 
     public void testLEDS() {
-        cameraLEDs.setSwitchableChannel(SmartDashboard.getBoolean("LEDs on", true));
+        pd.setSwitchableChannel(SmartDashboard.getBoolean("LEDs on", true));
     }
 
     @Override
