@@ -95,7 +95,7 @@ public abstract class VisionSubsystemBase extends SubsystemBase {
     }
 
     public void setCamerLEDS(int module, PowerDistribution.ModuleType moduleType) {
-        cameraLEDs = new PowerDistribution​(module, moduleType);
+        cameraLEDs = new PowerDistribution(module, moduleType);
     }
 
     public void LEDSwitch(boolean on) {
