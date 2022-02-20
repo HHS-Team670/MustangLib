@@ -13,7 +13,6 @@ import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.robot.constants.RobotConstants;
 
-
 /**
  * Stores values off of NetworkTables for easy retrieval and gives them
  * Listeners to update the stored values as they are changed.
@@ -31,7 +30,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     protected double visionCapTime;
     private boolean hasTarget;
 
-    public VisionSubsystemBase(PowerDistribution pd){
+    public VisionSubsystemBase(PowerDistribution pd) {
         this.pd = pd;
     }
 
@@ -39,7 +38,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         camera = new PhotonCamera(cameraName);
     }
 
-    public boolean hasTarget(){
+    public boolean hasTarget() {
         return hasTarget;
     }
 
@@ -50,13 +49,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     protected void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
         var result = camera.getLatestResult();
 
-        if(result.hasTargets()){
+        if (result.hasTargets()) {
             hasTarget = true;
             angle = result.getTargets().get(0).getYaw();
             distance = PhotonUtils.calculateDistanceToTargetMeters(
                     cameraHeight, targetHeight,
                     Units.degreesToRadians(cameraAngleDeg),
-                    Units.degreesToRadians(result.getBestTarget().getPitch()));                
+                    Units.degreesToRadians(result.getBestTarget().getPitch()));
             visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
         } else {
             hasTarget = false;
@@ -102,7 +101,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         pd.setSwitchableChannel(on);
     }
 
-    public boolean LEDsTurnedOn(){
+    public boolean LEDsTurnedOn() {
         return pd.getSwitchableChannel();
     }
 
@@ -112,14 +111,14 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     @Override
     public HealthState checkHealth() {
-        return HealthState.RED;
+        return HealthState.GREEN;
     }
 
-    public class VisionMeasurement{
+    public class VisionMeasurement {
         public Pose2d pose;
         public double capTime;
 
-        public VisionMeasurement(Pose2d pose, double capTime){
+        public VisionMeasurement(Pose2d pose, double capTime) {
             this.capTime = capTime;
             this.pose = pose;
         }
