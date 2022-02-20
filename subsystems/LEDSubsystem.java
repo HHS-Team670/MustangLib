@@ -2,33 +2,39 @@ package frc.team670.mustanglib.subsystems;
 
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
-public class LEDSubsystem extends MustangSubsystemBase {
-    private static final int length = 70;
-    private AddressableLED led;
-    private Status status = Status.BLANK;
+public abstract class LEDSubsystem extends MustangSubsystemBase {
+    private AddressableLED m_led;
+    private AddressableLEDBuffer m_ledBuffer;
+    private int length;
 
-    public LEDSubsystem(int port) {
-        this.led = new AddressableLED(port);
-        led.setLength(length);
+    private int m_rainbowFirstPixelHue;
+
+    public LEDSubsystem(int port, int length) {
+        m_led = new AddressableLED(9);
+
+        // Reuse buffer
+        // Default to a length of 60, start empty output
+        // Length is expensive to set, so only set it once, then just update data
+        m_ledBuffer = new AddressableLEDBuffer(70);
+        m_led.setLength(m_ledBuffer.getLength());
+
+        this.length = length;
+
+        // Set the data
+        m_led.setData(m_ledBuffer);
+        m_led.start();
     }
 
-    public void setStatus(Status status) {
-        this.status = status;
-    }
-    
     @Override
     public void mustangPeriodic() {
-        led.setData(status.buffer);
-        led.start();
-        
+        m_led.setData(m_ledBuffer);
     }
 
     @Override
     public void debugSubsystem() {
-        SmartDashboard.putString("LED Status", status.toString());        
+
     }
 
     @Override
@@ -36,27 +42,85 @@ public class LEDSubsystem extends MustangSubsystemBase {
         return HealthState.GREEN;
     }
 
-    public enum Status {
-        SHOOTING(makeBuffer(length, new Color(0, 0, 255))),
-		INTAKING(makeBuffer(length, new Color(255,0,0))),
-        ONE_BALL(makeBuffer(length, new Color(0,255,0))),
-        TWO_BALL(makeBuffer(length, new Color(255,0,255))),
-        FLEX(makeBuffer(length, new Color(150,150, 150))),
-        BLANK(makeBuffer(length, new Color(0,0,0)));
+    public static double[] RGBtoHSV(double r, double g, double b) {
 
-        public final AddressableLEDBuffer buffer;
+        double h, s, v;
 
-        private Status(AddressableLEDBuffer buffer) {
-            this.buffer = buffer;
+        double min, max, delta;
+
+        min = Math.min(Math.min(r, g), b);
+        max = Math.max(Math.max(r, g), b);
+
+        // V
+        v = max;
+
+        delta = max - min;
+
+        // S
+        if (max != 0)
+            s = delta / max;
+        else {
+            s = 0;
+            h = -1;
+            return new double[] { h, s, v };
         }
 
-        private static AddressableLEDBuffer makeBuffer(int length, Color color) {
-            AddressableLEDBuffer buffer  = new AddressableLEDBuffer(length);
+        // H
+        if (r == max)
+            h = (g - b) / delta; // between yellow & magenta
+        else if (g == max)
+            h = 2 + (b - r) / delta; // between cyan & yellow
+        else
+            h = 4 + (r - g) / delta; // between magenta & cyan
 
-            for(int i=0; i < length; i++) {
-                buffer.setRGB(i, (int) color.red, (int) color.green, (int) color.blue);
-            }
-            return buffer;
+        h *= 60; // degrees
+
+        if (h < 0)
+            h += 360;
+
+        return new double[] { h, s, v };
+    }
+
+    public void rainbow() {
+        // For every pixel
+        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+            // Calculate the hue - hue is easier for rainbows because the color
+            // shape is a circle so only one value needs to precess
+            final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
+            // Set the value
+            m_ledBuffer.setHSV(i, hue, 255, 128);
+        }
+        // Increase by to make the rainbow "move"
+        m_rainbowFirstPixelHue += 3;
+        // Check bounds
+        m_rainbowFirstPixelHue %= 180;
+    }
+
+    public void solid(Color c){
+        // For every pixel
+        double[] hsv = RGBtoHSV(c.red, c.green, c.blue);
+        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+            // Set the value
+            m_ledBuffer.setHSV(i, (int)hsv[0], (int)hsv[1], (int)hsv[2]);
         }
     }
+
+    public void resourceBar(Color c, double ratioFilled){
+        // For every pixel
+        double[] hsv = RGBtoHSV(c.red, c.green, c.blue);
+        int ratioBright = (int)((double)m_ledBuffer.getLength() * ratioFilled);
+        for (var i = 0; i < ratioBright; i++) {
+            // Set the value
+            m_ledBuffer.setHSV(i, (int)hsv[0], (int)hsv[1], (int)hsv[2]);
+        }
+        for (var i = ratioBright; i < m_ledBuffer.getLength(); i++) {
+            // Set the value
+            m_ledBuffer.setHSV(i, (int)hsv[0], (int)hsv[1], (int)(hsv[2]/2));
+        }
+    }
+
+    public void setBuffer(AddressableLEDBuffer buffer){
+        this.m_ledBuffer = buffer;
+    }
+
 }

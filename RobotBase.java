@@ -50,7 +50,7 @@ public class RobotBase extends TimedRobot {
     RobotContainerBase.checkSubsystemsHealth();
     timer = new Timer();
     timer.start();
-
+    robotContainer.robotInit();
     MustangScheduler.getInstance();
   }
 
@@ -144,4 +144,5 @@ public class RobotBase extends TimedRobot {
   public void testPeriodic() {
     MustangScheduler.getInstance().run();
   }
+
 }
