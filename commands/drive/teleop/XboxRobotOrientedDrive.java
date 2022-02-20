@@ -8,6 +8,7 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.mustanglib.utils.JoystickUtils;
 import frc.team670.mustanglib.utils.MustangController;
 import frc.team670.robot.subsystems.DriveBase;
 
@@ -30,11 +31,11 @@ public class XboxRobotOrientedDrive extends CommandBase implements MustangComman
     public void execute() {
         
         // get x and y components of joystick push
-        double xSpeed = xbox.getLeftStickX();
-        double ySpeed = xbox.getLeftStickY();   
+        double xSpeed = JoystickUtils.smoothInput(xbox.getLeftStickX());
+        double ySpeed = JoystickUtils.smoothInput(xbox.getLeftStickY());
 
         // twist from right joystick
-        double zRotation = xbox.getRightStickX();
+        double zRotation = JoystickUtils.smoothInput(xbox.getRightStickX());
         driveBase.setCenterDrive(xSpeed);
         driveBase.curvatureDrive(-ySpeed, zRotation, true);
     }
