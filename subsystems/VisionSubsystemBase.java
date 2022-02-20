@@ -20,7 +20,7 @@ import frc.team670.robot.constants.RobotConstants;
  */
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
-    private PhotonCamera camera;
+    protected PhotonCamera camera;
     private PowerDistribution pd;
     protected Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
