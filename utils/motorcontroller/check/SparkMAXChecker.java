@@ -46,7 +46,7 @@ public class SparkMAXChecker extends MotorChecker<CANSparkMax> {
 
     @Override
     public void setOutput(CANSparkMax motor, double output) {
-        motor.getPIDController().setReference(output, ControlType.kDutyCycle);
+        motor.getPIDController().setReference(output, CANSparkMax.ControlType.kDutyCycle);
     }
 
     @Override

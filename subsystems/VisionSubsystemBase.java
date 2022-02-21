@@ -1,7 +1,5 @@
 package frc.team670.mustanglib.subsystems;
 
-import java.util.Timer;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 
@@ -9,6 +7,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.robot.constants.RobotConstants;
 
@@ -28,6 +27,8 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     protected double angle;
     protected double visionCapTime;
     private boolean hasTarget;
+
+    private boolean ledsTurnedOn;
 
     public VisionSubsystemBase(PowerDistribution pd) {
         this.pd = pd;
@@ -98,10 +99,11 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     public void switchLEDS(boolean on) {
         pd.setSwitchableChannel(on);
+        ledsTurnedOn = on;
     }
 
     public boolean LEDsTurnedOn() {
-        return pd.getSwitchableChannel();
+        return ledsTurnedOn;
     }
 
     public void testLEDS() {

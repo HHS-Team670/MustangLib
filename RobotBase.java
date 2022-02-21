@@ -70,7 +70,7 @@ public class RobotBase extends TimedRobot {
   public void robotPeriodic() {
     MustangScheduler.getInstance().run();
     robotContainer.periodic();
-    if (timer.hasPeriodPassed(SYSTEM_CHECK_PERIOD)) {
+    if (timer.hasElapsed(SYSTEM_CHECK_PERIOD)) {
       RobotContainerBase.checkSubsystemsHealth();
     }
   }
