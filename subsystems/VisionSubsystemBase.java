@@ -1,14 +1,13 @@
 package frc.team670.mustanglib.subsystems;
 
+import java.util.Timer;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.robot.constants.RobotConstants;
@@ -21,7 +20,7 @@ import frc.team670.robot.constants.RobotConstants;
  */
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
-    private PhotonCamera camera;
+    protected PhotonCamera camera;
     private PowerDistribution pd;
     protected Pose2d startPose = new Pose2d(0, 0, new Rotation2d(0));
 
