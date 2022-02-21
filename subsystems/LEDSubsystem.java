@@ -25,6 +25,21 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     protected boolean isBlinking;
     private LEDColor blinkColor;
 
+    /**
+     * Creates a new LEDSubsystem
+     * @param port The port at which the LED strip is connected to
+     * @param length The number of LEDS in the LED strip
+     */
+    public LEDSubsystem(int port, int length) {
+        m_led = new AddressableLED(port);
+        m_ledBuffer = new AddressableLEDBuffer(length);
+        m_led.setLength(length);
+
+        // Set the data
+        m_led.setData(m_ledBuffer);
+        m_led.start();
+    }
+
     @Override
     public void mustangPeriodic() {
         // Handle turning off blink
@@ -49,21 +64,6 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     @Override
     public HealthState checkHealth() {
         return HealthState.GREEN;
-    }
-    
-    /**
-     * Creates a new LEDSubsystem
-     * @param port The port at which the LED strip is connected to
-     * @param length The number of LEDS in the LED strip
-     */
-    public LEDSubsystem(int port, int length) {
-        m_led = new AddressableLED(port);
-        m_ledBuffer = new AddressableLEDBuffer(length);
-        m_led.setLength(length);
-
-        // Set the data
-        m_led.setData(m_ledBuffer);
-        m_led.start();
     }
 
     /**
@@ -137,7 +137,6 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         for (int i = ratioBright; i < m_ledBuffer.getLength(); i++) { // inactive
             m_ledBuffer.setHSV(i, inactive.h, inactive.s,  inactive.v);
         }
-        m_led.setData(m_ledBuffer);
     }
 
     /**
