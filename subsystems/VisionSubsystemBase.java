@@ -59,6 +59,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
         } else {
             hasTarget = false;
+            distance = RobotConstants.VISION_ERROR_CODE;
             // Logger.consoleLog("NO TARGET DETECTED");
         }
     }
@@ -69,6 +70,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     public double getDistanceToTargetM() {
         return hasTarget ? distance : RobotConstants.VISION_ERROR_CODE;
+    }
+
+    public double getLastValidDistanceMetersCaptured(){
+        if(getVisionCaptureTime() < 2 && distance > RobotConstants.VISION_ERROR_CODE){
+            return distance;
+        }
+        return RobotConstants.VISION_ERROR_CODE;
     }
 
     public double getDistanceToTargetCm() {
