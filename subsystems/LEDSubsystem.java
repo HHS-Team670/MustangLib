@@ -146,7 +146,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * @param ratio The ratio between the active color vs the inactive color
      */
     public void progressBar(LEDColor color, double ratio){
-        progressBar(color, LEDColor.dimmer(color), ratio);
+        progressBar(color, color.dimmer(), ratio);
     }
 
     /**

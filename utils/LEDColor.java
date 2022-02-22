@@ -25,11 +25,11 @@ public class LEDColor {
         this.v = v;
     }
 
-    public static LEDColor dimmer(LEDColor color) {
-        return new LEDColor(color.h, color.s, color.v / 3);
+    public LEDColor dimmer() {
+        return new LEDColor(h, s, v / 3);
     }
 
-    public static LEDColor brighter(LEDColor color) {
-        return new LEDColor(color.h, color.s, color.v * 3);
+    public LEDColor brighter() {
+        return new LEDColor(h, s, v * 3);
     }
 }
