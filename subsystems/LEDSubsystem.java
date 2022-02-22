@@ -19,6 +19,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     private AddressableLEDBuffer m_ledBuffer;
 
     private int m_rainbowFirstPixelHue;
+    private int m_mustangRainbowFirstSaturation;
 
     private int blinkCounter;
     private int blinkEndCount;
@@ -82,6 +83,17 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         m_rainbowFirstPixelHue += 3;
         // Check bounds
         m_rainbowFirstPixelHue %= 180;
+    }
+
+    public void mustangRainbow() {
+        // For every pixel
+        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+            m_ledBuffer.setHSV(i, 60, m_mustangRainbowFirstSaturation + (i * 255 / m_ledBuffer.getLength()) % 255, 255);
+        }
+        // Increase by to make the rainbow "move"
+        m_mustangRainbowFirstSaturation += 5;
+        // Check bounds
+        m_mustangRainbowFirstSaturation %= 255;
     }
 
     /**
