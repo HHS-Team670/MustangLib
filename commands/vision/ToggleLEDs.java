@@ -20,21 +20,19 @@ import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 /**
  * Set vision leds to turned on or off
  */
-public class SetVisionLEDs extends InstantCommand implements MustangCommand {
+public class ToggleLEDs extends InstantCommand implements MustangCommand {
 
   boolean turnOn;
   VisionSubsystemBase vision;
 
-  public SetVisionLEDs(boolean turnOn, VisionSubsystemBase vision) {
+  public ToggleLEDs(VisionSubsystemBase vision) {
     super();
-    this.turnOn = turnOn;
     this.vision = vision;
   }
 
   // Called once when the command executes
   public void initialize() {
-   Logger.consoleLog("LEds turned to: %s", turnOn);
-     vision.switchLEDS(turnOn);
+     vision.switchLEDS(!vision.LEDsTurnedOn());
   }
 
   @Override
