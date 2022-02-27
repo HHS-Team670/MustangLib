@@ -7,11 +7,12 @@
 
 package frc.team670.mustanglib;
 
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-
 import frc.team670.mustanglib.utils.Logger;
 
 /**
@@ -72,6 +73,8 @@ public class RobotBase extends TimedRobot {
     robotContainer.periodic();
     if (timer.hasElapsed(SYSTEM_CHECK_PERIOD)) {
       RobotContainerBase.checkSubsystemsHealth();
+      RobotContainerBase.monitorBudget();
+      sendCANStatusToDash();
     }
   }
 
@@ -143,6 +146,13 @@ public class RobotBase extends TimedRobot {
   @Override
   public void testPeriodic() {
     MustangScheduler.getInstance().run();
+  }
+
+  /**
+   * This function is called to send CAN Status to SmartDashboard. Can be displayed on FRCDashboard.
+   */
+  public void sendCANStatusToDash(){
+    SmartDashboard.putString("CANStatus", RobotController.getCANStatus().toString());
   }
 
 }

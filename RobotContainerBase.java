@@ -10,8 +10,10 @@ package frc.team670.mustanglib;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
+import frc.team670.mustanglib.dataCollection.PowerDistributionPanel;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 
@@ -27,6 +29,16 @@ public abstract class RobotContainerBase {
 
   // The robot's subsystems and commands are defined here...
   public static List<MustangSubsystemBase> allSubsystems = new ArrayList<MustangSubsystemBase>();
+  private static PowerDistributionPanel pdp;
+
+  private static boolean powerBudgetMonitoring = true;
+
+  public RobotContainerBase(PowerDistributionPanel pdp){
+    if(pdp.getType() == ModuleType.kCTRE){
+      powerBudgetMonitoring = false;
+    }
+    this.pdp = pdp;
+  }
 
   public static void addSubsystem(MustangSubsystemBase... subsystems) {
     for (MustangSubsystemBase m_subsystemBase : subsystems) {
@@ -68,6 +80,16 @@ public abstract class RobotContainerBase {
 
   public static List<MustangSubsystemBase> getSubsystems() {
     return allSubsystems;
+  }
+
+  public static void monitorBudget(){
+    if(powerBudgetMonitoring){
+      pdp.monitorBudget();
+    }
+  }
+
+  public PowerDistributionPanel getPDP(){
+    return pdp;
   }
 
 
