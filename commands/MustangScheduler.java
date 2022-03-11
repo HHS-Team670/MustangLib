@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj.DriverStation;
-
+import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.team670.mustanglib.utils.MustangNotifications;
 import frc.team670.robot.RobotContainer;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -51,12 +51,14 @@ public class MustangScheduler {
     }
 
     /**
-     * Cancel the given MustangCommands. 
+     * Cancel the given MustangCommands.
      */
     public void cancel(MustangCommand... commands) {
-        // We can't directly cast an array of MustangCommands to an array of Commands, you
-        // can only do that for subtype to supertype array. 
-        // So each MustangCommand will be cast to a Command and added to an array of Commands.
+        // We can't directly cast an array of MustangCommands to an array of Commands,
+        // you
+        // can only do that for subtype to supertype array.
+        // So each MustangCommand will be cast to a Command and added to an array of
+        // Commands.
         Command[] commandsToCancel = Arrays.copyOf(commands, commands.length, Command[].class);
         scheduler.cancel((Command[]) commandsToCancel);
     }
@@ -115,6 +117,41 @@ public class MustangScheduler {
     }
 
     /**
+     * To be used only as a convenience feature for quickly scheduling command groups. Expects nothing less than a green health
+     * state for the subsystem
+     * @param group The command group that needs to be scheduled
+     * @param subsystem The subsystem being used for the command group
+     */
+    public void schedule(Command group, MustangSubsystemBase subsystem) {
+
+        if (group == null) {
+            MustangNotifications.reportMinorWarning("Scheduler run without any command"); // TODO Choose if we want to
+                                                                                          // throw a warning or a minor
+                                                                                          // warning which does not kill
+                                                                                          // the jar
+            return;
+        }
+        try {
+
+            HealthState currentHealth = subsystem.getHealth(false);
+            if (currentHealth.getId() > HealthState.GREEN.getId()) {
+                MustangNotifications.reportWarning(
+                        "%s not run because of health issue! Required health: %s, Actual health: %s",
+                        group.getName(), HealthState.GREEN, currentHealth);
+                return;
+            }
+
+            this.currentCommand = group;
+            scheduler.schedule(currentCommand);
+            Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+        } finally
+
+        {
+            this.currentCommand = null;
+        }
+    }
+
+    /**
      * Initial check that runs when the command initializes to check if it is a
      * MustangCommand that has been scheduled using MustangScheduler
      * 
@@ -162,17 +199,17 @@ public class MustangScheduler {
         }
     }
 
-    public void unregisterSubsystem(MustangSubsystemBase... subsystems){
+    public void unregisterSubsystem(MustangSubsystemBase... subsystems) {
         scheduler.unregisterSubsystem(subsystems);
     }
 
-    public void registerSubsystem(MustangSubsystemBase... subsystems){
+    public void registerSubsystem(MustangSubsystemBase... subsystems) {
         scheduler.registerSubsystem(subsystems);
     }
 
-    public void scheduleOrCancel (CommandBase command) {
-    	if (RobotContainer.getDriverController().getRightJoystickButton() == true) {
-    		scheduler.schedule(command);
+    public void scheduleOrCancel(CommandBase command) {
+        if (RobotContainer.getDriverController().getRightJoystickButton() == true) {
+            scheduler.schedule(command);
         }
     }
 }

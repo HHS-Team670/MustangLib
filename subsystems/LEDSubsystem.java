@@ -70,14 +70,15 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     /**
      * Creates a rainbow effect on the LED Strip
      */
-    public void rainbow() {
+    public void rainbow(boolean isMaxBrightness) {
         // For every pixel
+        int brightness = isMaxBrightness ? 255 : 127;
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
             // shape is a circle so only one value needs to precess
             final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
             // Set the value
-            m_ledBuffer.setHSV(i, hue, 255, 255);
+            m_ledBuffer.setHSV(i, hue, 255, brightness);
         }
         // Increase by to make the rainbow "move"
         m_rainbowFirstPixelHue += 3;
