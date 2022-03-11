@@ -73,7 +73,8 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     public double getLastValidDistanceMetersCaptured(){
-        if(getVisionCaptureTime() < 2 && distance > RobotConstants.VISION_ERROR_CODE){
+        double lastDistanceCapTime = Math.abs(getVisionCaptureTime() - Timer.getFPGATimestamp());
+        if(lastDistanceCapTime < 2 && distance != RobotConstants.VISION_ERROR_CODE){
             return distance;
         }
         return RobotConstants.VISION_ERROR_CODE;
