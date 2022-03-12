@@ -72,7 +72,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
     public void rainbow(boolean isMaxBrightness) {
         // For every pixel
-        int brightness = isMaxBrightness ? 255 : 127;
+        int brightness = isMaxBrightness ? 255 : 60;
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
             // shape is a circle so only one value needs to precess
