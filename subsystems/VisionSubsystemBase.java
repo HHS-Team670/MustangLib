@@ -92,7 +92,16 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         return hasTarget ? angle : RobotConstants.VISION_ERROR_CODE;
     }
 
-    public abstract VisionMeasurement getVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset);
+    public VisionMeasurement getPoseVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset) {
+        // specific to fixed target point from a single side
+        if (super.hasTarget()){
+            Translation2d camToTargetTranslation = PhotonUtils.estimateCameraToTargetTranslation(distance, Rotation2d.fromDegrees(angle));
+            Transform2d camToTargetTrans = PhotonUtils.estimateCameraToTarget(camToTargetTranslation, targetPose, Rotation2d.fromDegrees(heading));
+            Pose2d targetOffset = cameraOffset.transformBy(camToTargetTrans.inverse());
+            return new VisionMeasurement(targetOffset, visionCapTime);
+        }
+        return null;
+    }
 
     public void setStartPoseDeg(double x, double y, double angle) {
         startPose = new Pose2d(x, y, Rotation2d.fromDegrees(angle));
