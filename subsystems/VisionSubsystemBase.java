@@ -5,11 +5,14 @@ import org.photonvision.PhotonUtils;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.robot.constants.RobotConstants;
+
 
 /**
  * Stores values off of NetworkTables for easy retrieval and gives them
@@ -94,7 +97,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     public VisionMeasurement getPoseVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset) {
         // specific to fixed target point from a single side
-        if (super.hasTarget()){
+        if (hasTarget()){
             Translation2d camToTargetTranslation = PhotonUtils.estimateCameraToTargetTranslation(distance, Rotation2d.fromDegrees(angle));
             Transform2d camToTargetTrans = PhotonUtils.estimateCameraToTarget(camToTargetTranslation, targetPose, Rotation2d.fromDegrees(heading));
             Pose2d targetOffset = cameraOffset.transformBy(camToTargetTrans.inverse());
