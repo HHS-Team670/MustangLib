@@ -33,6 +33,8 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     private boolean ledsTurnedOn;
 
+    private boolean overriden;
+
     public VisionSubsystemBase(PowerDistribution pd) {
         this.pd = pd;
     }
@@ -75,10 +77,26 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         return hasTarget ? distance : RobotConstants.VISION_ERROR_CODE;
     }
 
+    public boolean isValidImage(){
+        double lastDistanceCapTime = Math.abs(getVisionCaptureTime() - Timer.getFPGATimestamp());
+        if(lastDistanceCapTime < 2){
+            return true;
+        }
+        return false;
+    }
+
     public double getLastValidDistanceMetersCaptured(){
         double lastDistanceCapTime = Math.abs(getVisionCaptureTime() - Timer.getFPGATimestamp());
         if(lastDistanceCapTime < 2 && distance != RobotConstants.VISION_ERROR_CODE){
             return distance;
+        }
+        return RobotConstants.VISION_ERROR_CODE;
+    }
+
+    public double getLastValidAngleCaptured(){
+        double lastDistanceCapTime = Math.abs(getVisionCaptureTime() - Timer.getFPGATimestamp());
+        if(lastDistanceCapTime < 2 && angle != RobotConstants.VISION_ERROR_CODE){
+            return angle;
         }
         return RobotConstants.VISION_ERROR_CODE;
     }
@@ -118,9 +136,18 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         return visionCapTime;
     }
 
-    public void switchLEDS(boolean on) {
+    public void switchLEDS(boolean on, boolean override) {
         pd.setSwitchableChannel(on);
         ledsTurnedOn = on;
+        overriden = override;
+    }
+
+    public void switchLEDS(boolean on){
+        switchLEDS(on, false);
+    }
+
+    public boolean LEDSOverriden(){
+        return overriden;
     }
 
     public boolean LEDsTurnedOn() {

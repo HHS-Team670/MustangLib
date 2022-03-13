@@ -33,8 +33,8 @@ public class SetVisionLEDs extends InstantCommand implements MustangCommand {
 
   // Called once when the command executes
   public void initialize() {
-   Logger.consoleLog("LEds turned to: %s", turnOn);
-     vision.switchLEDS(turnOn);
+    Logger.consoleLog("LEds turned to: %s", turnOn);
+    vision.switchLEDS(turnOn, true);
   }
 
   @Override
