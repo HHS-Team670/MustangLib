@@ -18,6 +18,9 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     private AddressableLED m_led;
     private AddressableLEDBuffer m_ledBuffer;
 
+    private int startIndex;
+    public int length;
+
     private int m_rainbowFirstPixelHue;
     private int m_mustangRainbowFirstSaturation;
 
@@ -32,6 +35,11 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * @param length The number of LEDS in the LED strip
      */
     public LEDSubsystem(int port, int length) {
+       this(port, 0, length);
+    }
+
+    public LEDSubsystem(int port, int startIndex, int endIndex) {
+        length = endIndex - startIndex;
         m_led = new AddressableLED(port);
         m_ledBuffer = new AddressableLEDBuffer(length);
         m_led.setLength(length);
@@ -47,7 +55,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         if(isBlinking) { 
             blinkCounter++;
             if(blinkCounter >= blinkEndCount) {
-                for(int i = 0; i < m_ledBuffer.getLength(); i++) {
+                for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
                     m_ledBuffer.setHSV(i, blinkColor.h, blinkColor.s, blinkColor.v);
                 }
             }
@@ -73,7 +81,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     public void rainbow(boolean isMaxBrightness) {
         // For every pixel
         int brightness = isMaxBrightness ? 255 : 60;
-        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+        for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
             // shape is a circle so only one value needs to precess
             final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
@@ -88,7 +96,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     public void mustangRainbow() {
         // For every pixel
-        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+        for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setHSV(i, 60, m_mustangRainbowFirstSaturation + (i * 255 / m_ledBuffer.getLength()) % 255, 255);
         }
         // Increase by to make the rainbow "move"
@@ -102,7 +110,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * @param Color The color
      */
     public void solid(LEDColor color){
-        for (var i = 0; i < m_ledBuffer.getLength(); i++) {
+        for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setHSV(i, color.h, color.s, color.v);
         }
     }
@@ -119,7 +127,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             isBlinking = true;
             blinkColor = color;
             blinkEndCount = duration;
-            for(int i = 0; i < m_ledBuffer.getLength(); i++) {
+            for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
                 m_ledBuffer.setHSV(i, color.h, color.s, color.v * 2);
             }
         }
@@ -141,13 +149,13 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
     public void progressBar(LEDColor active, LEDColor inactive, double ratio) {
         ratio /= 2; // due to our leds having 2 leds per 'index'
-        int ratioBright = (int)(m_ledBuffer.getLength() * ratio);
+        int ratioBright = (int)(length * ratio);
 
         for (int i = 0; i < ratioBright; i++) { // active
             m_ledBuffer.setHSV(i, active.h, active.s, active.v);
         }
 
-        for (int i = ratioBright; i < m_ledBuffer.getLength(); i++) { // inactive
+        for (int i = ratioBright; i < length; i++) { // inactive
             m_ledBuffer.setHSV(i, inactive.h, inactive.s,  inactive.v);
         }
     }
