@@ -135,6 +135,8 @@ public class RobotBase extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     MustangScheduler.getInstance().cancelAll();
+    Logger.consoleLog("Teleop Init");
+    robotContainer.teleopInit();
   }
 
   /**

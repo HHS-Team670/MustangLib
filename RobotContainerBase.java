@@ -62,6 +62,8 @@ public abstract class RobotContainerBase {
 
   public abstract void teleopInit();
 
+  public abstract void testInit();
+
   public abstract void disabled();
 
   public abstract void periodic();
