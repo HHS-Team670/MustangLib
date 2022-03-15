@@ -9,9 +9,9 @@ package frc.team670.mustanglib;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-
 import frc.team670.mustanglib.utils.Logger;
 
 /**
@@ -135,8 +135,9 @@ public class RobotBase extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     MustangScheduler.getInstance().cancelAll();
-    Logger.consoleLog("Teleop Init");
-    robotContainer.teleopInit();
+    Logger.consoleLog("Test Init");
+    LiveWindow.setEnabled(false);
+    robotContainer.testInit();
   }
 
   /**
