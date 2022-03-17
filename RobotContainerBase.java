@@ -66,6 +66,8 @@ public abstract class RobotContainerBase {
 
   public abstract void disabled();
 
+  public abstract void disabledPeriodic();
+
   public abstract void periodic();
 
   public static List<MustangSubsystemBase> getSubsystems() {
