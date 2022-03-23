@@ -180,6 +180,6 @@ public class RamseteCommand extends CommandBase {
 
   @Override
   public boolean isFinished() {
-    return m_timer.hasPeriodPassed(m_trajectory.getTotalTimeSeconds());
+    return m_timer.hasElapsed(m_trajectory.getTotalTimeSeconds());
   }
 }
