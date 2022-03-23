@@ -70,6 +70,8 @@ public abstract class RobotContainerBase {
 
   public abstract void periodic();
 
+  public abstract void autonomousPeriodic();
+
   public static List<MustangSubsystemBase> getSubsystems() {
     return allSubsystems;
   }

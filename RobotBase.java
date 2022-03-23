@@ -100,6 +100,7 @@ public class RobotBase extends TimedRobot {
     if (m_autonomousCommand != null) {
       MustangScheduler.getInstance().schedule(m_autonomousCommand);
     }
+
   }
 
   /**
@@ -108,6 +109,7 @@ public class RobotBase extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     MustangScheduler.getInstance().run();
+    robotContainer.autonomousPeriodic();
   }
 
   @Override
