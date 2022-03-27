@@ -173,4 +173,8 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
     }
 
+    public PhotonCamera getCamera(){
+        return camera;
+    }
+
 }
