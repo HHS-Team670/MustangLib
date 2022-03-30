@@ -13,7 +13,7 @@ public class MustangController extends XboxController {
     private long targetRumbleTime;
 
     public enum DPadState {
-        NEUTRAl, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT;
+        NEUTRAL, UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT;
     }
 
     public static class XboxButtons {
@@ -169,7 +169,7 @@ public class MustangController extends XboxController {
         } else if (angle == 315) {
             return DPadState.UP_LEFT;
         } else {
-            return DPadState.NEUTRAl;
+            return DPadState.NEUTRAL;
         }
 
     }

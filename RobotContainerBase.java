@@ -41,10 +41,10 @@ public abstract class RobotContainerBase {
     for (MustangSubsystemBase s : allSubsystems) {
       s.getHealth(true);
       if (s.getHealth(false).equals(HealthState.GREEN)) {
-        MustangScheduler.getInstance().registerSubsystem(s);
-        if(s.getDefaultMustangCommand() != null){
-          MustangScheduler.getInstance().setDefaultCommand(s, s.getDefaultMustangCommand());
-        }
+        // MustangScheduler.getInstance().registerSubsystem(s); //TODO: Test this today
+        // if(s.getDefaultMustangCommand() != null){
+        //   MustangScheduler.getInstance().setDefaultCommand(s, s.getDefaultMustangCommand());
+        // }
       }
       else if (s.getHealth(false).equals(HealthState.RED)) {
         MustangScheduler.getInstance().cancel(s.getDefaultMustangCommand());
@@ -62,9 +62,15 @@ public abstract class RobotContainerBase {
 
   public abstract void teleopInit();
 
+  public abstract void testInit();
+
   public abstract void disabled();
 
+  public abstract void disabledPeriodic();
+
   public abstract void periodic();
+
+  public abstract void autonomousPeriodic();
 
   public static List<MustangSubsystemBase> getSubsystems() {
     return allSubsystems;

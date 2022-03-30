@@ -9,9 +9,9 @@ package frc.team670.mustanglib;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-
 import frc.team670.mustanglib.utils.Logger;
 
 /**
@@ -50,7 +50,7 @@ public class RobotBase extends TimedRobot {
     RobotContainerBase.checkSubsystemsHealth();
     timer = new Timer();
     timer.start();
-
+    robotContainer.robotInit();
     MustangScheduler.getInstance();
   }
 
@@ -70,7 +70,7 @@ public class RobotBase extends TimedRobot {
   public void robotPeriodic() {
     MustangScheduler.getInstance().run();
     robotContainer.periodic();
-    if (timer.hasPeriodPassed(SYSTEM_CHECK_PERIOD)) {
+    if (timer.hasElapsed(SYSTEM_CHECK_PERIOD)) {
       RobotContainerBase.checkSubsystemsHealth();
     }
   }
@@ -85,7 +85,7 @@ public class RobotBase extends TimedRobot {
 
   @Override
   public void disabledPeriodic() {
-
+    robotContainer.disabledPeriodic();
   }
 
   /**
@@ -100,6 +100,7 @@ public class RobotBase extends TimedRobot {
     if (m_autonomousCommand != null) {
       MustangScheduler.getInstance().schedule(m_autonomousCommand);
     }
+
   }
 
   /**
@@ -108,6 +109,7 @@ public class RobotBase extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     MustangScheduler.getInstance().run();
+    robotContainer.autonomousPeriodic();
   }
 
   @Override
@@ -135,6 +137,9 @@ public class RobotBase extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     MustangScheduler.getInstance().cancelAll();
+    Logger.consoleLog("Test Init");
+    LiveWindow.setEnabled(false);
+    robotContainer.testInit();
   }
 
   /**
@@ -144,4 +149,5 @@ public class RobotBase extends TimedRobot {
   public void testPeriodic() {
     MustangScheduler.getInstance().run();
   }
+
 }
