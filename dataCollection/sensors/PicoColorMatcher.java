@@ -28,8 +28,8 @@ public class PicoColorMatcher {
 
   public enum colors {
 
-    BLUE(0, new Color(0.09, 0.04, 0.10)), // 2022 blue game piece
-    RED(2, new Color(0.10, 0.03, 0.09)); // 2022 red game piece
+    BLUE(0, new Color(0.136, 0.412, 0.450)), // 2022 blue game piece
+    RED(1, new Color(0.475, 0.371, 0.153));  // 2022 red game piece
 
     private int colorNumber;
     private Color color;
@@ -86,7 +86,7 @@ public class PicoColorMatcher {
     // String colorString;
     int colorNumber;
 
-    ColorMatchResult match = m_colorMatcher.matchClosestColor(new Color(detectedColor.red/100.0, detectedColor.green/100.0, detectedColor.blue/100.0));
+    ColorMatchResult match = m_colorMatcher.matchClosestColor(convertRawToColor(detectedColor));
     SmartDashboard.putNumber("Red", detectedColor.red);
     SmartDashboard.putNumber("Green", detectedColor.green);
     SmartDashboard.putNumber("Blue", detectedColor.blue);
@@ -107,5 +107,13 @@ public class PicoColorMatcher {
     }
     
     return -1;  
+  }
+
+  public Color convertRawToColor(RawColor rawColor) {
+    var red = rawColor.red;
+    var green = rawColor.green;
+    var blue = rawColor.blue;
+    double sum = red + green + blue;
+    return new Color(red/sum,green/sum,blue/sum);
   }
 }
