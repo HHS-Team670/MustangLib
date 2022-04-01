@@ -49,7 +49,6 @@ public class XboxFieldOrientedDrive extends CommandBase implements MustangComman
         double zRotation = xbox.getRightStickX();
         double[] speeds = getComponentSpeeds(xSpeed, ySpeed, navXAngle);
 
-        driveBase.setCenterDrive(speeds[1]);
         driveBase.curvatureDrive(speeds[0], zRotation, true);
     }
 

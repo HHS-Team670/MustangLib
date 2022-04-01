@@ -36,11 +36,6 @@ public class XboxRobotOrientedDrive extends CommandBase implements MustangComman
 
         // twist from right joystick
         double zRotation = JoystickUtils.smoothInput(xbox.getRightStickX());
-        if(Math.abs(ySpeed) >= 0.2) {
-            driveBase.setCenterDrive(xSpeed);
-        } else {
-            driveBase.setCenterDrive(0);
-        }
         driveBase.curvatureDrive(-ySpeed, zRotation, true);
     }
 
