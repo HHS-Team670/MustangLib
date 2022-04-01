@@ -10,8 +10,6 @@ package frc.team670.mustanglib.commands;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
-import frc.team670.mustanglib.utils.Logger;
-
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;

@@ -5,12 +5,11 @@ import java.util.Map;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.commands.MustangCommand;
-import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 import frc.team670.mustanglib.utils.JoystickUtils;
 import frc.team670.mustanglib.utils.MustangController;
-import frc.team670.robot.subsystems.DriveBase;
 
 /**
  *  @author Rathik, Ethan Chang, Aaditya R, Akshat Adzule, Benjamin
@@ -31,7 +30,6 @@ public class XboxRobotOrientedDrive extends CommandBase implements MustangComman
     public void execute() {
         
         // get x and y components of joystick push
-        double xSpeed = JoystickUtils.smoothInput(xbox.getLeftStickX());
         double ySpeed = JoystickUtils.smoothInput(xbox.getLeftStickY());
 
         // twist from right joystick

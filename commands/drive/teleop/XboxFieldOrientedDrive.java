@@ -3,15 +3,13 @@ package frc.team670.mustanglib.commands.drive.teleop;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 import frc.team670.mustanglib.utils.MustangController;
-import frc.team670.robot.subsystems.DriveBase;
 
 /**
  *  @author Rathik, Ethan Chang, Aaditya R, Akshat Adzule, Benjamin
