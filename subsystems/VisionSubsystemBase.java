@@ -1,7 +1,10 @@
 package frc.team670.mustanglib.subsystems;
 
+import java.util.List;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonUtils;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -53,17 +56,19 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      */
     protected void processImage(double cameraHeight, double targetHeight, double cameraAngleDeg) {
         var result = camera.getLatestResult();
+        List<PhotonTrackedTarget> targets = result.getTargets();
         double lastDistanceCapTime = Math.abs(getVisionCaptureTime() - Timer.getFPGATimestamp());
 
-        if (result.hasTargets() || (lastDistanceCapTime < 0.75 && distance != RobotConstants.VISION_ERROR_CODE)) {
+        if (targets.size() > 0) {
             hasTarget = true;
-            angle = result.getTargets().get(0).getYaw();
+            PhotonTrackedTarget target = targets.get(0);
+            angle = target.getYaw();
             distance = PhotonUtils.calculateDistanceToTargetMeters(
                     cameraHeight, targetHeight,
                     Units.degreesToRadians(cameraAngleDeg),
-                    Units.degreesToRadians(result.getBestTarget().getPitch()));
+                    Units.degreesToRadians(target.getPitch()));
             visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
-        } else {
+        } else if (lastDistanceCapTime > 0.75){
             hasTarget = false;
             distance = RobotConstants.VISION_ERROR_CODE;
             // Logger.consoleLog("NO TARGET DETECTED");
