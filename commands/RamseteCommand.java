@@ -21,6 +21,7 @@ import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team670.mustanglib.utils.Logger;
 
 import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 
@@ -173,6 +174,7 @@ public class RamseteCommand extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
+    Logger.consoleLog("finished running trajectory");
     m_timer.stop();
   }
 
