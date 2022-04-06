@@ -68,7 +68,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                     Units.degreesToRadians(cameraAngleDeg),
                     Units.degreesToRadians(target.getPitch()));
             visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
-        } else if (lastDistanceCapTime > 0.75){
+        } else if (lastDistanceCapTime > 0.25){
             hasTarget = false;
             distance = RobotConstants.VISION_ERROR_CODE;
             // Logger.consoleLog("NO TARGET DETECTED");
