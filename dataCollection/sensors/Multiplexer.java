@@ -32,20 +32,34 @@ public class Multiplexer {
         start();
     }
 
+    /**
+     * Put into map of sensors with individual key; selects the given port on the multiplexer that is avaliable (memory) and assigns it to given TOF sensor
+     * @param newSensor TimeOfFlightSensor 
+     * @param key String name/id of sensor
+     */
     public synchronized void attachSensor(TimeOfFlightSensor newSensor, String key){
         sensors.put(key, newSensor);
         selectTOF(newSensor.getAddress());
         newSensor.initSensor();
     }
 
+    /**
+     * @return Map of sensors
+     */
     public Map<String, TimeOfFlightSensor> getSensors(){
         return sensors;
     }
 
+    /**
+     * Start timertask with period 100 (long)
+     */
     private void start() {
         start(100);
     }
 
+    /**
+     * Schedule timer 
+     */
     private void start(int period) {
         TimerTask task = new TimerTask() {
             @Override
@@ -56,6 +70,9 @@ public class Multiplexer {
         updater.scheduleAtFixedRate(task, 0, period);
     }
 
+    /**
+     * Check that sensor address is within range and updating the time of flight distance unadjusted for offset and angle to target
+     */
     private synchronized void update(){
         for (TimeOfFlightSensor sensor : sensors.values()) {
             selectTOF(sensor.getAddress());
@@ -63,6 +80,9 @@ public class Multiplexer {
         }
     }
 
+    /** 
+     * Terminate Timer and create a new Timer instant
+     */
     public void stop() {
         updater.cancel();
         updater = new java.util.Timer();

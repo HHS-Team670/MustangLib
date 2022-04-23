@@ -13,7 +13,7 @@ import frc.team670.mustanglib.utils.MustangNotifications;
  * 
  * @author riyagupta, meganchoy, akshatadsule, lakshbhambhani
  */
-public class TimeOfFlightSensor {
+public class FlightSensor {
     private I2C sensor;
 
     private static java.util.Timer updater;
@@ -141,14 +141,23 @@ public class TimeOfFlightSensor {
         return range;
     }
 
+    /**
+     * @return boolean true
+     */
     public boolean isHealthy() {
         return isHealthy;
     }
 
+    /**
+     * Start timertask with period 100 (long)
+     */
     private void start() {
         start(100);
     }
 
+    /**
+     * Schedule timer 
+     */
     private void start(int period) {
         TimerTask task = new TimerTask() {
             @Override
@@ -159,11 +168,18 @@ public class TimeOfFlightSensor {
         updater.scheduleAtFixedRate(task, 0, period);
     }
 
+    /** 
+     * Terminate Timer and create a new Timer instant
+     */
     public void stop() {
         updater.cancel();
         updater = new java.util.Timer();
     }
 
+    //TODO
+    /** 
+     * ask for explanation-
+     */
     private boolean write(int registerAddress, int data) {
         try{
             byte[] rawData = new byte[3];
@@ -212,6 +228,9 @@ public class TimeOfFlightSensor {
         return ERROR;
     }
 
+    /** 
+     * @return Address of sensor
+     */
     public int getAddress(){
         return address;
     }
@@ -241,6 +260,9 @@ public class TimeOfFlightSensor {
         return getDistance() <= threshold;
     }
 
+    /** 
+     * reset threshold
+     */
     public void setThreshold(int threshold){
         this.threshold = threshold;
     }
