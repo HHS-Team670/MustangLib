@@ -5,7 +5,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-
+import frc.team670.mustanglib.utils.PIDConstantSet;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
@@ -24,7 +24,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
     protected SparkMaxPIDController rotator_controller;
     protected double setpoint;
     protected double tempSetpoint;
-    protected double kP, kI, kD, kFF, kIz, MAX_OUTPUT, MIN_OUTPUT;
+    protected PIDConstantSet PIDs;
+    protected double MAX_OUTPUT, MIN_OUTPUT;
     protected double MAX_ROT_RPM, MAX_SUB_RPM, MIN_RPM, MAX_ACC, ALLOWED_ERR;
     protected int SMARTMOTION_SLOT;
     protected double ROTATOR_GEAR_RATIO;
@@ -87,11 +88,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
         this.ROTATOR_GEAR_RATIO = config.getRotatorGearRatio();
 
         // PID coefficients
-        this.kP = config.getP();
-        this.kI = config.getI();
-        this.kD = config.getD();
-        this.kIz = config.getIz();
-        this.kFF = config.getFF();
+        this.PIDs = new PIDConstantSet(config.getP(), config.getI(), config.getIz(), config.getD(), config.getFF());
         this.MAX_OUTPUT = config.getMaxOutput();
         this.MIN_OUTPUT = config.getMinOutput();
 
@@ -102,11 +99,11 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
         this.ALLOWED_ERR = config.getAllowedError();
 
         // set PID coefficients
-        this.rotator_controller.setP(kP);
-        this.rotator_controller.setI(kI);
-        this.rotator_controller.setD(kD);
-        this.rotator_controller.setIZone(kIz);
-        this.rotator_controller.setFF(kFF);
+        this.rotator_controller.setP(PIDs.P);
+        this.rotator_controller.setI(PIDs.I);
+        this.rotator_controller.setD(PIDs.D);
+        this.rotator_controller.setIZone(PIDs.I_ZONE);
+        this.rotator_controller.setFF(PIDs.FF);
         this.rotator_controller.setOutputRange(this.MIN_OUTPUT, this.MAX_OUTPUT);
 
         this.SMARTMOTION_SLOT = config.getSlot();
@@ -207,7 +204,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      *               should be 0.5
      */
     protected void temporaryScaleSmartMotionMaxVelAndAccel(double factor) {
-        rotator_controller.setFF(this.kFF * factor);
+        rotator_controller.setFF(PIDs.FF * factor);
         rotator_controller.setSmartMotionMaxVelocity(this.MAX_ROT_RPM * factor, this.SMARTMOTION_SLOT);
         rotator_controller.setSmartMotionMaxAccel(this.MAX_ACC * factor, this.SMARTMOTION_SLOT);
     }
@@ -219,7 +216,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * motion back to normal.
      */
     protected void resetSmartMotionSettingsToSystem() {
-        rotator_controller.setFF(this.kFF);
+        rotator_controller.setFF(PIDs.FF);
         rotator_controller.setSmartMotionMaxVelocity(this.MAX_ROT_RPM, this.SMARTMOTION_SLOT);
         rotator_controller.setSmartMotionMaxAccel(this.MAX_ACC, this.SMARTMOTION_SLOT);
     }

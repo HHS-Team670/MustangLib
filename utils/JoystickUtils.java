@@ -1,6 +1,6 @@
 package frc.team670.mustanglib.utils;
 
-public class JoystickUtils{
+public class JoystickUtils {
     /**
      * 
      * Runs a calculation to smooth out a joystick input in range [-1, 1] (currently squares it)
