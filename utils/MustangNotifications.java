@@ -8,7 +8,7 @@ import frc.team670.mustanglib.constants.RobotConstantsBase;
 import frc.team670.mustanglib.utils.Logger;
 
 /**
- * Used to send notifications between driverStation, log and FRCDashboard
+ * Utility class used to send notifications to DriverStation, logs (Logger.consoleLog/consoleError), and NetworkTables.
  * @author lakshbhambhani
  */
 public class MustangNotifications {
@@ -17,10 +17,13 @@ public class MustangNotifications {
     private static NetworkTable table = instance.getTable("/SmartDashboard");
     private static NetworkTableEntry warning = table.getEntry("warnings");
 
+    // While not at competition, some errors will kill robot code so we can debug.
+    // If overrideAtCompetition is set to true, those errors will kill robot code
+    // anyway, even if we're at a competition.
     private static boolean overrideAtCompetition;
 
     public MustangNotifications(boolean overrideAtCompetition){
-        this.overrideAtCompetition = overrideAtCompetition;
+        MustangNotifications.overrideAtCompetition = overrideAtCompetition;
     }
 
     /**
@@ -42,8 +45,8 @@ public class MustangNotifications {
         DriverStation.reportWarning(dataToSend, false);
         Logger.consoleWarning(dataToSend);
         warning.forceSetString(dataToSend); //String.format(message, parameters)
-        // if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
-        //     throw new RuntimeException(message);
+        if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
+            throw new RuntimeException(message);
     }
 
     /**
@@ -54,7 +57,7 @@ public class MustangNotifications {
     public static void reportMinorWarning(String message, Object... parameters) {
         DriverStation.reportWarning(String.format(message, parameters), false);
         Logger.consoleWarning(message, parameters);
-        // warning.forceSetString(String.format(message, parameters));
+        warning.forceSetString(String.format(message, parameters));
     }
 
     /**
@@ -63,11 +66,11 @@ public class MustangNotifications {
      * @param parameters Parameter list matching format specifiers
      */
     public static void reportError(String message, Object... parameters) {
-        // DriverStation.reportError(String.format(message, parameters), false);
+        DriverStation.reportError(String.format(message, parameters), false);
         Logger.consoleError(message, parameters);
-        // warning.forceSetString(String.format(message, parameters));
-        // if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
-        //     throw new RuntimeException(message);
+        warning.forceSetString(String.format(message, parameters));
+        if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
+            throw new RuntimeException(message);
     }
 
     /**
@@ -77,7 +80,7 @@ public class MustangNotifications {
      */
     public static void notify(String message, Object... parameters) {
         DriverStation.reportWarning(String.format(message, parameters), false);
-        // Logger.consoleLog(message, parameters);
-        // warning.forceSetString(String.format(message, parameters));
+        Logger.consoleLog(message, parameters);
+        warning.forceSetString(String.format(message, parameters));
     }
 }

@@ -2,6 +2,8 @@ package frc.team670.mustanglib.utils;
 
 /**
  * Represents colors that our LED subsystem supports
+ * Uses Hue, Saturation, and Value (HSV) insteadof RGB
+ * 
  */
 public class LEDColor {
     public static final LEDColor BLUE = new LEDColor(120);
