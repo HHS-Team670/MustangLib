@@ -42,7 +42,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         this.pd = pd;
     }
 
-    public void setCameraName(String cameraName) {
+    public void setCamera(String cameraName) {
         camera = new PhotonCamera(cameraName);
     }
 
