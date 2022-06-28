@@ -13,7 +13,8 @@ Generalized Robot Code for Team 670
 - Basic vision and camera 
 - Sensor Generalizations (NavX)
 - Utilities: Math, Logger, Search algorithms
-- TalonFactory - a static method for setting up TalonSRX with all settings
-- SparkMaxFactory - see above
+- SparkMaxFactory - configuring SparkMax motor to default settings
+
+**Note**: Files utilizing brushless motors (Talon and Victor) have been removed. You can view them in the history [here] (insert valid link here).
 
 
