@@ -107,8 +107,7 @@ public abstract class HDrive extends DriveBase {
 
   /**
    * Checks the health for driveBase. RED if all motors are dead, GREEN if all
-   * motors are alive and navx is connected, YELLOW if a motor is disconnected or
-   * nav is not connected
+   * motors are alive, YELLOW if a motor is disconnected
    * @param isLeft1Error boolean for left1 motor being errored
    * @param isLeft2Error boolean for left2 motor being errored
    * @param isRight1Error boolean for right1 motor being errored
@@ -118,9 +117,6 @@ public abstract class HDrive extends DriveBase {
   public HealthState checkHealth(boolean isLeft1Error, boolean isLeft2Error, boolean isRight1Error, boolean isRight2Error, boolean isCenterError) {
     HealthState state = HealthState.GREEN;
 
-    // used to check if it is green first which would be the case most of the times.
-    // Then red as it is just 4 conditions and
-    // finally yellow using else as it has many conditions to check for yellow
     if (!isLeft1Error && !isLeft2Error && !isRight1Error && !isRight2Error && !isCenterError) {
       state = HealthState.GREEN;
     } else if (isLeft1Error && isLeft2Error || isRight1Error && isRight2Error) {
