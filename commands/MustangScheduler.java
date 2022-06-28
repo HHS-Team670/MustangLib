@@ -15,9 +15,13 @@ import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Responsible for scheduling and running commands, including
- * MustangCommandBases. Use this instead of the WPILib CommandScheduler.
- * 
+ * Responsible for scheduling and running commands, including MustangCommandBases. 
+ * Based on CommandScheduler, but uses health system. 
+ *
+ * Note: Although it makes sense for MustangScheduler to extend CommandScheduler,
+ * it does not because it is not possible to cleanly implement the health system
+ * doing so.
+ *
  * @author ctychen, lakshbhambhani
  */
 
@@ -54,11 +58,9 @@ public class MustangScheduler {
      * Cancel the given MustangCommands.
      */
     public void cancel(MustangCommand... commands) {
-        // We can't directly cast an array of MustangCommands to an array of Commands,
-        // you
+        // We can't directly cast an array of MustangCommands to an array of Commands, you
         // can only do that for subtype to supertype array.
-        // So each MustangCommand will be cast to a Command and added to an array of
-        // Commands.
+        // So each MustangCommand will be cast to a Command and added to an array of Commands.
         Command[] commandsToCancel = Arrays.copyOf(commands, commands.length, Command[].class);
         scheduler.cancel((Command[]) commandsToCancel);
     }
@@ -77,10 +79,7 @@ public class MustangScheduler {
     public void schedule(MustangCommand... commands) {
 
         if (commands == null) {
-            MustangNotifications.reportMinorWarning("Scheduler run without any command"); // TODO Choose if we want to
-                                                                                          // throw a warning or a minor
-                                                                                          // warning which does not kill
-                                                                                          // the jar
+            MustangNotifications.reportMinorWarning("Scheduler run without any command");
             return;
         }
 
@@ -131,24 +130,19 @@ public class MustangScheduler {
                                                                                           // the jar
             return;
         }
-        try {
 
-            HealthState currentHealth = subsystem.getHealth(false);
-            if (currentHealth.getId() > HealthState.GREEN.getId()) {
-                MustangNotifications.reportWarning(
-                        "%s not run because of health issue! Required health: %s, Actual health: %s",
-                        group.getName(), HealthState.GREEN, currentHealth);
-                return;
-            }
-
-            this.currentCommand = group;
-            scheduler.schedule(currentCommand);
-            Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
-        } finally
-
-        {
-            this.currentCommand = null;
+        HealthState currentHealth = subsystem.getHealth(false);
+        if (currentHealth.getId() > HealthState.GREEN.getId()) {
+            MustangNotifications.reportWarning(
+                    "%s not run because of health issue! Required health: %s, Actual health: %s",
+                    group.getName(), HealthState.GREEN, currentHealth);
+            return;
         }
+
+        this.currentCommand = group;
+        scheduler.schedule(currentCommand);
+        Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+        
     }
 
     /**
