@@ -1,12 +1,18 @@
 package frc.team670.mustanglib.subsystems;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.commands.MustangCommand;
+import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
@@ -27,6 +33,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     private static NetworkTable table = instance.getTable("/SmartDashboard");
 
     private boolean debugSubsystemFields = false;
+
+    protected FileWriter logFileWriter;
 
     /**
      * Creates a new MustangSubsystemBase. By default, the subsystem's initial
@@ -82,10 +90,17 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     }
 
     /**
-     * @param toggle true if subsystem needs to be debugged
+     * Creates a new log file inside of the timestamped directory.
+     * @param directory
      */
-    public void debugSubsystem(boolean toggle){
-        debugSubsystemFields = toggle;
+    public void createLogFile(File directory) {
+        try {
+            File logFile = new File(directory + "/" + getName() + ".csv");
+            logFileWriter = new FileWriter(logFile);
+        } catch (IOException e) {
+            Logger.consoleError("Failed to create file for the " + getName() + " subsystem.");
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -134,5 +149,23 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public abstract void mustangPeriodic();
 
     public abstract void debugSubsystem();
+
+    /**
+     * Writes the given string to the log file. Automatically adds a timestamp and a new line.
+     * @param string
+     */
+    public void writeToLogFile(String addedLine) {
+        try {
+            try {
+                logFileWriter.write(RobotBase.getTimeSinceStartup() + "," + addedLine + "\n");
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                Logger.consoleError("RobotBase.getTimeSinceStartup() " + RobotBase.getTimeSinceStartup());
+            }
+        } catch (IOException e) {
+            Logger.consoleError("Failed to write to log file for the " + getName() + " subsystem.");
+            e.printStackTrace();
+        }
+    }
 
 }

@@ -7,12 +7,16 @@
 
 package frc.team670.mustanglib;
 
+import java.io.File;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
+import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.Logger;
+import frc.team670.robot.RobotContainer;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -27,6 +31,10 @@ public class RobotBase extends TimedRobot {
 
   private Timer timer;
   private double SYSTEM_CHECK_PERIOD = 5;
+
+  private static final double startTimeMillis = System.currentTimeMillis();
+
+  private static String timeSinceStartupAsString = "00:00:00.000";
 
   public static boolean overrideAtCompetition = true;
 
@@ -51,7 +59,24 @@ public class RobotBase extends TimedRobot {
     timer = new Timer();
     timer.start();
     robotContainer.robotInit();
+
     MustangScheduler.getInstance();
+
+
+    //Log file setup. Logs can be found at /home/lvuser/logs
+    File logDirectory = new File("/home/lvuser/logs/" + System.currentTimeMillis());
+
+    //Creates log directory for the current code runthrough
+    if(logDirectory.mkdirs()) {
+      Logger.consoleLog("Successfully created logging directory at " + logDirectory.getAbsolutePath());
+    } else {
+      Logger.consoleLog("Failed to create logging directory at " + logDirectory.getAbsolutePath());
+    }
+    
+    for(MustangSubsystemBase subsystem : RobotContainer.allSubsystems) {
+      subsystem.createLogFile(logDirectory);
+    }
+    
   }
 
   /**
@@ -70,9 +95,28 @@ public class RobotBase extends TimedRobot {
   public void robotPeriodic() {
     MustangScheduler.getInstance().run();
     robotContainer.periodic();
+    updateTimeSinceStartupAsString();
     if (timer.hasElapsed(SYSTEM_CHECK_PERIOD)) {
       RobotContainerBase.checkSubsystemsHealth();
     }
+  }
+
+  private void updateTimeSinceStartupAsString() {
+    int millisSinceStartup = (int) (System.currentTimeMillis() - startTimeMillis);
+    int secondsSinceStartup = (int) (millisSinceStartup / 1000);
+    int sec = secondsSinceStartup % 60;
+    int min = (secondsSinceStartup / 60)%60;
+    int hours = (secondsSinceStartup/60)/60;
+    int milliseconds = millisSinceStartup - ((millisSinceStartup/1000) * 1000);
+    String strSec=(sec<10)?"0"+Integer.toString(sec):Integer.toString(sec);
+    String strmin=(min<10)?"0"+Integer.toString(min):Integer.toString(min);
+    String strHours=(hours<10)?"0"+Integer.toString(hours):Integer.toString(hours);
+    String strMillis = (milliseconds<100) ? "0" + ((milliseconds<10) ? "0" + milliseconds : Integer.toString(milliseconds)) : Integer.toString(milliseconds);
+    timeSinceStartupAsString = strHours + ":" + strmin + ":" + strSec + "." + strMillis;
+  }
+
+  public static String getTimeSinceStartup() {
+    return timeSinceStartupAsString;
   }
 
   /**
