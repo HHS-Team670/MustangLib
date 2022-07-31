@@ -8,6 +8,9 @@
 package frc.team670.mustanglib;
 
 import java.io.File;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -64,7 +67,9 @@ public class RobotBase extends TimedRobot {
 
 
     //Log file setup. Logs can be found at /home/lvuser/logs
-    File logDirectory = new File("/home/lvuser/logs/" + System.currentTimeMillis());
+    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+    String date = dateFormatter.format(new Date());
+    File logDirectory = new File("/home/lvuser/logs/" + date);
 
     //Creates log directory for the current code runthrough
     if(logDirectory.mkdirs()) {
