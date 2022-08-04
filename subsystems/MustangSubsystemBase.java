@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import javax.lang.model.util.ElementScanner6;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -34,7 +36,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
 
     private boolean debugSubsystemFields = false;
 
-    protected FileWriter logFileWriter;
+    private FileWriter logFileWriter;
+    private String headerLabels = "DEFAULT_LABELS";
 
     /**
      * Creates a new MustangSubsystemBase. By default, the subsystem's initial
@@ -97,6 +100,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
         try {
             File logFile = new File(directory + "/" + getName() + ".csv");
             logFileWriter = new FileWriter(logFile);
+            writeHeaderToLogFile(headerLabels);
         } catch (IOException e) {
             Logger.consoleError("Failed to create file for the " + getName() + " subsystem.");
             e.printStackTrace();
@@ -151,13 +155,23 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public abstract void debugSubsystem();
 
     /**
-     * Writes the given string to the log file. Automatically adds a timestamp and a new line.
-     * @param string
+     * DO NOT FORGET TO ADD A HEADER AT THE TOP! Use addHeaderToLogFile(String)
+     * 
+     * Writes the given values to the log file. Automatically adds a timestamp and a new line.
+     * Values should be comma separated.
+     * Example: writeToLogFile(25, 34, 105) will add "[timestamp],25,34,105,\n" to the CSV log file.
+     * 
+     * You can find the log files at /home/lvuser/logs
+     * @param dataPoints
      */
-    public void writeToLogFile(String addedLine) {
+    public void writeToLogFile(Object... dataPoints) {
+        String line = "";
+        for(Object item : dataPoints) {
+            line += item.toString() + ",";
+        }
         try {
             try {
-                logFileWriter.write(RobotBase.getTimeSinceStartup() + "," + addedLine + "\n");
+                logFileWriter.write(RobotBase.getTimeSinceStartup() + "," + line + "\n");
             } catch (NullPointerException e) {
                 e.printStackTrace();
                 Logger.consoleError("RobotBase.getTimeSinceStartup() " + RobotBase.getTimeSinceStartup());
@@ -166,6 +180,34 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
             Logger.consoleError("Failed to write to log file for the " + getName() + " subsystem.");
             e.printStackTrace();
         }
+    }
+
+    private void writeHeaderToLogFile(String headerLabel) {
+        String line = headerLabel + ",";
+        try {
+            try {
+                logFileWriter.write("Timestamp," + line + "\n");
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+                Logger.consoleError("RobotBase.getTimeSinceStartup() " + RobotBase.getTimeSinceStartup());
+            }
+        } catch (IOException e) {
+            Logger.consoleError("Failed to write to log file for the " + getName() + " subsystem.");
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * headerLabels should be a list of all your headers.
+     * Example: addHeaderToLogFile("position", "velocity1", "velocity2");
+     * @param headerLabels
+     */
+    public void setLogFileHeader(String... headerLabels) {
+        String line = "";
+        for(String item : headerLabels) {
+            line += item.toString() + ",";
+        }
+        this.headerLabels = line.substring(0, line.length()-1); //exclude the last comma
     }
 
 }
