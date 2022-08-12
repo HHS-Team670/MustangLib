@@ -170,4 +170,16 @@ public class NavX {
         return mAHRS.getRoll();
     }
 
+    public boolean isMagnetometerCalibrated() {
+        return mAHRS.isMagnetometerCalibrated();
+    }
+
+    public double getFusedHeading() {
+        return mAHRS.getFusedHeading();
+    }
+
+    public boolean isCalibrating() {
+        return mAHRS.isCalibrating();
+    }
+
 }
