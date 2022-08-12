@@ -17,9 +17,14 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
 
     private MustangController controller;
 
-    public XboxSwerveDrive(SwerveDriveBase swerveDriveBase, MustangController controller) {
+    private double MAX_VELOCITY, MAX_ANGULAR_VELOCITY;
+
+    public XboxSwerveDrive(SwerveDriveBase swerveDriveBase, MustangController controller, double maxVelocity, double maxAngularVelocity) {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
+
+        MAX_VELOCITY = maxVelocity;
+        MAX_ANGULAR_VELOCITY = maxAngularVelocity;
 
         addRequirements(driveBase);
     }
@@ -27,15 +32,15 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     @Override
     public void execute() {
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-        double angle = controller.getRightX(); //m_rotationSupplier.getAsDouble();
-        double xPos = controller.getLeftX(); //m_translationXSupplier.getAsDouble();
-        double yPos =  controller.getLeftY(); //m_translationYSupplier.getAsDouble();
+        double angle = modifyAxis(controller.getRightX()); //m_rotationSupplier.getAsDouble();
+        double xPos = modifyAxis(controller.getLeftX()); //m_translationXSupplier.getAsDouble();
+        double yPos =  modifyAxis(controller.getLeftY()); //m_translationYSupplier.getAsDouble();
         
         driveBase.drive(
                 ChassisSpeeds.fromFieldRelativeSpeeds(
-                        xPos,
-                        yPos,
-                        angle,
+                        xPos * MAX_VELOCITY,
+                        yPos * MAX_VELOCITY,
+                        angle * MAX_ANGULAR_VELOCITY,
                         driveBase.getGyroscopeRotation()
                 )
         );
@@ -53,4 +58,26 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
     }
+
+    private static double deadband(double value, double deadband) {
+        if (Math.abs(value) > deadband) {
+          if (value > 0.0) {
+            return (value - deadband) / (1.0 - deadband);
+          } else {
+            return (value + deadband) / (1.0 - deadband);
+          }
+        } else {
+          return 0.0;
+        }
+      }
+    
+      private static double modifyAxis(double value) {
+        // Deadband
+        value = deadband(value, 0.05);
+    
+        // Square the axis
+        //value = Math.copySign(value, value);
+    
+        return value;
+      }
 }
