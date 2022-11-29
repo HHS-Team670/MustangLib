@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangNotifications;
+import frc.team670.mustanglib.utils.motorcontroller.defaultconfig.NeoDefaults;
 
 import com.revrobotics.CANSparkMax.ControlType;
 
@@ -16,7 +17,7 @@ import com.revrobotics.CANSparkMax.ControlType;
  * Utility class for configuring a SparkMAX to default settings and resetting to
  * factory defaults.
  * 
- * @author ctychen, ruchidixit
+ * @author ctychen, ruchidixit, ajs256
  */
 public class SparkMAXFactory {
 
@@ -39,13 +40,8 @@ public class SparkMAXFactory {
     }
 
     public static final Config defaultConfig = new Config();
-    public static final Config defaultFollowerConfig = new Config();
+    public static final Config defaultFollowerConfig = NEOConfig.UNCONTROLLED_NEO;
 
-    static {
-        defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 1000;
-        defaultFollowerConfig.STATUS_FRAME_1_RATE_MS = 1000;
-        defaultFollowerConfig.STATUS_FRAME_2_RATE_MS = 1000;
-    }
 
     /**
      * Creates a SparkMAXLite with factory settings.
@@ -75,6 +71,7 @@ public class SparkMAXFactory {
         sparkMax.setInverted(config.INVERTED);
         sparkMax.setSmartCurrentLimit(MotorConfig.MOTOR_MAX_CURRENT.get(motorType));
         sparkMax.enableVoltageCompensation(12);
+        // TODO set status frames
         return sparkMax;
     }
 
