@@ -9,7 +9,7 @@ import com.revrobotics.CANSparkMax.IdleMode;
 
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangNotifications;
-import frc.team670.mustanglib.utils.motorcontroller.defaultconfig.NeoDefaults;
+import frc.team670.mustanglib.utils.motorcontroller.defaultconfig.SparkMAXDefaults;
 
 import com.revrobotics.CANSparkMax.ControlType;
 
@@ -27,9 +27,12 @@ public class SparkMAXFactory {
         public IdleMode DEFAULT_MODE = IdleMode.kCoast;
         public boolean INVERTED = false;
 
-        public int STATUS_FRAME_0_RATE_MS = 10;
+        // sane defaults in case we don't set
+        public int STATUS_FRAME_0_RATE_MS = 20;
         public int STATUS_FRAME_1_RATE_MS = 1000;
         public int STATUS_FRAME_2_RATE_MS = 1000;
+        public int STATUS_FRAME_3_RATE_MS = 5000;
+        public int STATUS_FRAME_4_RATE_MS = 5000;
 
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
@@ -40,8 +43,7 @@ public class SparkMAXFactory {
     }
 
     public static final Config defaultConfig = new Config();
-    public static final Config defaultFollowerConfig = NEOConfig.UNCONTROLLED_NEO;
-
+    public static final Config defaultFollowerConfig = SparkMAXDefaults.UNCONTROLLED_NEO;
 
     /**
      * Creates a SparkMAXLite with factory settings.

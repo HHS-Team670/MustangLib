@@ -36,8 +36,6 @@ public class MotorConfig {
             put(Motor_Type.CIM, MotorType.kBrushed);
         }
     };
-    // use: position (all we need is 2), velocity (all we need is 1), uncontrolled (turn it all down)
-    // boolean in constructor: is follower (turn it all down)
 
     public enum Motor_Use {
         POSITION_CONTROL, VELOCITY_CONTROL, OPEN_LOOP
