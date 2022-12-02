@@ -101,13 +101,17 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     public void drive(ChassisSpeeds chassisSpeeds) {
         m_chassisSpeeds = chassisSpeeds;
     }
-
+    
     /**
    * Sets the gyroscope angle to zero. This can be used to set the direction the robot is currently facing to the
    * 'forwards' direction.
    */
     public void zeroGyroscope() {
         gyroOffset = getGyroscopeRotation(false);
+    }
+
+    public SwerveDriveKinematics getSwerveKinematics() {
+        return m_kinematics;
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -134,7 +138,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     @Override
     public void mustangPeriodic() {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+        setModuleStates(states);  
+    }
 
+    public void setModuleStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
 
         if (gyroOffset == null && !m_navx.isCalibrating()) {
