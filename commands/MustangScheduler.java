@@ -3,10 +3,8 @@ package frc.team670.mustanglib.commands;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.command.CommandGroup;
 import frc.team670.mustanglib.utils.MustangNotifications;
-import frc.team670.robot.RobotContainer;
+import frc.team670.mustanglib.RobotContainerBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.Logger;
@@ -99,7 +97,7 @@ public class MustangScheduler {
                                 MustangNotifications.reportWarning(
                                         "%s not run because of health issue! Required health: %s, Actual health: %s",
                                         m_command.getName(), healthReq, currentHealth);
-                                RobotContainer.getDriverController().rumble(0.75, 1);
+                                RobotContainerBase.getDriverController().rumble(0.75, 1);
                                 scheduleOrCancel(m_command);
                                 return;
                             }
@@ -178,7 +176,7 @@ public class MustangScheduler {
                             MustangNotifications.reportError(
                                     "%s not run because of health issue! Required health: %s, Actual health: %s",
                                     m_command.getName(), healthReq, currentHealth);
-                            RobotContainer.getDriverController().rumble(0.75, 1);
+                            RobotContainerBase.getDriverController().rumble(0.75, 1);
                             scheduleOrCancel(m_command);
                             return;
                         }
@@ -202,7 +200,7 @@ public class MustangScheduler {
     }
 
     public void scheduleOrCancel(CommandBase command) {
-        if (RobotContainer.getDriverController().getRightJoystickButton() == true) {
+        if (RobotContainerBase.getDriverController().getRightJoystickButton() == true) {
             scheduler.schedule(command);
         }
     }

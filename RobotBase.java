@@ -17,9 +17,10 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
+import frc.team670.mustanglib.constants.MustangLibConfig;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.Logger;
-import frc.team670.robot.RobotContainer;
+import frc.team670.mustanglib.RobotContainerBase;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -41,10 +42,13 @@ public class RobotBase extends TimedRobot {
 
   public static boolean overrideAtCompetition = true;
 
+  public static MustangLibConfig config;
+
   RobotContainerBase robotContainer;
 
-  public RobotBase(RobotContainerBase robotContainer){
+  public RobotBase(RobotContainerBase robotContainer, MustangLibConfig config){
     this.robotContainer = robotContainer;
+    this.config = config;
   }
 
   public RobotContainerBase getRobotContainer(){
@@ -95,7 +99,7 @@ public class RobotBase extends TimedRobot {
     }
 
     //Creates new subsystem files in the log directory
-    for(MustangSubsystemBase subsystem : RobotContainer.allSubsystems) {
+    for(MustangSubsystemBase subsystem : RobotContainerBase.allSubsystems) {
       subsystem.createLogFile(logDirectory);
     }
   }

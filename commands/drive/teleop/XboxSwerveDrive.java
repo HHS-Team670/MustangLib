@@ -9,17 +9,17 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.MustangController;
-import frc.team670.robot.subsystems.SwerveDriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 
 
 public class XboxSwerveDrive extends CommandBase implements MustangCommand {
-    private final SwerveDriveBase driveBase;
+    private final SwerveDrive driveBase;
 
     private MustangController controller;
 
     private double MAX_VELOCITY, MAX_ANGULAR_VELOCITY;
 
-    public XboxSwerveDrive(SwerveDriveBase swerveDriveBase, MustangController controller, double maxVelocity, double maxAngularVelocity) {
+    public XboxSwerveDrive(SwerveDrive swerveDriveBase, MustangController controller, double maxVelocity, double maxAngularVelocity) {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
 

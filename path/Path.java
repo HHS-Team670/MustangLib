@@ -16,9 +16,9 @@ import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.math.trajectory.constraint.DifferentialDriveVoltageConstraint;
-
-import frc.team670.robot.constants.RobotConstants;
-import frc.team670.robot.subsystems.DriveBase;
+import frc.team670.mustanglib.constants.MustangLibConfig;
+import frc.team670.mustanglib.constants.RobotConstantsBase;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 
 /**
  * Generic representation of a path that the robot can drive.
@@ -33,16 +33,18 @@ public class Path {
     private Trajectory trajectory;
     private DriveBase driveBase; 
     private List<Pose2d> waypointsList;
+    private static MustangLibConfig mustanglibConfig;
 
     /**
      * Used to create a path object based on a list of way points and the drivebase
      * @param waypoints a list of waypoints
      * @param driveBase the drivebase which has to follow the path
      */
-    public Path(List<Pose2d> waypoints, DriveBase driveBase) {
+    public Path(List<Pose2d> waypoints, DriveBase driveBase, MustangLibConfig mustanglibConfig) {
         this.driveBase = driveBase;
         this.waypointsList = waypoints;
         trajectoryFromWaypoints(waypoints);
+        this.mustanglibConfig = mustanglibConfig;
     }
 
         /**
@@ -53,10 +55,11 @@ public class Path {
      * @param kAutoPathConstraints 
      *
      */
-    public Path(List<Pose2d> waypoints, DriveBase driveBase, DifferentialDriveKinematicsConstraint kAutoPathConstraints, double kMaxSpeedMetersPerSecond, double kMaxAccelerationMetersPerSecondSquared, double endVelocityMetersPerSecond, boolean reversed) {
+    public Path(List<Pose2d> waypoints, DriveBase driveBase, MustangLibConfig mustanglibConfig, DifferentialDriveKinematicsConstraint kAutoPathConstraints, double kMaxSpeedMetersPerSecond, double kMaxAccelerationMetersPerSecondSquared, double endVelocityMetersPerSecond, boolean reversed) {
         // Logger.consoleLog("slow trajectory");
         this.driveBase = driveBase;
         this.waypointsList = waypoints;
+        this.mustanglibConfig = mustanglibConfig;
         TrajectoryConfig config = getConfig(kAutoPathConstraints, kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared, endVelocityMetersPerSecond, reversed);
         trajectoryFromWaypoints(waypoints, config);
     }
@@ -96,16 +99,16 @@ public class Path {
 
 
     private static DifferentialDriveVoltageConstraint getLeftAutoVoltageConstraint() {
-        return new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(RobotConstants.leftKsVolts,
-                RobotConstants.leftKvVoltSecondsPerMeter, RobotConstants.leftKaVoltSecondsSquaredPerMeter),
-                RobotConstants.kDriveKinematics, 10);
+        return new DifferentialDriveVoltageConstraint(new SimpleMotorFeedforward(mustanglibConfig.getLeftKsVolts(),
+                mustanglibConfig.getLeftKvVoltSecondsPerMeter(), mustanglibConfig.getLeftKaVoltSecondsSquaredPerMeter()),
+                mustanglibConfig.getKDriveKinematics(), 10);
     }
 
     private static TrajectoryConfig getConfig(DifferentialDriveKinematicsConstraint kAutoPathConstraints, double kMaxSpeedMetersPerSecond, double kMaxAccelerationMetersPerSecondSquared, double endVelocityMetersPerSecond, boolean reversed) {
         return new TrajectoryConfig(kMaxSpeedMetersPerSecond,
                 kMaxAccelerationMetersPerSecondSquared)
                         // Add kinematics to ensure max speed is actually obeyed
-                        .setKinematics(RobotConstants.kDriveKinematics)
+                        .setKinematics(mustanglibConfig.getKDriveKinematics())
                         // Apply the voltage constraint
                         .addConstraint(kAutoPathConstraints)
                         .addConstraint(AUTO_VOLTAGE_CONSTRAINT)
@@ -115,12 +118,12 @@ public class Path {
     }
 
     private static TrajectoryConfig getConfig() {
-        return new TrajectoryConfig(RobotConstants.kMaxSpeedMetersPerSecond,
-                RobotConstants.kMaxAccelerationMetersPerSecondSquared)
+        return new TrajectoryConfig(mustanglibConfig.getKMaxSpeedMetersPerSecond(),
+                mustanglibConfig.getKMaxAccelerationMetersPerSecondSquared())
                         // Add kinematics to ensure max speed is actually obeyed
-                        .setKinematics(RobotConstants.kDriveKinematics)
+                        .setKinematics(mustanglibConfig.getKDriveKinematics())
                         // Apply the voltage constraint
-                        .addConstraint(RobotConstants.kAutoPathConstraints).addConstraint(AUTO_VOLTAGE_CONSTRAINT);
+                        .addConstraint(mustanglibConfig.getKAutoPathConstraints()).addConstraint(AUTO_VOLTAGE_CONSTRAINT);
     }
 
     /**

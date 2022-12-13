@@ -14,6 +14,7 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.mustanglib.utils.MustangController;
 
 
 /**
@@ -24,6 +25,12 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
  * commands, and button mappings) should be declared here.
  */
 public abstract class RobotContainerBase {
+
+  private static MustangController m_controller;
+
+  public RobotContainerBase(MustangController m_controller) {
+    this.m_controller = m_controller;
+  }
 
   // The robot's subsystems and commands are defined here...
   public static List<MustangSubsystemBase> allSubsystems = new ArrayList<MustangSubsystemBase>();
@@ -71,6 +78,10 @@ public abstract class RobotContainerBase {
   public abstract void periodic();
 
   public abstract void autonomousPeriodic();
+
+  public static MustangController getDriverController() {
+    return m_controller;
+  }
 
   public static List<MustangSubsystemBase> getSubsystems() {
     return allSubsystems;

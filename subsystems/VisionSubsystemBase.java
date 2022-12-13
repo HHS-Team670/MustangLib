@@ -14,7 +14,7 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team670.robot.constants.RobotConstants;
+import frc.team670.mustanglib.constants.RobotConstantsBase;
 
 
 /**
@@ -70,7 +70,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             visionCapTime = Timer.getFPGATimestamp() - result.getLatencyMillis() / 1000;
         } else if (lastDistanceCapTime > 0.25){
             hasTarget = false;
-            distance = RobotConstants.VISION_ERROR_CODE;
+            distance = RobotConstantsBase.VISION_ERROR_CODE;
             // Logger.consoleLog("NO TARGET DETECTED");
         }
     }
@@ -80,7 +80,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     public double getDistanceToTargetM() {
-        return hasTarget ? distance : RobotConstants.VISION_ERROR_CODE;
+        return hasTarget ? distance : RobotConstantsBase.VISION_ERROR_CODE;
     }
 
     public boolean isValidImage(){
@@ -100,7 +100,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     public double getAngleToTarget() {
-        return hasTarget ? angle : RobotConstants.VISION_ERROR_CODE;
+        return hasTarget ? angle : RobotConstantsBase.VISION_ERROR_CODE;
     }
 
     public VisionMeasurement getPoseVisionMeasurements(double heading, Pose2d targetPose, Pose2d cameraOffset) {
