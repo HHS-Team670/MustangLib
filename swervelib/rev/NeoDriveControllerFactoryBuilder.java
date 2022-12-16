@@ -1,13 +1,12 @@
-package com.swervedrivespecialties.swervelib.rev;
+package frc.team670.mustanglib.swervelib.rev;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
-import com.swervedrivespecialties.swervelib.DriveController;
-import com.swervedrivespecialties.swervelib.DriveControllerFactory;
-import com.swervedrivespecialties.swervelib.ModuleConfiguration;
-
-import static com.swervedrivespecialties.swervelib.rev.RevUtils.checkNeoError;
+import frc.team670.mustanglib.swervelib.DriveController;
+import frc.team670.mustanglib.swervelib.DriveControllerFactory;
+import frc.team670.mustanglib.swervelib.ModuleConfiguration;
+import static frc.team670.mustanglib.swervelib.rev.RevUtils.checkNeoError;
 
 public final class NeoDriveControllerFactoryBuilder {
     private double nominalVoltage = Double.NaN;

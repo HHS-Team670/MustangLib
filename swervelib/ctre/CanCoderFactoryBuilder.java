@@ -1,12 +1,12 @@
-package com.swervedrivespecialties.swervelib.ctre;
+package frc.team670.mustanglib.swervelib.ctre;
 
 import com.ctre.phoenix.ErrorCode;
 import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix.sensors.CANCoderConfiguration;
 import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.WPI_CANCoder;
-import com.swervedrivespecialties.swervelib.AbsoluteEncoder;
-import com.swervedrivespecialties.swervelib.AbsoluteEncoderFactory;
+import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
+import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
 
 public class CanCoderFactoryBuilder {
     private Direction direction = Direction.COUNTER_CLOCKWISE;

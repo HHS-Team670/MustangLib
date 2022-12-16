@@ -1,4 +1,4 @@
-package com.swervedrivespecialties.swervelib;
+package frc.team670.mustanglib.swervelib;
 
 @FunctionalInterface
 public interface AbsoluteEncoder {

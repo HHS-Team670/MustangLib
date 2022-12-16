@@ -1,7 +1,7 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
-import com.swervedrivespecialties.swervelib.Mk4iSwerveModuleHelper;
-import com.swervedrivespecialties.swervelib.SwerveModule;
+import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
+import frc.team670.mustanglib.swervelib.SwerveModule;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;

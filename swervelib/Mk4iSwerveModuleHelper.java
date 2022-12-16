@@ -1,7 +1,7 @@
-package com.swervedrivespecialties.swervelib;
+package frc.team670.mustanglib.swervelib;
 
-import com.swervedrivespecialties.swervelib.ctre.*;
-import com.swervedrivespecialties.swervelib.rev.*;
+import frc.team670.mustanglib.swervelib.ctre.*;
+import frc.team670.mustanglib.swervelib.rev.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
 public final class Mk4iSwerveModuleHelper {

@@ -1,11 +1,11 @@
-package com.swervedrivespecialties.swervelib.ctre;
+package frc.team670.mustanglib.swervelib.ctre;
 
 import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-import com.swervedrivespecialties.swervelib.DriveController;
-import com.swervedrivespecialties.swervelib.DriveControllerFactory;
-import com.swervedrivespecialties.swervelib.ModuleConfiguration;
+import frc.team670.mustanglib.swervelib.DriveController;
+import frc.team670.mustanglib.swervelib.DriveControllerFactory;
+import frc.team670.mustanglib.swervelib.ModuleConfiguration;
 
 public final class Falcon500DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;

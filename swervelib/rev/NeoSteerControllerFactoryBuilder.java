@@ -1,10 +1,10 @@
-package com.swervedrivespecialties.swervelib.rev;
+package frc.team670.mustanglib.swervelib.rev;
 
 import com.revrobotics.*;
-import com.swervedrivespecialties.swervelib.*;
+import frc.team670.mustanglib.swervelib.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 
-import static com.swervedrivespecialties.swervelib.rev.RevUtils.checkNeoError;
+import static frc.team670.mustanglib.swervelib.rev.RevUtils.checkNeoError;
 
 public final class NeoSteerControllerFactoryBuilder {
     // PID configuration

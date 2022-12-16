@@ -1,4 +1,4 @@
-package com.swervedrivespecialties.swervelib.rev;
+package frc.team670.mustanglib.swervelib.rev;
 
 import com.revrobotics.REVLibError;
 import edu.wpi.first.wpilibj.DriverStation;
