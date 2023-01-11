@@ -32,9 +32,9 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     @Override
     public void execute() {
         // You can use `new ChassisSpeeds(...)` for robot-oriented movement instead of field-oriented movement
-        double angle = modifyAxis(controller.getRightX()); //m_rotationSupplier.getAsDouble();
-        double xPos = modifyAxis(controller.getLeftX()); //m_translationXSupplier.getAsDouble();
-        double yPos =  modifyAxis(controller.getLeftY()); //m_translationYSupplier.getAsDouble();
+        double angle = modifyAxis(-controller.getRightX()); //m_rotationSupplier.getAsDouble();
+        double xPos = modifyAxis(-controller.getLeftY()); //m_translationXSupplier.getAsDouble();
+        double yPos =  modifyAxis(-controller.getLeftX()); //m_translationYSupplier.getAsDouble();
         
         driveBase.drive(
                 ChassisSpeeds.fromFieldRelativeSpeeds(

@@ -1,5 +1,6 @@
 package frc.team670.mustanglib.swervelib;
 
+
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 
 @FunctionalInterface
@@ -8,6 +9,9 @@ public interface SteerControllerFactory<Controller extends SteerController, SC> 
             ShuffleboardContainer container,
             Controller controller
     ) {
+
+        //Logger.consoleLog("Added current angle to shuffleboard tab");
+        //173, 270, 88, 103 FL, FR, BL, BR
         container.addNumber("Current Angle", () -> Math.toDegrees(controller.getStateAngle()));
         container.addNumber("Target Angle", () -> Math.toDegrees(controller.getReferenceAngle()));
     }

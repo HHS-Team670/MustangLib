@@ -196,10 +196,11 @@ public final class Falcon500SteerControllerFactoryBuilder {
             // end up getting a good reading. If we reset periodically this won't matter anymore.
             if (motor.getSelectedSensorVelocity() * motorEncoderVelocityCoefficient < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
                 if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-                    resetIteration = 0;
-                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-                    motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
-                    currentAngleRadians = absoluteAngle;
+                    // resetIteration = 0;
+                    // double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                    // motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
+                    // currentAngleRadians = absoluteAngle;
+                    currentAngleRadians=realign();
                 }
             } else {
                 resetIteration = 0;
@@ -222,6 +223,13 @@ public final class Falcon500SteerControllerFactoryBuilder {
 
 
             this.referenceAngleRadians = referenceAngleRadians;
+        }
+        @Override
+        public double realign(){
+            resetIteration = 0;
+                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                    motor.setSelectedSensorPosition(absoluteAngle / motorEncoderPositionCoefficient);
+                    return absoluteAngle;
         }
 
         @Override

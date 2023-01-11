@@ -2,15 +2,19 @@ package frc.team670.mustanglib.subsystems.drivebase;
 
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
-
+import frc.team670.mustanglib.utils.Logger;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.robot.Robot;
 import frc.team670.mustanglib.constants.SwerveConfig;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -31,6 +35,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private Rotation2d gyroOffset;
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
     private double MAX_VELOCITY, MAX_VOLTAGE;
+    private SwerveDriveOdometry odometer;
 
     public SwerveDrive(SwerveConfig config) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -41,7 +46,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_frontLeftModule = Mk4iSwerveModuleHelper.createNeo(
             tab.getLayout("Front Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
-                    .withPosition(2, 0),
+                    .withPosition(0, 0),
             Mk4iSwerveModuleHelper.GearRatio.L1,
             config.FRONT_LEFT_MODULE_DRIVE_MOTOR,
             config.FRONT_LEFT_MODULE_STEER_MOTOR,
@@ -63,7 +68,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_backLeftModule = Mk4iSwerveModuleHelper.createNeo(
             tab.getLayout("Back Left Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
-                    .withPosition(2, 0),
+                    .withPosition(4, 0),
             Mk4iSwerveModuleHelper.GearRatio.L1,
             config.BACK_LEFT_MODULE_DRIVE_MOTOR,
             config.BACK_LEFT_MODULE_STEER_MOTOR,
@@ -74,7 +79,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_backRightModule = Mk4iSwerveModuleHelper.createNeo(
             tab.getLayout("Back Right Module", BuiltInLayouts.kList)
                     .withSize(2, 4)
-                    .withPosition(2, 0),
+                    .withPosition(6, 0),
             Mk4iSwerveModuleHelper.GearRatio.L1,
             config.BACK_RIGHT_MODULE_DRIVE_MOTOR,
             config.BACK_RIGHT_MODULE_STEER_MOTOR,
@@ -95,10 +100,15 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         m_navx = new NavX(config.NAVX_PORT);
         m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0));
 
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
+        //Logger.consoleLog(chassisSpeeds.vxMetersPerSecond + ", " + chassisSpeeds.vyMetersPerSecond + ", " + chassisSpeeds.omegaRadiansPerSecond);
+        SmartDashboard.putNumber("chassis x velocity", chassisSpeeds.vxMetersPerSecond);
+        SmartDashboard.putNumber("chassis y velocity", chassisSpeeds.vyMetersPerSecond);
+        SmartDashboard.putNumber("chassis omega velocity", chassisSpeeds.omegaRadiansPerSecond);
         m_chassisSpeeds = chassisSpeeds;
     }
     
@@ -137,15 +147,31 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     @Override
     public void mustangPeriodic() {
-        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-        setModuleStates(states);  
+        //Logger.consoleLog(states[0].angle.getDegrees() + ", " + states[1].angle.getDegrees() + ", " + states[2].angle.getDegrees() + ", " + states[3].angle.getDegrees());
+        
+        if (gyroOffset == null && !m_navx.isCalibrating()) {
+            zeroGyroscope();
+        }
+        
+        if(Robot.currentInstance.isTeleopEnabled()) {
+            SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+            setModuleStates(states);
+        }
+        SmartDashboard.putNumber("x: ", odometer.getPoseMeters().getX());
+        SmartDashboard.putNumber("y: ", odometer.getPoseMeters().getY());
+        SmartDashboard.putNumber("rotation: ", odometer.getPoseMeters().getRotation().getDegrees());
+    }
+
+    private int toThousandths(double d) {
+        return (int) (d * 1000);
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
 
-        if (gyroOffset == null && !m_navx.isCalibrating()) {
-            zeroGyroscope();
+        if(gyroOffset != null) {
+            Logger.consoleLog(toThousandths(states[0].speedMetersPerSecond) + ", " + toThousandths(states[1].speedMetersPerSecond) + ", " + toThousandths(states[2].speedMetersPerSecond) + ", " + toThousandths(states[3].speedMetersPerSecond));
+            odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);
         }
 
         double frontLeftSpeed = states[0].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
@@ -174,6 +200,21 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         frontRightPrevAngle = frontRightAngle;
         backLeftPrevAngle = backLeftAngle;
         backRightPrevAngle = backRightAngle;
+    }
+
+    public void realignModules(){
+        m_backLeftModule.realign();
+        m_backRightModule.realign();
+        m_frontLeftModule.realign();
+        m_frontRightModule.realign();
+    }
+
+    public Pose2d getPose() {
+        return odometer.getPoseMeters();
+  }
+  
+    public void resetOdometry(Pose2d pose) {
+        odometer.resetPosition(pose, getGyroscopeRotation());
     }
 
 }

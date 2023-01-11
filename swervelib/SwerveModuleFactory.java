@@ -108,6 +108,10 @@ public class SwerveModuleFactory<DC, SC> {
         public double getSteerAngle() {
             return steerController.getStateAngle();
         }
+        @Override 
+        public void realign(){
+            steerController.realign();
+        }
 
         @Override
         public void set(double driveVoltage, double steerAngle) {

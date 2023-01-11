@@ -78,18 +78,18 @@ public class RobotBase extends TimedRobot {
     File logDirectory = new File("/home/lvuser/logs/" + dateString);
     
     //Deletes old log files
-    for(File directory : (new File("/home/lvuser/logs")).listFiles()) {
-      try {
-        Date directoryDate = dateFormatter.parse(directory.getName());
-        long timeDifferenceMillis = currentDate.getTime() - directoryDate.getTime();
-        if(timeDifferenceMillis > 3 * 24 * 3600 * 1000) { //If too much time has passed (in millisecond), delete directory
-          recursivelyDeleteDirectory(directory);
-        }
-      } catch (ParseException e) {
-        Logger.consoleError("Failed to parse date from log directory " + directory.getName());
-        e.printStackTrace();
-      }
-    }
+    // for(File directory : (new File("/home/lvuser/logs")).listFiles()) {
+    //   try {
+    //     Date directoryDate = dateFormatter.parse(directory.getName());
+    //     long timeDifferenceMillis = currentDate.getTime() - directoryDate.getTime();
+    //     if(timeDifferenceMillis > 3 * 24 * 3600 * 1000) { //If too much time has passed (in millisecond), delete directory
+    //       recursivelyDeleteDirectory(directory);
+    //     }
+    //   } catch (ParseException e) {
+    //     Logger.consoleError("Failed to parse date from log directory " + directory.getName());
+    //     e.printStackTrace();
+    //   }
+    // }
 
     //Creates log directory for the current code runthrough
     if(logDirectory.mkdirs()) {
