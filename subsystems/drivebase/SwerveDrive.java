@@ -9,6 +9,7 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -39,7 +40,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public SwerveDrive(SwerveConfig config) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-
         MAX_VELOCITY = config.MAX_VELOCITY_METERS_PER_SECOND;
         MAX_VOLTAGE = config.MAX_VOLTAGE;
 
@@ -164,9 +164,15 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public void setModuleStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
+        SwerveModulePosition[] positions = new SwerveModulePosition[states.length];
+        for (int i = 0; i < states.length; i++) {
+            positions[i] = new SwerveModulePosition(states[i].speedMetersPerSecond, states[i].angle);
+        }
 
         if(gyroOffset != null) {
-            odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);    //TODO
+            // odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);    //TODO
+            
+            odometer.update(getGyroscopeRotation(), positions);
         }
 
         double frontLeftSpeed = states[0].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
@@ -209,7 +215,14 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
   }
   
     public void resetOdometry(Pose2d pose) {
-        odometer.resetPosition(pose, getGyroscopeRotation());
+        SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+        SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
+        SwerveModulePosition[] positions = new SwerveModulePosition[states.length];
+        for (int i = 0; i < states.length; i++) {
+            positions[i] = new SwerveModulePosition(states[i].speedMetersPerSecond, states[i].angle);
+        }
+
+        odometer.resetPosition(getGyroscopeRotation(), positions, pose);
     }
 
 }
