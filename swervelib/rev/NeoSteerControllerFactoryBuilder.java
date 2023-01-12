@@ -2,6 +2,7 @@ package frc.team670.mustanglib.swervelib.rev;
 
 import com.revrobotics.*;
 import frc.team670.mustanglib.swervelib.*;
+import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
 import frc.team670.mustanglib.utils.Logger;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;

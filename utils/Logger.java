@@ -83,11 +83,10 @@ public class Logger {
 
             // if (true) throw new IOException("Test Exception");
 
-            DriverStation ds = DriverStation.getInstance();
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss");
             Date date = new Date();
-            fileTxt = new FileHandler(String.format("/home/lvuser/Log_%s_%s_%s.txt", ds.getEventName(),
-                    ds.getMatchNumber(), dateFormat.format(date)));
+            fileTxt = new FileHandler(String.format("/home/lvuser/Log_%s_%s_%s.txt", DriverStation.getEventName(),
+                    DriverStation.getMatchNumber(), dateFormat.format(date)));
 
             fileTxt.setFormatter(logFormatter);
 
