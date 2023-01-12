@@ -7,6 +7,7 @@
 
 package frc.team670.mustanglib.commands;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -22,8 +23,6 @@ import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.utils.Logger;
-
-import static edu.wpi.first.wpilibj.util.ErrorMessages.requireNonNullParam;
 
 /**
  * A command that uses a RAMSETE controller ({@link RamseteController}) to follow a trajectory
@@ -91,16 +90,16 @@ public class RamseteCommand extends CommandBase {
                         PIDController rightController,
                         BiConsumer<Double, Double> outputVolts,
                         Subsystem... requirements) {
-    m_trajectory = requireNonNullParam(trajectory, "trajectory", "RamseteCommand");
-    m_pose = requireNonNullParam(pose, "pose", "RamseteCommand");
-    m_follower = requireNonNullParam(controller, "controller", "RamseteCommand");
+    m_trajectory = Objects.requireNonNull(trajectory);
+    m_pose = Objects.requireNonNull(pose);
+    m_follower = Objects.requireNonNull(controller);
     m_leftFeedForward = leftFeedForward;
     m_rightFeedForward = rightFeedForward;
-    m_kinematics = requireNonNullParam(kinematics, "kinematics", "RamseteCommand");
-    m_speeds = requireNonNullParam(wheelSpeeds, "wheelSpeeds", "RamseteCommand");
-    m_leftController = requireNonNullParam(leftController, "leftController", "RamseteCommand");
-    m_rightController = requireNonNullParam(rightController, "rightController", "RamseteCommand");
-    m_output = requireNonNullParam(outputVolts, "outputVolts", "RamseteCommand");
+    m_kinematics = Objects.requireNonNull(kinematics);
+    m_speeds = Objects.requireNonNull(wheelSpeeds);
+    m_leftController = Objects.requireNonNull(leftController);
+    m_rightController = Objects.requireNonNull(rightController);
+    m_output = Objects.requireNonNull(outputVolts);
 
     m_usePID = true;
 
