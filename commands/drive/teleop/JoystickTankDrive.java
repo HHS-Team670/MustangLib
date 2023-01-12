@@ -35,7 +35,6 @@ public class JoystickTankDrive extends CommandBase implements MustangCommand {
     // Called just before this Command runs the first time
     @Override
     public void execute() {
-        // TODO use the drive calculator to adjust outputs
         driveBase.tankDrive(-1 * leftJoystick.getY(), -1 * rightJoystick.getY());
     }
 
