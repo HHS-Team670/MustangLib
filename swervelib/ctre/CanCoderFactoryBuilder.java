@@ -40,7 +40,7 @@ public class CanCoderFactoryBuilder {
     }
 
     private static class EncoderImplementation implements AbsoluteEncoder {
-        private final int ATTEMPTS = 3; // TODO: Allow changing number of tries for getting correct position
+        private final int ATTEMPTS = 3;
 
         private final WPI_CANCoder encoder;
 

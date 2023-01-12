@@ -93,21 +93,6 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     }
 
     /**
-     * Creates a new log file inside of the timestamped directory.
-     * @param directory
-     */
-    public void createLogFile(File directory) {
-        try {
-            File logFile = new File(directory + "/" + getName() + ".csv");
-            logFileWriter = new FileWriter(logFile);
-            writeHeaderToLogFile(headerLabels);
-        } catch (IOException e) {
-            Logger.consoleError("Failed to create file for the " + getName() + " subsystem.");
-            e.printStackTrace();
-        }
-    }
-
-    /**
      * Calculates the current state of the subsystem.
      */
     public abstract HealthState checkHealth();
@@ -165,36 +150,36 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      * @param dataPoints
      */
     public void writeToLogFile(Object... dataPoints) {
-        String line = "";
-        for(Object item : dataPoints) {
-            line += item.toString() + ",";
-        }
-        try {
-            try {
-                logFileWriter.write(RobotBase.getTimeSinceStartup() + "," + line + "\n");
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-                Logger.consoleError("RobotBase.getTimeSinceStartup() " + RobotBase.getTimeSinceStartup());
-            }
-        } catch (IOException e) {
-            Logger.consoleError("Failed to write to log file for the " + getName() + " subsystem.");
-            e.printStackTrace();
-        }
+        // String line = "";
+        // for(Object item : dataPoints) {
+        //     line += item.toString() + ",";
+        // }
+        // try {
+        //     try {
+        //         logFileWriter.write(RobotBase.getTimeSinceStartup() + "," + line + "\n");
+        //     } catch (NullPointerException e) {
+        //         e.printStackTrace();
+        //         Logger.consoleError("RobotBase.getTimeSinceStartup() " + RobotBase.getTimeSinceStartup());
+        //     }
+        // } catch (IOException e) {
+        //     Logger.consoleError("Failed to write to log file for the " + getName() + " subsystem.");
+        //     e.printStackTrace();
+        // }
     }
 
     private void writeHeaderToLogFile(String headerLabel) {
-        String line = headerLabel + ",";
-        try {
-            try {
-                logFileWriter.write("Timestamp," + line + "\n");
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-                Logger.consoleError("RobotBase.getTimeSinceStartup() " + RobotBase.getTimeSinceStartup());
-            }
-        } catch (IOException e) {
-            Logger.consoleError("Failed to write to log file for the " + getName() + " subsystem.");
-            e.printStackTrace();
-        }
+        // String line = headerLabel + ",";
+        // try {
+        //     try {
+        //         logFileWriter.write("Timestamp," + line + "\n");
+        //     } catch (NullPointerException e) {
+        //         e.printStackTrace();
+        //         Logger.consoleError("RobotBase.getTimeSinceStartup() " + RobotBase.getTimeSinceStartup());
+        //     }
+        // } catch (IOException e) {
+        //     Logger.consoleError("Failed to write to log file for the " + getName() + " subsystem.");
+        //     e.printStackTrace();
+        // }
     }
 
     /**
@@ -203,11 +188,26 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      * @param headerLabels
      */
     public void setLogFileHeader(String... headerLabels) {
-        String line = "";
-        for(String item : headerLabels) {
-            line += item.toString() + ",";
-        }
-        this.headerLabels = line.substring(0, line.length()-1); //exclude the last comma
+        // String line = "";
+        // for(String item : headerLabels) {
+        //     line += item.toString() + ",";
+        // }
+        // this.headerLabels = line.substring(0, line.length()-1); //exclude the last comma
+    }
+
+    /**
+     * Creates a new log file inside of the timestamped directory.
+     * @param directory
+     */
+    public void createLogFile(File directory) {
+        // try {
+        //     File logFile = new File(directory + "/" + getName() + ".csv");
+        //     logFileWriter = new FileWriter(logFile);
+        //     writeHeaderToLogFile(headerLabels);
+        // } catch (IOException e) {
+        //     Logger.consoleError("Failed to create file for the " + getName() + " subsystem.");
+        //     e.printStackTrace();
+        // }
     }
 
 }

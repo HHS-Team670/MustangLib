@@ -10,8 +10,6 @@ public interface SteerControllerFactory<Controller extends SteerController, SC> 
             Controller controller
     ) {
 
-        //Logger.consoleLog("Added current angle to shuffleboard tab");
-        //173, 270, 88, 103 FL, FR, BL, BR
         container.addNumber("Current Angle", () -> Math.toDegrees(controller.getStateAngle()));
         container.addNumber("Target Angle", () -> Math.toDegrees(controller.getReferenceAngle()));
     }

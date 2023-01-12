@@ -122,10 +122,7 @@ public class MustangScheduler {
     public void schedule(Command group, MustangSubsystemBase subsystem) {
 
         if (group == null) {
-            MustangNotifications.reportMinorWarning("Scheduler run without any command"); // TODO Choose if we want to
-                                                                                          // throw a warning or a minor
-                                                                                          // warning which does not kill
-                                                                                          // the jar
+            MustangNotifications.reportMinorWarning("Scheduler run without any command");
             return;
         }
 

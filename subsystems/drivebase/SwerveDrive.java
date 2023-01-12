@@ -147,7 +147,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     @Override
     public void mustangPeriodic() {
-        //Logger.consoleLog(states[0].angle.getDegrees() + ", " + states[1].angle.getDegrees() + ", " + states[2].angle.getDegrees() + ", " + states[3].angle.getDegrees());
         
         if (gyroOffset == null && !m_navx.isCalibrating()) {
             zeroGyroscope();
@@ -157,20 +156,16 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
-        SmartDashboard.putNumber("x: ", odometer.getPoseMeters().getX());
-        SmartDashboard.putNumber("y: ", odometer.getPoseMeters().getY());
-        SmartDashboard.putNumber("rotation: ", odometer.getPoseMeters().getRotation().getDegrees());
-    }
 
-    private int toThousandths(double d) {
-        return (int) (d * 1000);
+        SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
+        SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
+        SmartDashboard.putNumber("Odometry rotation: ", odometer.getPoseMeters().getRotation().getDegrees());
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
 
         if(gyroOffset != null) {
-            Logger.consoleLog(toThousandths(states[0].speedMetersPerSecond) + ", " + toThousandths(states[1].speedMetersPerSecond) + ", " + toThousandths(states[2].speedMetersPerSecond) + ", " + toThousandths(states[3].speedMetersPerSecond));
             odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);
         }
 
