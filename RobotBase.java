@@ -8,19 +8,17 @@
 package frc.team670.mustanglib;
 
 import java.io.File;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-import frc.team670.mustanglib.constants.MustangLibConfig;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.Logger;
-import frc.team670.mustanglib.RobotContainerBase;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -40,15 +38,15 @@ public class RobotBase extends TimedRobot {
 
   private static String timeSinceStartupAsString = "00:00:00.000";
 
+  private static RobotBase instance;
+
   public static boolean overrideAtCompetition = true;
-
-  public static MustangLibConfig config;
-
+  
   RobotContainerBase robotContainer;
 
-  public RobotBase(RobotContainerBase robotContainer, MustangLibConfig config){
+  public RobotBase(RobotContainerBase robotContainer){
     this.robotContainer = robotContainer;
-    this.config = config;
+    RobotBase.instance = this;
   }
 
   public RobotContainerBase getRobotContainer(){
@@ -152,6 +150,10 @@ public class RobotBase extends TimedRobot {
 
   public static String getTimeSinceStartup() {
     return timeSinceStartupAsString;
+  }
+
+  public static synchronized RobotBase getInstance() {
+    return Objects.requireNonNull(instance);
   }
 
   /**

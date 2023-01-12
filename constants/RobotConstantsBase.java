@@ -1,8 +1,5 @@
 package frc.team670.mustanglib.constants;
 
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConstraint;
-
 public class RobotConstantsBase {
 
     /**

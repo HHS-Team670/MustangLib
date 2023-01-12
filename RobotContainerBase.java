@@ -26,12 +26,6 @@ import frc.team670.mustanglib.utils.MustangController;
  */
 public abstract class RobotContainerBase {
 
-  private static MustangController m_controller;
-
-  public RobotContainerBase(MustangController m_controller) {
-    this.m_controller = m_controller;
-  }
-
   // The robot's subsystems and commands are defined here...
   public static List<MustangSubsystemBase> allSubsystems = new ArrayList<MustangSubsystemBase>();
 
@@ -60,7 +54,7 @@ public abstract class RobotContainerBase {
       s.pushHealthToDashboard();
     }
   }
-
+  
   public abstract void robotInit();
 
   public abstract MustangCommand getAutonomousCommand();
@@ -79,14 +73,13 @@ public abstract class RobotContainerBase {
 
   public abstract void autonomousPeriodic();
 
-  public static MustangController getDriverController() {
-    return m_controller;
-  }
+  public abstract MustangController getOperatorController();
+  
+  public abstract MustangController getDriverController();
+  
+  public abstract MustangController getBackupController();
 
   public static List<MustangSubsystemBase> getSubsystems() {
     return allSubsystems;
   }
-
-
-
 }

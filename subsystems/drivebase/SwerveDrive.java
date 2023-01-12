@@ -14,7 +14,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team670.robot.Robot;
+import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.constants.SwerveConfig;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -100,7 +100,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         m_navx = new NavX(config.NAVX_PORT);
         m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0));
+        odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0), null); //TODO
 
     }
 
@@ -152,7 +152,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             zeroGyroscope();
         }
         
-        if(Robot.currentInstance.isTeleopEnabled()) {
+        if(RobotBase.getInstance().isTeleopEnabled()) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
@@ -166,7 +166,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
 
         if(gyroOffset != null) {
-            odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);
+            odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);    //TODO
         }
 
         double frontLeftSpeed = states[0].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;

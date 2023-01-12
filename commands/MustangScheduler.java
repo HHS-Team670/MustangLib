@@ -4,13 +4,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.utils.MustangNotifications;
-import frc.team670.mustanglib.RobotContainerBase;
+import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.Logger;
 
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * Responsible for scheduling and running commands, including MustangCommandBases. 
@@ -37,10 +38,7 @@ public class MustangScheduler {
      * @return the instance
      */
     public static synchronized MustangScheduler getInstance() {
-        if (instance == null) {
-            instance = new MustangScheduler();
-        }
-        return instance;
+        return Objects.requireNonNull(instance);
     }
 
     MustangScheduler() {
@@ -97,7 +95,7 @@ public class MustangScheduler {
                                 MustangNotifications.reportWarning(
                                         "%s not run because of health issue! Required health: %s, Actual health: %s",
                                         m_command.getName(), healthReq, currentHealth);
-                                RobotContainerBase.getDriverController().rumble(0.75, 1);
+                                RobotBase.getInstance().getRobotContainer().getDriverController().rumble(0.75, 1);
                                 scheduleOrCancel(m_command);
                                 return;
                             }
@@ -173,7 +171,7 @@ public class MustangScheduler {
                             MustangNotifications.reportError(
                                     "%s not run because of health issue! Required health: %s, Actual health: %s",
                                     m_command.getName(), healthReq, currentHealth);
-                            RobotContainerBase.getDriverController().rumble(0.75, 1);
+                                RobotBase.getInstance().getRobotContainer().getDriverController().rumble(0.75, 1);
                             scheduleOrCancel(m_command);
                             return;
                         }
@@ -197,7 +195,7 @@ public class MustangScheduler {
     }
 
     public void scheduleOrCancel(CommandBase command) {
-        if (RobotContainerBase.getDriverController().getRightJoystickButton() == true) {
+        if (RobotBase.getInstance().getRobotContainer().getDriverController().getRightJoystickButton() == true) {
             scheduler.schedule(command);
         }
     }
