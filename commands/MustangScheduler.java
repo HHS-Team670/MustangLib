@@ -38,7 +38,10 @@ public class MustangScheduler {
      * @return the instance
      */
     public static synchronized MustangScheduler getInstance() {
-        return Objects.requireNonNull(instance);
+        if (instance == null) {
+            instance = new MustangScheduler();
+        }
+        return instance;
     }
 
     MustangScheduler() {
