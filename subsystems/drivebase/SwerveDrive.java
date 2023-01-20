@@ -100,7 +100,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         m_navx = new NavX(config.NAVX_PORT);
         m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0), null); //TODO
+        odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0), getSwervePositionsfromStates(m_kinematics.toSwerveModuleStates(m_chassisSpeeds)));
 
     }
 
@@ -162,12 +162,23 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         SmartDashboard.putNumber("Odometry rotation: ", odometer.getPoseMeters().getRotation().getDegrees());
     }
 
-    public void setModuleStates(SwerveModuleState[] states) {
+    private SwerveModulePosition[] getSwervePositionsfromStates(SwerveModuleState[] states) {
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
         SwerveModulePosition[] positions = new SwerveModulePosition[states.length];
         for (int i = 0; i < states.length; i++) {
             positions[i] = new SwerveModulePosition(states[i].speedMetersPerSecond, states[i].angle);
         }
+        return positions;
+    }
+
+    public void setModuleStates(SwerveModuleState[] states) {
+        // SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
+        // SwerveModulePosition[] positions = new SwerveModulePosition[states.length];
+        // for (int i = 0; i < states.length; i++) {
+        //     positions[i] = new SwerveModulePosition(states[i].speedMetersPerSecond, states[i].angle);
+        // }
+        SwerveModulePosition[] positions = getSwervePositionsfromStates(states);
+
 
         if(gyroOffset != null) {
             // odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);    //TODO
