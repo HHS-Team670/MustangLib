@@ -124,6 +124,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         return m_kinematics;
     }
 
+    public ChassisSpeeds getChassisSpeeds() {
+        return m_chassisSpeeds;
+    }
+
     public Rotation2d getGyroscopeRotation() {
         return getGyroscopeRotation(true);
     }
