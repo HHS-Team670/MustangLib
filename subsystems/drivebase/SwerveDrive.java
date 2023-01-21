@@ -27,7 +27,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private final SwerveModule m_backLeftModule;
     private final SwerveModule m_backRightModule;
 
-    private final SwerveDriveKinematics m_kinematics;
+    private final SwerveDriveKinematics m_kinematics;   //TODO: put in constants
 
     private final NavX m_navx;
 
@@ -133,7 +133,12 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public Rotation2d getGyroscopeRotation(boolean offset) {
+        // Logger.consoleLog("Magnetomter calibrated:" + m_navx.isMagnetometerCalibrated());
+        // SmartDashboard.putString("gyro magnetometer calibrated", "" + m_navx.isMagnetometerCalibrated());
+        // TODO: remove
+
         if (m_navx.isMagnetometerCalibrated()) {
+
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
@@ -144,9 +149,9 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         // We have to invert the angle of the NavX so that rotating the robot counter-clockwise makes the angle increase.
         if (offset) {      
-            return Rotation2d.fromDegrees(m_navx.getYawFieldCentric()-360).minus(gyroOffset);
+            return Rotation2d.fromDegrees(-m_navx.getYawFieldCentric()).minus(gyroOffset);
         }    
-        return Rotation2d.fromDegrees(m_navx.getYawFieldCentric()-360);
+        return Rotation2d.fromDegrees(-m_navx.getYawFieldCentric());
     }   
 
     @Override
