@@ -233,8 +233,12 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     public Pose2d getPose() {
         return odometer.getPoseMeters();
   }
-  
-    public void resetOdometry(Pose2d pose) {
+
+    public double getPitch() {
+        return m_navx.getPitch();
+    }
+
+      public void resetOdometry(Pose2d pose) {
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
         SwerveModulePosition[] positions = new SwerveModulePosition[states.length];
