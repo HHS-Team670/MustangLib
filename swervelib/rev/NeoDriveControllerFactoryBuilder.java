@@ -34,30 +34,41 @@ public final class NeoDriveControllerFactoryBuilder {
         return new FactoryImplementation();
     }
 
-    private class FactoryImplementation implements DriveControllerFactory<ControllerImplementation, Integer> {
+    private class FactoryImplementation
+            implements DriveControllerFactory<ControllerImplementation, Integer> {
         @Override
-        public ControllerImplementation create(Integer id, String _canbus, ModuleConfiguration moduleConfiguration) {
+        public ControllerImplementation create(Integer id, String _canbus,
+                ModuleConfiguration moduleConfiguration) {
             CANSparkMax motor = new CANSparkMax(id, CANSparkMaxLowLevel.MotorType.kBrushless);
             motor.setInverted(moduleConfiguration.isDriveInverted());
 
             // Setup voltage compensation
             if (hasVoltageCompensation()) {
-                checkNeoError(motor.enableVoltageCompensation(nominalVoltage), "Failed to enable voltage compensation");
+                checkNeoError(motor.enableVoltageCompensation(nominalVoltage),
+                        "Failed to enable voltage compensation");
             }
 
             if (hasCurrentLimit()) {
-                checkNeoError(motor.setSmartCurrentLimit((int) currentLimit), "Failed to set current limit for NEO");
+                checkNeoError(motor.setSmartCurrentLimit((int) currentLimit),
+                        "Failed to set current limit for NEO");
             }
 
-            checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100), "Failed to set periodic status frame 0 rate");
-            checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20), "Failed to set periodic status frame 1 rate");
-            checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20), "Failed to set periodic status frame 2 rate");
+            checkNeoError(
+                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100),
+                    "Failed to set periodic status frame 0 rate");
+            checkNeoError(
+                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20),
+                    "Failed to set periodic status frame 1 rate");
+            checkNeoError(
+                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20),
+                    "Failed to set periodic status frame 2 rate");
             // Set neutral mode to brake
             motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
 
             // Setup encoder
             RelativeEncoder encoder = motor.getEncoder();
-            double positionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter() * moduleConfiguration.getDriveReduction();
+            double positionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter()
+                    * moduleConfiguration.getDriveReduction();
             encoder.setPositionConversionFactor(positionConversionFactor);
             encoder.setVelocityConversionFactor(positionConversionFactor / 60.0);
 
@@ -87,6 +98,11 @@ public final class NeoDriveControllerFactoryBuilder {
         @Override
         public double getStateVelocity() {
             return encoder.getVelocity();
+        }
+
+        @Override
+        public double getDistanceMoved() {
+            return encoder.getPosition();
         }
     }
 }

@@ -17,4 +17,8 @@ public interface SwerveModule {
     void set(double driveVoltage, double steerAngle);
 
     public void realign();
+
+    public SwerveModuleState getState();
+
+    public SwerveModulePosition getPosition();
 }
