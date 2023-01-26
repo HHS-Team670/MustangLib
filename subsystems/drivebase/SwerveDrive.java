@@ -37,6 +37,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
     private double MAX_VELOCITY, MAX_VOLTAGE;
     private SwerveDriveOdometry odometer;
+    private Pose2d m_pose;
 
     public SwerveDrive(SwerveConfig config) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -166,6 +167,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             setModuleStates(states);
         }
 
+        odometer.update(getGyroscopeRotation(), getSwervePositionsfromStates(m_kinematics.toSwerveModuleStates(m_chassisSpeeds)));    //TODO: testing update in periodic
+
         SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
         SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
         SmartDashboard.putNumber("Odometry rotation: ", odometer.getPoseMeters().getRotation().getDegrees());
@@ -186,14 +189,12 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         // for (int i = 0; i < states.length; i++) {
         //     positions[i] = new SwerveModulePosition(states[i].speedMetersPerSecond, states[i].angle);
         // }
-        SwerveModulePosition[] positions = getSwervePositionsfromStates(states);
+        // SwerveModulePosition[] positions = getSwervePositionsfromStates(states);
 
 
-        if(gyroOffset != null) {
-            // odometer.update(getGyroscopeRotation(), states[0], states[1], states[2], states[3]);    //TODO
-            
-            odometer.update(getGyroscopeRotation(), positions);
-        }
+        // if (gyroOffset != null) {            
+        //     odometer.update(getGyroscopeRotation(), positions);
+        // }
 
         double frontLeftSpeed = states[0].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
         double frontRightSpeed = states[1].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
@@ -239,13 +240,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
       public void resetOdometry(Pose2d pose) {
+        SmartDashboard.putString("reset", "reset");
         SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
         SwerveDriveKinematics.desaturateWheelSpeeds(states, MAX_VELOCITY);
-        SwerveModulePosition[] positions = new SwerveModulePosition[states.length];
-        for (int i = 0; i < states.length; i++) {
-            positions[i] = new SwerveModulePosition(states[i].speedMetersPerSecond, states[i].angle);
-        }
-
+        SwerveModulePosition[] positions = getSwervePositionsfromStates(states);
         odometer.resetPosition(getGyroscopeRotation(), positions, pose);
     }
 

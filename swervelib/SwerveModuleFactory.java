@@ -1,5 +1,6 @@
 package frc.team670.mustanglib.swervelib;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
@@ -10,69 +11,48 @@ public class SwerveModuleFactory<DC, SC> {
     private final SteerControllerFactory<?, SC> steerControllerFactory;
 
     public SwerveModuleFactory(ModuleConfiguration moduleConfiguration,
-                               DriveControllerFactory<?, DC> driveControllerFactory,
-                               SteerControllerFactory<?, SC> steerControllerFactory) {
+            DriveControllerFactory<?, DC> driveControllerFactory,
+            SteerControllerFactory<?, SC> steerControllerFactory) {
         this.moduleConfiguration = moduleConfiguration;
         this.driveControllerFactory = driveControllerFactory;
         this.steerControllerFactory = steerControllerFactory;
     }
 
-    public SwerveModule create(DC driveConfiguration, String driveCanbus, SC steerConfiguration, String steerCanbus) {
-        var driveController = driveControllerFactory.create(
-                driveConfiguration, 
-                driveCanbus,
-                moduleConfiguration
-        );
-        var steerController = steerControllerFactory.create(
-                steerConfiguration, 
-                steerCanbus,
-                moduleConfiguration
-        );
+    public SwerveModule create(DC driveConfiguration, String driveCanbus, SC steerConfiguration,
+            String steerCanbus) {
+        var driveController =
+                driveControllerFactory.create(driveConfiguration, driveCanbus, moduleConfiguration);
+        var steerController =
+                steerControllerFactory.create(steerConfiguration, steerCanbus, moduleConfiguration);
 
         return new ModuleImplementation(driveController, steerController);
     }
 
     public SwerveModule create(DC driveConfiguration, SC steerConfiguration) {
-        var driveController = driveControllerFactory.create(
-                driveConfiguration, 
-                moduleConfiguration
-        );
-        var steerController = steerControllerFactory.create(
-                steerConfiguration, 
-                moduleConfiguration
-        );
+        var driveController =
+                driveControllerFactory.create(driveConfiguration, moduleConfiguration);
+        var steerController =
+                steerControllerFactory.create(steerConfiguration, moduleConfiguration);
 
         return new ModuleImplementation(driveController, steerController);
     }
 
-    public SwerveModule create(ShuffleboardLayout container, DC driveConfiguration, String driveCanbus, SC steerConfiguration, String steerCanbus) {
-        var driveController = driveControllerFactory.create(
-                container,
-                driveConfiguration,
-                driveCanbus,
-                moduleConfiguration
-        );
-        var steerContainer = steerControllerFactory.create(
-                container,
-                steerConfiguration,
-                steerCanbus,
-                moduleConfiguration
-        );
+    public SwerveModule create(ShuffleboardLayout container, DC driveConfiguration,
+            String driveCanbus, SC steerConfiguration, String steerCanbus) {
+        var driveController = driveControllerFactory.create(container, driveConfiguration,
+                driveCanbus, moduleConfiguration);
+        var steerContainer = steerControllerFactory.create(container, steerConfiguration,
+                steerCanbus, moduleConfiguration);
 
         return new ModuleImplementation(driveController, steerContainer);
     }
 
-    public SwerveModule create(ShuffleboardLayout container, DC driveConfiguration, SC steerConfiguration) {
-        var driveController = driveControllerFactory.create(
-                container,
-                driveConfiguration,
-                moduleConfiguration
-        );
-        var steerContainer = steerControllerFactory.create(
-                container,
-                steerConfiguration,
-                moduleConfiguration
-        );
+    public SwerveModule create(ShuffleboardLayout container, DC driveConfiguration,
+            SC steerConfiguration) {
+        var driveController =
+                driveControllerFactory.create(container, driveConfiguration, moduleConfiguration);
+        var steerContainer =
+                steerControllerFactory.create(container, steerConfiguration, moduleConfiguration);
 
         return new ModuleImplementation(driveController, steerContainer);
     }
@@ -81,7 +61,8 @@ public class SwerveModuleFactory<DC, SC> {
         private final DriveController driveController;
         private final SteerController steerController;
 
-        private ModuleImplementation(DriveController driveController, SteerController steerController) {
+        private ModuleImplementation(DriveController driveController,
+                SteerController steerController) {
             this.driveController = driveController;
             this.steerController = steerController;
         }
@@ -110,8 +91,9 @@ public class SwerveModuleFactory<DC, SC> {
         public double getSteerAngle() {
             return steerController.getStateAngle();
         }
-        @Override 
-        public void realign(){
+
+        @Override
+        public void realign() {
             steerController.realign();
         }
 
@@ -123,7 +105,8 @@ public class SwerveModuleFactory<DC, SC> {
             }
 
             double difference = steerAngle - getSteerAngle();
-            // Change the target angle so the difference is in the range [-pi, pi) instead of [0, 2pi)
+            // Change the target angle so the difference is in the range [-pi, pi) instead of [0,
+            // 2pi)
             if (difference >= Math.PI) {
                 steerAngle -= 2.0 * Math.PI;
             } else if (difference < -Math.PI) {
@@ -131,10 +114,12 @@ public class SwerveModuleFactory<DC, SC> {
             }
             difference = steerAngle - getSteerAngle(); // Recalculate difference
 
-            // If the difference is greater than 90 deg or less than -90 deg the drive can be inverted so the total
+            // If the difference is greater than 90 deg or less than -90 deg the drive can be
+            // inverted so the total
             // movement of the module is less than 90 deg
             if (difference > Math.PI / 2.0 || difference < -Math.PI / 2.0) {
-                // Only need to add 180 deg here because the target angle will be put back into the range [0, 2pi)
+                // Only need to add 180 deg here because the target angle will be put back into the
+                // range [0, 2pi)
                 steerAngle += Math.PI;
                 driveVoltage *= -1.0;
             }
@@ -147,6 +132,17 @@ public class SwerveModuleFactory<DC, SC> {
 
             driveController.setReferenceVoltage(driveVoltage);
             steerController.setReferenceAngle(steerAngle);
+        }
+
+        @Override
+        public SwerveModuleState getState() {
+            return new SwerveModuleState(getDriveVelocity(), new Rotation2d(getSteerAngle()));
+        }
+
+        @Override
+        public SwerveModulePosition getPosition() {
+            return new SwerveModulePosition(driveController.getDistanceMoved(),
+                    new Rotation2d(getSteerAngle()));
         }
     }
 }
