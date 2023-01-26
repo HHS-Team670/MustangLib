@@ -220,7 +220,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public void resetOdometry(Pose2d pose) {
         SmartDashboard.putString("reset", "reset");
-        odometer.resetPosition(getGyroscopeRotation(), getModulePositions(), pose);
+        odometer.resetPosition(getGyroscopeRotation(), getModulePositions(), pose); //TODO: position not resetting
     }
 
     private SwerveModulePosition[] getModulePositions() {
