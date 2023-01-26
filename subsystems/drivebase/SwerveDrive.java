@@ -27,7 +27,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     // private final SwerveModule m_modules[2];
     // private final SwerveModule m_modules[3];
 
-    private final SwerveModule m_modules[];
+    private final SwerveModule[] m_modules;
 
     private final SwerveDriveKinematics m_kinematics;
 
@@ -39,7 +39,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
     private double MAX_VELOCITY, MAX_VOLTAGE;
     private SwerveDriveOdometry odometer;
-    private Pose2d m_pose;
 
     public SwerveDrive(SwerveConfig config) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -161,8 +160,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
 
         if (RobotBase.getInstance().isTeleopEnabled()) {
-            SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-            setModuleStates(states);
+            // SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+            setModuleStates(getModuleStates());
         }
     }
 
@@ -196,7 +195,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         backLeftPrevAngle = backLeftAngle;
         backRightPrevAngle = backRightAngle;
 
-        m_pose = odometer.update(getGyroscopeRotation(),getModulePositions()); 
+        odometer.update(getGyroscopeRotation(),getModulePositions()); 
         SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
         SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
         SmartDashboard.putNumber("Odometry rotation: ",
@@ -223,7 +222,11 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         odometer.resetPosition(getGyroscopeRotation(), getModulePositions(), pose); //TODO: position not resetting
     }
 
-    private SwerveModulePosition[] getModulePositions() {
+    public SwerveModule[] getModules() {
+        return m_modules;
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition positions[] = new SwerveModulePosition[4];
         for (int i = 0; i < m_modules.length; i++) {
             positions[i] = m_modules[i].getPosition();
@@ -231,4 +234,11 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         return positions;
     }
 
+    public SwerveModuleState[] getModuleStates() {
+        SwerveModuleState states[] = new SwerveModuleState[4];
+        for (int i = 0; i < m_modules.length; i++) {
+            states[i] = m_modules[i].getState();
+        }
+        return states;
+    }
 }
