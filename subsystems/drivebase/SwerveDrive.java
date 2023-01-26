@@ -160,9 +160,14 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
 
         if (RobotBase.getInstance().isTeleopEnabled()) {
-            // SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
-            setModuleStates(getModuleStates());
+            SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+            setModuleStates(states);
         }
+        odometer.update(getGyroscopeRotation(),getModulePositions()); 
+        SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
+        SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
+        SmartDashboard.putNumber("Odometry rotation: ",
+                odometer.getPoseMeters().getRotation().getDegrees());
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
@@ -194,12 +199,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         frontRightPrevAngle = frontRightAngle;
         backLeftPrevAngle = backLeftAngle;
         backRightPrevAngle = backRightAngle;
-
-        odometer.update(getGyroscopeRotation(),getModulePositions()); 
-        SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
-        SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
-        SmartDashboard.putNumber("Odometry rotation: ",
-                odometer.getPoseMeters().getRotation().getDegrees());
     }
 
     public void realignModules() {
