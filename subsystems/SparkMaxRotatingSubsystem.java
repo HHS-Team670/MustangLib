@@ -118,6 +118,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
             rotator.enableSoftLimit(SoftLimitDirection.kForward, false);
             rotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
         } else {
+            rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
+            rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
             rotator.setSoftLimit(SoftLimitDirection.kForward, config.setSoftLimits()[0]);
             rotator.setSoftLimit(SoftLimitDirection.kReverse, config.setSoftLimits()[1]);
         }
