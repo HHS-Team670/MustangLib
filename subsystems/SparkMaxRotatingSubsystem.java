@@ -73,11 +73,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
          *         [forwardLimit, reverseLimit].
          * @return null if this system does not have soft limits.
          */
-        public abstract float[] setSoftLimits();
+        public abstract float[] getSoftLimits();
 
         public abstract int getContinuousCurrent();
 
         public abstract int getPeakCurrent();
+
+        public float convertDegreesToRotations(float d) {
+            return (float) ((d / 360) * getRotatorGearRatio());
+        }
     }
 
     public SparkMaxRotatingSubsystem(Config config) {
@@ -114,12 +118,12 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
         rotator.setSmartCurrentLimit(config.getPeakCurrent(), config.getContinuousCurrent());
 
-        if (config.setSoftLimits() == null || config.setSoftLimits().length > 2) {
+        if (config.getSoftLimits() == null || config.getSoftLimits().length > 2) {
             rotator.enableSoftLimit(SoftLimitDirection.kForward, false);
             rotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
         } else {
-            rotator.setSoftLimit(SoftLimitDirection.kForward, config.setSoftLimits()[0]);
-            rotator.setSoftLimit(SoftLimitDirection.kReverse, config.setSoftLimits()[1]);
+            rotator.setSoftLimit(SoftLimitDirection.kForward, config.getSoftLimits()[0]);
+            rotator.setSoftLimit(SoftLimitDirection.kReverse, config.getSoftLimits()[1]);
         }
         //getMaxSubsystemRPM(config.getMaxRotatorRPM());
 
@@ -225,7 +229,11 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * 
      * @return The current position of the subsystem, in degrees.
      */
-    public abstract double getCurrentAngleInDegrees();
+    public double getCurrentAngleInDegrees() {
+        double rotations = getRotatorEncoder().getPosition();
+        double angle = 360 * ((rotations) / this.ROTATOR_GEAR_RATIO);
+        return angle;
+    }
 
     /**
      * 
@@ -268,5 +276,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
     public SparkMaxPIDController getRotatorController() {
         return this.rotator_controller;
+    }
+
+    public void moveByPercentOutput(double output) {
+        rotator.set(output);
     }
 }
