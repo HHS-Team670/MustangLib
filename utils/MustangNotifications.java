@@ -45,8 +45,8 @@ public class MustangNotifications {
         DriverStation.reportWarning(dataToSend, false);
         Logger.consoleWarning(dataToSend);
         warning.setString(dataToSend); //String.format(message, parameters)
-        if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
-            throw new RuntimeException(message);
+        // if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
+        //     throw new RuntimeException(message);
     }
 
     /**
@@ -69,8 +69,8 @@ public class MustangNotifications {
         DriverStation.reportError(String.format(message, parameters), false);
         Logger.consoleError(message, parameters);
         warning.setString(String.format(message, parameters));
-        if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
-            throw new RuntimeException(message);
+        // if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
+        //     throw new RuntimeException(message);
     }
 
     /**
