@@ -176,6 +176,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param angle The target angle this subsystem should turn to, in degrees
      */
     public void setSystemTargetAngleInDegrees(double angle) {
+        
         setSystemMotionTarget(getMotorRotationsFromAngle(angle));
     }
 
