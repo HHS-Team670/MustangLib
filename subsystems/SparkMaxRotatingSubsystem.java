@@ -152,7 +152,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param setpoint The target position for this subsystem, in motor rotations
      */
     protected void setSystemMotionTarget(double setpoint) {
-        rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
+        setSystemMotionTarget(setpoint, 0);
+    }
+
+    /**
+     * 
+     * @param setpoint
+     */
+    protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
+        rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, arbitraryFF);
         this.setpoint = setpoint;
     }
 
