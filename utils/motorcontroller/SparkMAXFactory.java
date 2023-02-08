@@ -55,8 +55,12 @@ public class SparkMAXFactory {
     }
 
     public static SparkMAXLite setPermanentFollower(int deviceID, SparkMAXLite leader) {
+        return setPermanentFollower(deviceID, leader, false);
+    }
+
+    public static SparkMAXLite setPermanentFollower(int deviceID, SparkMAXLite leader, boolean inverted) {
         SparkMAXLite sparkMax = buildSparkMAX(deviceID, defaultFollowerConfig, leader.getMotor());
-        sparkMax.follow(leader);
+        sparkMax.follow(leader, inverted);
         return sparkMax;
     }
 
