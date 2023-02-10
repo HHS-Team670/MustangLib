@@ -29,6 +29,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
     protected double MAX_ROT_RPM, MAX_SUB_RPM, MIN_RPM, MAX_ACC, ALLOWED_ERR;
     protected int SMARTMOTION_SLOT;
     protected double ROTATOR_GEAR_RATIO;
+    protected static final double NO_SETPOINT = 9999;
+
 
     /**
      * Configuration for this RotatingSubsystem's properties. Use this to keep track
@@ -128,6 +130,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
             rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
         }
         //getMaxSubsystemRPM(config.getMaxRotatorRPM());
+        setpoint = NO_SETPOINT;
 
         clearSetpoint();
 
