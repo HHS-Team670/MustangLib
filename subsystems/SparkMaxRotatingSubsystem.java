@@ -120,15 +120,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
         rotator.setSmartCurrentLimit(config.getPeakCurrent(), config.getContinuousCurrent());
 
-        if (config.getSoftLimits() == null || config.getSoftLimits().length > 2) {
-            rotator.enableSoftLimit(SoftLimitDirection.kForward, false);
-            rotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
-        } else {
-            rotator.setSoftLimit(SoftLimitDirection.kForward, config.getSoftLimits()[0]);
-            rotator.setSoftLimit(SoftLimitDirection.kReverse, config.getSoftLimits()[1]);
-            rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
-            rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
-        }
+        updateSoftLimits(config.getSoftLimits());
         //getMaxSubsystemRPM(config.getMaxRotatorRPM());
         setpoint = NO_SETPOINT;
 
@@ -137,10 +129,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
     }
 
     public void updateSoftLimits(float[] softLimits) {
-        rotator.setSoftLimit(SoftLimitDirection.kForward, softLimits[0]);
-        rotator.setSoftLimit(SoftLimitDirection.kReverse, softLimits[1]);
-        rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
-        rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        if (softLimits == null || softLimits.length > 2) {
+            rotator.enableSoftLimit(SoftLimitDirection.kForward, false);
+            rotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        } else {
+            rotator.setSoftLimit(SoftLimitDirection.kForward, softLimits[0]);
+            rotator.setSoftLimit(SoftLimitDirection.kReverse, softLimits[1]);
+            rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
+            rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
+        }
     }
 
     /**
