@@ -136,6 +136,13 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
     }
 
+    public void updateSoftLimits(float[] softLimits) {
+        rotator.setSoftLimit(SoftLimitDirection.kForward, softLimits[0]);
+        rotator.setSoftLimit(SoftLimitDirection.kReverse, softLimits[1]);
+        rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
+        rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
+    }
+
     /**
      * 
      * @return The count, in motor rotations, from the subsystem's rotator's
