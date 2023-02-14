@@ -9,7 +9,7 @@ public final class CodeVersionStringGenerator {
         if (CodeVersion.DIRTY == 1) {
             str = CodeVersion.GIT_BRANCH + " (dirty) at " + CodeVersion.BUILD_DATE;
         } else {
-            str = CodeVersion.GIT_BRANCH + "_" + CodeVersion.BUILD_DATE + "_" + CodeVersion.GIT_SHA.substring(0, 8);
+            str = CodeVersion.GIT_BRANCH + " at " + CodeVersion.BUILD_DATE + " - commit " + CodeVersion.GIT_SHA.substring(0, 8);
         }
 
         return str;
