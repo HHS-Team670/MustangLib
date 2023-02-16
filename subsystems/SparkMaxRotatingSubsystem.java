@@ -334,4 +334,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
     public void moveByPercentOutput(double output) {
         rotator.set(output);
     }
+
+    public void setSoftLimits(float[] softLimits) {
+        this.softLimits = softLimits;
+    }
 }
