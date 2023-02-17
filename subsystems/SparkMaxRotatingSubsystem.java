@@ -10,6 +10,7 @@ import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
+import frc.team670.mustanglib.utils.Logger;
 
 /**
  * Superclass for any rotating subsystem which uses a SparkMax to control the
@@ -29,8 +30,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
     protected double MAX_ROT_RPM, MAX_SUB_RPM, MIN_RPM, MAX_ACC, ALLOWED_ERR;
     protected int SMARTMOTION_SLOT;
     protected double ROTATOR_GEAR_RATIO;
+    protected float[] softLimits;
     protected static final double NO_SETPOINT = 9999;
-
 
     /**
      * Configuration for this RotatingSubsystem's properties. Use this to keep track
@@ -128,8 +129,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
             rotator.setSoftLimit(SoftLimitDirection.kReverse, config.getSoftLimits()[1]);
             rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
             rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
+            this.softLimits = config.getSoftLimits();
         }
-        //getMaxSubsystemRPM(config.getMaxRotatorRPM());
+        // getMaxSubsystemRPM(config.getMaxRotatorRPM());
         setpoint = NO_SETPOINT;
 
         clearSetpoint();
@@ -145,8 +147,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
         return this.rotator_encoder.getPosition();
     }
 
-    public double getMaxSubsystemRPM(double rotRPM){
-        return rotRPM/this.ROTATOR_GEAR_RATIO;
+    public double getMaxSubsystemRPM(double rotRPM) {
+        return rotRPM / this.ROTATOR_GEAR_RATIO;
     }
 
     /**
@@ -155,7 +157,13 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param setpoint The target position for this subsystem, in motor rotations
      */
     protected void setSystemMotionTarget(double setpoint) {
+        if (softLimits != null && (setpoint > softLimits[0] || setpoint < softLimits[1])) {
+            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " + softLimits[1]
+                    + " and " + softLimits[0]);
+            return;
+        }
         setSystemMotionTarget(setpoint, 0);
+
     }
 
     /**
@@ -163,6 +171,13 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param setpoint
      */
     protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
+
+        if (softLimits != null && (setpoint > softLimits[0] || setpoint < softLimits[1])) {
+            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " + softLimits[1]
+                    + " and " + softLimits[0]);
+            return;
+        }
+
         rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, arbitraryFF);
         this.setpoint = setpoint;
     }
@@ -175,6 +190,14 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param setpoint The temporary setpoint for the system, in motor rotations
      */
     protected void setTemporaryMotionTarget(double setpoint) {
+
+        if (softLimits != null && (setpoint > softLimits[0] || setpoint < softLimits[1])) {
+            Logger.consoleLog("Improper temporary setpoint: " + setpoint + " Temporary setpoint should be between "
+                    + softLimits[1]
+                    + " and " + softLimits[0]);
+            return;
+        }
+
         tempSetpoint = setpoint;
         rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
     }
@@ -187,8 +210,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param angle The target angle this subsystem should turn to, in degrees
      */
     public void setSystemTargetAngleInDegrees(double angle) {
-        
-        setSystemMotionTarget(getMotorRotationsFromAngle(angle));
+        double setpoint = getMotorRotationsFromAngle(angle);
+        if (softLimits != null && (setpoint > softLimits[0] || setpoint < softLimits[1])) {
+            Logger.consoleLog("Improper temporary angle : " + angle + "Setpoint: " + setpoint
+                    + " Setpoint should be between " + softLimits[0]
+                    + " and " + softLimits[1]);
+
+        }
+
+        setSystemMotionTarget(setpoint);
     }
 
     /**
@@ -198,6 +228,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param angle The angle this subsystem should turn to, in degrees
      */
     public void setTemporaryTargetAngleInDegrees(double angle) {
+        double setpoint = getMotorRotationsFromAngle(angle);
+
+        if (softLimits != null && (setpoint > softLimits[0] || setpoint < softLimits[1])) {
+            Logger.consoleLog("Improper temporary angle : " + angle + "Setpoint: " + setpoint
+                    + " Setpoint should be between " + softLimits[0]
+                    + " and " + softLimits[1]);
+            return;
+        }
+
         setTemporaryMotionTarget(getMotorRotationsFromAngle(angle));
     }
 
@@ -294,5 +333,18 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
 
     public void moveByPercentOutput(double output) {
         rotator.set(output);
+    }
+
+    public void updateSoftLimits(float[] softLimits) {
+        if (softLimits == null || softLimits.length > 2) {
+            rotator.enableSoftLimit(SoftLimitDirection.kForward, false);
+            rotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        } else {
+            this.softLimits = softLimits;
+            rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
+            rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
+            rotator.setSoftLimit(SoftLimitDirection.kForward, softLimits[0]);
+            rotator.setSoftLimit(SoftLimitDirection.kReverse, softLimits[1]);
+        }
     }
 }
