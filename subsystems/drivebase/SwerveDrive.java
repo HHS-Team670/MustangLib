@@ -102,7 +102,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
         // getModulePositions());
         poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, getGyroscopeRotation(false),
-                getModulePositions(), getPose());
+                getModulePositions(), new Pose2d());
         this.vision = vision;
     }
 
