@@ -36,6 +36,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         for (int i = 0; i < cameras.length; i++) {
             cams[i] = new PhotonCameraWrapper(cameras[i], cameraOffsets[i], visionFieldLayout);
         }
+        this.cameras = cams;
     }
 
     public boolean hasTarget() {
