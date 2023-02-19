@@ -222,7 +222,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         for (int i = 0; i < zeroedPos.length; i++) {
             zeroedPos[i] = new SwerveModulePosition();
         }
-        odometer.resetPosition(new Rotation2d(), getModulePositions(), pose);
+        odometer.resetPosition(pose.getRotation(), getModulePositions(), pose);
     }
     
     public SwerveModule[] getModules() {
