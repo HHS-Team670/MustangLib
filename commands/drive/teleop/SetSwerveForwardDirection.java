@@ -14,7 +14,7 @@ public class SetSwerveForwardDirection extends InstantCommand implements Mustang
     private SwerveDrive swerveDrive;
     private Arm arm;
 
-    public SetSwerveForwardDirection(SwerveDrive driveBase, Arm arm) {
+    public SetSwerveForwardDirection(SwerveDrive driveBase/* , Arm arm*/) {
         this.swerveDrive = driveBase;
         this.arm = arm;
         
@@ -23,7 +23,7 @@ public class SetSwerveForwardDirection extends InstantCommand implements Mustang
     public void initialize() {
         swerveDrive.zeroGyroscope(); 
         swerveDrive.realignModules(); 
-        arm.resetPositionFromAbsolute();
+        // arm.resetPositionFromAbsolute();
     }
 
     @Override
