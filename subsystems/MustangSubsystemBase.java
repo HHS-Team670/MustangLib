@@ -104,7 +104,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     @Override
     public void periodic() {
         HealthState lastHealth = getHealth(false);
-        if (lastHealth == HealthState.GREEN || lastHealth == HealthState.UNKNOWN) {
+        if (lastHealth == HealthState.GREEN || lastHealth == HealthState.UNKNOWN || lastHealth == HealthState.YELLOW) {
             if (failedLastTime) {
                 MustangNotifications
                         .notify("Health state for " + this.getName() + " is: " + lastHealth + ". Enabling Periodic");
