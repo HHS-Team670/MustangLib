@@ -3,6 +3,7 @@ package frc.team670.mustanglib.subsystems.drivebase;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.utils.Logger;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -19,6 +20,7 @@ import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.constants.SwerveConfig;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
+import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
 
@@ -38,9 +40,11 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private Rotation2d gyroOffset;
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
     private double MAX_VELOCITY, MAX_VOLTAGE;
-    private SwerveDriveOdometry odometer;
+    // private SwerveDriveOdometry odometer;
+    private SwerveDrivePoseEstimator poseEstimator;
+    private VisionSubsystemBase vision;
 
-    public SwerveDrive(SwerveConfig config) {
+    public SwerveDrive(SwerveConfig config, VisionSubsystemBase vision) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
         MAX_VELOCITY = config.MAX_VELOCITY_METERS_PER_SECOND;
         MAX_VOLTAGE = config.MAX_VOLTAGE;
@@ -94,8 +98,9 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         m_navx = new NavX(config.NAVX_PORT);
         m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0), getModulePositions());
-
+        // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0), getModulePositions());
+        poseEstimator = new SwerveDrivePoseEstimator(m_kinematics, getGyroscopeRotation(false), getModulePositions(), getPose());
+        this.vision = vision;
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -163,11 +168,13 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
-        odometer.update(getGyroscopeRotation(),getModulePositions()); 
-        SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
-        SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
-        SmartDashboard.putNumber("Odometry rotation: ",
-                odometer.getPoseMeters().getRotation().getDegrees());
+
+        updateOdometry();
+    //     odometer.update(getGyroscopeRotation(),getModulePositions()); 
+    //     SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
+    //     SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
+    //     SmartDashboard.putNumber("Odometry rotation: ",
+    //             odometer.getPoseMeters().getRotation().getDegrees());
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
@@ -208,8 +215,21 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[1].realign();
     }
 
+    private void updateOdometry() {
+        poseEstimator.update(gyroOffset, getModulePositions());
+
+        var result = vision.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+
+        if (result.isPresent()) {
+            var camPose = result.get();
+            poseEstimator.addVisionMeasurement(
+                    camPose.getFirst().toPose2d(), camPose.getSecond());
+        }
+    }
+
     public Pose2d getPose() {
-        return odometer.getPoseMeters();
+        // return odometer.getPoseMeters();
+        return poseEstimator.getEstimatedPosition();
     }
 
     public double getPitch() {
@@ -222,7 +242,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         for (int i = 0; i < zeroedPos.length; i++) {
             zeroedPos[i] = new SwerveModulePosition();
         }
-        odometer.resetPosition(pose.getRotation(), getModulePositions(), pose);
+        // odometer.resetPosition(new Rotation2d(), getModulePositions(), pose);
+        poseEstimator.resetPosition(new Rotation2d(), zeroedPos, pose);
     }
     
     public SwerveModule[] getModules() {
