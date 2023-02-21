@@ -228,7 +228,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(),
                         pose.timestampSeconds);
         }
-
+        Pose2d estPose = poseEstimator.getEstimatedPosition();
+        SmartDashboard.putNumber("est pose x: ", estPose.getX());
+        SmartDashboard.putNumber("est pose y: ", estPose.getY());
+        SmartDashboard.putNumber("est pose deg: ", estPose.getRotation().getDegrees());
     }
 
     public Pose2d getPose() {
