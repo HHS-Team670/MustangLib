@@ -3,6 +3,10 @@ package frc.team670.mustanglib.subsystems.drivebase;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.utils.Logger;
+import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
+import frc.team670.robot.subsystems.PoseEstimatorSubsystem;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -105,6 +109,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         SmartDashboard.putNumber("chassis y velocity", chassisSpeeds.vyMetersPerSecond);
         SmartDashboard.putNumber("chassis omega velocity", chassisSpeeds.omegaRadiansPerSecond);
         m_chassisSpeeds = chassisSpeeds;
+    }
+
+    public void stop() {
+        drive(new ChassisSpeeds());
     }
 
     /**
