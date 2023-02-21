@@ -115,6 +115,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         gyroOffset = getGyroscopeRotation(false);
     }
 
+    public void setGyroscopeRotation(Rotation2d rot) {
+        gyroOffset = rot;
+    }
+
     public SwerveDriveKinematics getSwerveKinematics() {
         return m_kinematics;
     }
@@ -208,7 +212,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[1].realign();
     }
 
-    public Pose2d getPose() {
+    public Pose2d getOdometerPose() {
         return odometer.getPoseMeters();
     }
 
