@@ -13,13 +13,13 @@ import java.util.Set;
  * 
  * @author ctchen, rghosh670
  */
-public class AStarMap {
+public class AStarMap<N extends Node<N>, E extends Edge<N>> {
 
-    protected final List<Node> nodes = new ArrayList<>();
-    protected final List<Edge> edges = new ArrayList<>();
+    protected final List<N> nodes = new ArrayList<>();
+    protected final List<E> edges = new ArrayList<>();
 
     // Add a node to the navigation mesh
-    public void addNode(Node node) {
+    public void addNode(N node) {
         this.nodes.add(node);
     }
 
@@ -27,41 +27,41 @@ public class AStarMap {
         return nodes.size();
     }
 
-    public Node getNode(int index) {
+    public N getNode(int index) {
         return nodes.get(index);
     }
 
     /**
-     * Runs the search function, returning a List ordered in the Edges to take from one start Node
+     * Runs the search function, returning a List ordered in the Edges to take from one start N
      * to destination
      * 
      * @param start The node that the user wishes to start from
      * @param destination The target node that the user wishes to reach
      * @return A path of nodes that the search algorithm has found.
-     * @exception IllegalArgumentException throws if the Node you are starting from has no open
+     * @exception IllegalArgumentException throws if the N you are starting from has no open
      *            paths from it Returns empty if destination and start are same node
      */
-    public List<Node> search(Node start, Node destination) {
+    public List<N> search(N start, N destination) {
 
         // Use A* search to find the shortest path through the navigation mesh
-        Set<Node> closedSet = new HashSet<>();
-        Set<Node> openSet = new HashSet<>();
-        Map<Node, Double> gScore = new HashMap<>();
-        Map<Node, Double> fScore = new HashMap<>();
-        Map<Node, Node> cameFrom = new HashMap<>();
+        Set<N> closedSet = new HashSet<>();
+        Set<N> openSet = new HashSet<>();
+        Map<N, Double> gScore = new HashMap<>();
+        Map<N, Double> fScore = new HashMap<>();
+        Map<N, N> cameFrom = new HashMap<>();
         gScore.put(start, 0.0);
         fScore.put(start, start.getHeuristicDistance(destination));
         openSet.add(start);
 
         while (!openSet.isEmpty()) {
 
-            Node current = getLowestFScore(openSet, fScore);
+            N current = getLowestFScore(openSet, fScore);
             if (current.equals(destination)) {
                 return getPath(current, cameFrom);
             }
             openSet.remove(current);
             closedSet.add(current);
-            for (Node neighbor : current.getNeighbors()) {
+            for (N neighbor : current.getNeighbors()) {
                 if (!closedSet.contains(neighbor)) {
                     double tentativeGScore =
                             gScore.get(current) + current.getHeuristicDistance(neighbor);
@@ -83,10 +83,10 @@ public class AStarMap {
     }
 
     // Get the node in the open set with the lowest f score
-    private Node getLowestFScore(Set<Node> openSet, Map<Node, Double> fScore) {
-        Node lowestFScoreNode = null;
+    private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
+        N lowestFScoreNode = null;
         double lowestFScore = Double.MAX_VALUE;
-        for (Node node : openSet) {
+        for (N node : openSet) {
             double f = fScore.get(node);
             if (f < lowestFScore) {
                 lowestFScore = f;
@@ -100,8 +100,8 @@ public class AStarMap {
     /**
      * @return the found path (list of nodes)
      */
-    private List<Node> getPath(Node current, Map<Node, Node> cameFrom) {
-        List<Node> path = new ArrayList<>();
+    private List<N> getPath(N current, Map<N, N> cameFrom) {
+        List<N> path = new ArrayList<>();
         path.add(current);
         while (cameFrom.containsKey(current)) {
             current = cameFrom.get(current);
