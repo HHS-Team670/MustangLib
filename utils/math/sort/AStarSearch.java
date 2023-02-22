@@ -11,35 +11,19 @@ import java.util.Set;
 /**
  * Implementation of an A* search algorithm https://www.geeksforgeeks.org/a-search-algorithm/
  * 
- * @author ctchen, rghosh670
+ * @author ctchen, rghosh670, ethan c :)
  */
-public class AStarMap<N extends Node<N>, E extends Edge<N>> {
-
-    protected final List<N> nodes = new ArrayList<>();
-    protected final List<E> edges = new ArrayList<>();
-
-    // Add a node to the navigation mesh
-    public void addNode(N node) {
-        this.nodes.add(node);
-    }
-
-    public int getNodeSize() {
-        return nodes.size();
-    }
-
-    public N getNode(int index) {
-        return nodes.get(index);
-    }
+public class AStarSearch<N extends Node<N>, E extends Edge<N>> {
 
     /**
-     * Runs the search function, returning a List ordered in the Edges to take from one start N
-     * to destination
+     * Runs the search function, returning a List ordered in the Edges to take from one start N to
+     * destination
      * 
      * @param start The node that the user wishes to start from
      * @param destination The target node that the user wishes to reach
      * @return A path of nodes that the search algorithm has found.
-     * @exception IllegalArgumentException throws if the N you are starting from has no open
-     *            paths from it Returns empty if destination and start are same node
+     * @exception IllegalArgumentException throws if the N you are starting from has no open paths
+     *            from it Returns empty if destination and start are same node
      */
     public List<N> search(N start, N destination) {
 
