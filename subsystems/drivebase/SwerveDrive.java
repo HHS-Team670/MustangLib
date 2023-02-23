@@ -36,7 +36,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     private ChassisSpeeds m_chassisSpeeds;
 
-    private Rotation2d gyroOffset = null;
+    private Rotation2d gyroOffset = new Rotation2d();
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
     private double MAX_VELOCITY, MAX_VOLTAGE;
     private SwerveDriveOdometry odometer;
@@ -171,7 +171,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
 
         if (poseEstimator == null) {
-            if (vision != null) initPoseEstimator(vision);
+            if (vision != null && gyroOffset != null) initPoseEstimator(vision);
         } else {
             poseEstimator.update();
         }
