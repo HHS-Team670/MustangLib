@@ -2,10 +2,12 @@ package frc.team670.mustanglib.utils.math.sort;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 /**
@@ -63,23 +65,31 @@ public class AStarSearch<N extends Node<N>, E extends Edge<N>> {
         }
 
         // If we get here, then no path was found
-        return null;
+        return new ArrayList<>();
     }
 
     // Get the node in the open set with the lowest f score
-    private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
-        N lowestFScoreNode = null;
-        double lowestFScore = Double.MAX_VALUE;
-        for (N node : openSet) {
-            double f = fScore.get(node);
-            if (f < lowestFScore) {
-                lowestFScore = f;
-                lowestFScoreNode = node;
-            }
-        }
-        return lowestFScoreNode;
+    // private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
+    //     N lowestFScoreNode = null;
+    //     double lowestFScore = Double.MAX_VALUE;
+    //     for (N node : openSet) {
+    //         double f = fScore.get(node);
+    //         if (f < lowestFScore) {
+    //             lowestFScore = f;
+    //             lowestFScoreNode = node;
+    //         }
+    //     }
+    //     return lowestFScoreNode;
 
+    // }
+
+    // courtesy of chatgpt
+    private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
+        PriorityQueue<N> pq = new PriorityQueue<>(Comparator.comparingDouble(fScore::get));
+        pq.addAll(openSet);
+        return pq.poll();
     }
+    
 
     /**
      * @return the found path (list of nodes)
