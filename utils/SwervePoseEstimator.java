@@ -53,6 +53,10 @@ public class SwervePoseEstimator {
     field2d.getObject("Trajectory").setTrajectory(traj);
   }
 
+  public void removeTrajectory() {
+    field2d.getObject("Trajectory").close();
+  }
+
   public void update() {
     EstimatedRobotPose[] visionPoses =
         vision.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
