@@ -16,7 +16,7 @@ import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 public class SwervePoseEstimator {
 
   private final SwerveDrive driveBase;
-  private final VisionSubsystemBase vision;
+  private VisionSubsystemBase vision;
 
   /**
    * Standard deviations of model states. Increase these numbers to trust your model's state
@@ -40,12 +40,21 @@ public class SwervePoseEstimator {
 
   // private double previousPipelineTimestamp = 0;
 
+  public SwervePoseEstimator(SwerveDrive swerve) {
+    this.driveBase = swerve;
+    this.vision = null;
+    poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),
+        swerve.getGyroscopeRotation(), swerve.getModulePositions(), swerve.getOdometerPose(),
+        stateStdDevs, visionMeasurementStdDevs);
+    SmartDashboard.putData(field2d);
+  }
+
   public SwervePoseEstimator(VisionSubsystemBase vision, SwerveDrive swerve) {
     this.vision = vision;
     this.driveBase = swerve;
     poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),
-        swerve.getGyroscopeRotation(), swerve.getModulePositions(),
-        swerve.getOdometerPose(), stateStdDevs, visionMeasurementStdDevs);
+        swerve.getGyroscopeRotation(), swerve.getModulePositions(), swerve.getOdometerPose(),
+        stateStdDevs, visionMeasurementStdDevs);
     SmartDashboard.putData(field2d);
   }
 
@@ -58,12 +67,14 @@ public class SwervePoseEstimator {
   }
 
   public void update() {
-    EstimatedRobotPose[] visionPoses =
-        vision.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
+    if (vision != null) {
+      EstimatedRobotPose[] visionPoses =
+          vision.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
 
-    for (EstimatedRobotPose pose : visionPoses) {
-      if (pose != null)
-        poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+      for (EstimatedRobotPose pose : visionPoses) {
+        if (pose != null)
+          poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+      }
     }
     poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
 

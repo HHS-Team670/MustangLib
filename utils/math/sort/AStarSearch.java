@@ -83,7 +83,7 @@ public class AStarSearch<N extends Node<N>, E extends Edge<N>> {
 
     // }
 
-    // courtesy of chatgpt
+    // courtesy of chatgpt lmao
     private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
         PriorityQueue<N> pq = new PriorityQueue<>(Comparator.comparingDouble(fScore::get));
         pq.addAll(openSet);

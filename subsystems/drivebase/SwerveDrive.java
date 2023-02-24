@@ -22,26 +22,20 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
-
-    // private final SwerveModule m_modules[0];
-    // private final SwerveModule m_modules[1];
-    // private final SwerveModule m_modules[2];
-    // private final SwerveModule m_modules[3];
-
-    private final SwerveModule[] m_modules;
-
-    private final SwerveDriveKinematics m_kinematics;
-
-    private final NavX m_navx;
-
-    private ChassisSpeeds m_chassisSpeeds;
-
-    private Rotation2d gyroOffset = new Rotation2d();
-    private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
-    private double MAX_VELOCITY, MAX_VOLTAGE;
+    
     private SwerveDriveOdometry odometer;
     private SwervePoseEstimator poseEstimator;
+    private final NavX m_navx;
     private VisionSubsystemBase vision;
+
+    private final SwerveModule[] m_modules;
+    private final SwerveDriveKinematics m_kinematics;
+    private ChassisSpeeds m_chassisSpeeds;
+    private Rotation2d gyroOffset = new Rotation2d();
+    
+    private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
+    
+    private final double MAX_VELOCITY, MAX_VOLTAGE;
 
     public SwerveDrive(SwerveConfig config) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");

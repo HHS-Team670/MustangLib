@@ -5,6 +5,7 @@ import java.util.List;
 /**
 * Models a node on a graph. Needed for A* sort 
 * https://www.geeksforgeeks.org/a-search-algorithm/ 
+* @author ethan c XD
 */
 public interface Node<T extends Node<T>> {  
     

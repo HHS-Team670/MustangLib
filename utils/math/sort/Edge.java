@@ -2,6 +2,7 @@ package frc.team670.mustanglib.utils.math.sort;
 
 /**
  * Represents an edge that connects nodes. 
+ * @author ethan c xd
  */
 public interface Edge<T> {
     /**
