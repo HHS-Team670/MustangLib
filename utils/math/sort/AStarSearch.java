@@ -4,138 +4,125 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
-import frc.team670.mustanglib.utils.Logger;
+import java.util.PriorityQueue;
+import java.util.Set;
 
 /**
- * Implementation of an A* search algorithm
- * https://www.geeksforgeeks.org/a-search-algorithm/
+ * Implementation of an A* search algorithm https://www.geeksforgeeks.org/a-search-algorithm/
  * 
- * @author ctchen, rghosh670
+ * @author ctchen, rghosh670, ethan c :)
  */
-public class AStarSearch {
+public class AStarSearch<N extends Node<N>, E extends Edge<N>> {
+
     /**
-     * Runs the search function, returning a List ordered in the Edges to take from one start Node to destination
+     * Runs the search function, returning a List ordered in the Edges to take from one start N to
+     * destination
      * 
-     * @param start       The node that the user wishes to start from
+     * @param start The node that the user wishes to start from
      * @param destination The target node that the user wishes to reach
-     * @return A path of nodes that the search algorithm has found. 
-     * @exception IllegalArgumentException throws if the Node you are starting from has no open paths from it
-     * Returns empty if destination and start are same node
+     * @return A path of nodes that the search algorithm has found.
+     * @exception IllegalArgumentException throws if the N you are starting from has no open paths
+     *            from it Returns empty if destination and start are same node
      */
-    public static List<Edge> search(Node start, Node destination) {
-        
-        // System.out.println("StartNode: " + start.getClass().getName() + ", DestNode: " + destination.getClass().getName());
-        
-        if (start.equals(destination)) {
-            return new ArrayList<Edge>();
-        }
-        HashMap<Node, Edge> cameFrom = new HashMap<Node, Edge>();
-        Map<Node, Integer> fValues = new HashMap<Node, Integer>();
-        Map<Node, Integer> gValues = new HashMap<Node, Integer>();
+    public List<N> search(N start, N destination) {
 
-        Comparator<Node> fValueComp = new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) { // This compare is dumb and if 2 have the same F-value, one won't get added
-                int o1f = Integer.MAX_VALUE;
-                int o2f = Integer.MAX_VALUE;
+        // Use A* search to find the shortest path through the navigation mesh
+        Set<N> closedSet = new HashSet<>();
+        Set<N> openSet = new HashSet<>();
+        Map<N, Double> gScore = new HashMap<>();
+        Map<N, Double> fScore = new HashMap<>();
+        Map<N, N> cameFrom = new HashMap<>();
+        gScore.put(start, 0.0);
+        fScore.put(start, start.getHeuristicDistance(destination));
+        openSet.add(start);
 
-                if (fValues.get(o1) != null)
-                    o1f = fValues.get(o1);
+        while (!openSet.isEmpty()) {
 
-                if (fValues.get(o2) != null)
-                    o2f = fValues.get(o2);
-
-                return ((Integer) (o1f)).compareTo(o2f);
-            }
-        };
-
-        SortedSet<Node> openList = new TreeSet<Node>(fValueComp);
-        List<Node> closedList = new ArrayList<Node>();
-
-        Node current = null;
-        openList.add(start);
-
-        boolean end = false;
-
-        gValues.put(start, 0);
-
-        fValues.put(start, start.getHeuristicDistance(destination));
-
-        while (!openList.isEmpty() && !end) {
-
-            current = openList.first();
-
+            N current = getLowestFScore(openSet, fScore);
             if (current.equals(destination)) {
-                // System.out.println("CURRENT EQUALS DESTINATION");
-                end = true;
+                return getPath(current, cameFrom);
             }
-
-            if(!end) {
-                openList.remove(current);
-                closedList.add(current);
-
-                for (Edge e : current.getEdges()) {
-                    Node child = e.getDest();
-                    // System.out.println("Edge: " + e.getClass().getName() +", Edge SourceNode: " + e.getSource().getClass().getName() + ", DestinationNode: " + child.getClass().getName());
-
-                    if (child.equals(destination)) {
-                        // System.out.println("CURRENT EQUALS DESTINATION IN EDGE LOOP");
-                        // end = true;
+            openSet.remove(current);
+            closedSet.add(current);
+            for (N neighbor : current.getNeighbors()) {
+                if (!closedSet.contains(neighbor)) {
+                    double tentativeGScore =
+                            gScore.get(current) + current.getHeuristicDistance(neighbor);
+                    if (!openSet.contains(neighbor) || tentativeGScore < gScore.get(neighbor)) {
+                        cameFrom.put(neighbor, current);
+                        gScore.put(neighbor, tentativeGScore);
+                        fScore.put(neighbor,
+                                gScore.get(neighbor) + neighbor.getHeuristicDistance(destination));
+                        // No check needed, .add is a noop if it contains it. Sets don't allow
+                        // duplicates
+                        openSet.add(neighbor);
                     }
-                    // if(child.equals(destination)) {
-                    //     cameFrom.put(child, e);
-                    //     end = true;
-                    //     break;
-                    // }
-
-                    if (closedList.contains(child)) {
-                        continue;
-                    }
-
-                    int tempG = gValues.get(current) + e.getCost();
-                    int tempF = tempG + child.getHeuristicDistance(destination);
-
-                    if (!openList.contains(child) || fValues.get(child) == null) {
-                        fValues.put(child, tempF);
-                        openList.add(child); // WILL NOT ADD IF THE COORDINATES OF THE 2 ARM PIECES ARE THE SAME
-                    } else if (gValues.get(child) == null || tempG >= gValues.get(child)) {
-                        continue;
-                    }
-                    cameFrom.put(child, e);
-                    gValues.put(child, tempG);
                 }
-                // System.out.println("OpenListLength: " + openList.size());
             }
         }
 
-        if (openList.isEmpty()) { //either start or end is island
-            throw new IllegalArgumentException("Invalid input, check for island");
-        }
-        return getPath(start, destination, cameFrom);
+        // If we get here, then no path was found
+        return new ArrayList<>();
+    }
+
+    // Get the node in the open set with the lowest f score
+    // private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
+    //     N lowestFScoreNode = null;
+    //     double lowestFScore = Double.MAX_VALUE;
+    //     for (N node : openSet) {
+    //         double f = fScore.get(node);
+    //         if (f < lowestFScore) {
+    //             lowestFScore = f;
+    //             lowestFScoreNode = node;
+    //         }
+    //     }
+    //     return lowestFScoreNode;
+
+    // }
+
+    // courtesy of chatgpt lmao
+    private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
+        PriorityQueue<N> pq = new PriorityQueue<>(Comparator.comparingDouble(fScore::get));
+        pq.addAll(openSet);
+        return pq.poll();
     }
     
+
     /**
-     * @return the found path (list of edges)
+     * @return the found path (list of nodes)
      */
-    private static List<Edge> getPath(Node start, Node destination, HashMap<Node, Edge> cameFrom) {
-        List<Edge> path = new ArrayList<Edge>();
-        Node node = destination;
-
-        if(cameFrom.isEmpty()) { 
-            throw new IllegalArgumentException("Invalid argument, check for island");
+    private List<N> getPath(N current, Map<N, N> cameFrom) {
+        List<N> path = new ArrayList<>();
+        path.add(current);
+        while (cameFrom.containsKey(current)) {
+            current = cameFrom.get(current);
+            path.add(current);
         }
-        while (!node.equals(start)) {
-            Edge e = cameFrom.get(node);
-            path.add(e);
-            node = e.getSource();
-        }
-
         Collections.reverse(path);
         return path;
     }
+
+    // /**
+    // * @return the found path (list of edges)
+    // */
+    // private List<Edge> getPath(Node start, Node destination, HashMap<Node, Edge> cameFrom) {
+    // List<Edge> path = new ArrayList<Edge>();
+    // Node node = destination;
+
+    // if(cameFrom.isEmpty()) {
+    // throw new IllegalArgumentException("Invalid argument, check for island");
+    // }
+    // while (!node.equals(start)) {
+    // Edge e = cameFrom.get(node);
+    // path.add(e);
+    // node = e.getSource();
+    // }
+
+    // Collections.reverse(path);
+    // return path;
+    // }
+
 }

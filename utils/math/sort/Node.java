@@ -1,19 +1,27 @@
 package frc.team670.mustanglib.utils.math.sort;
 
+import java.util.List;
+
 /**
 * Models a node on a graph. Needed for A* sort 
 * https://www.geeksforgeeks.org/a-search-algorithm/ 
+* @author ethan c XD
 */
-public interface Node extends Comparable<Node> {  
-    
-    /**
-     * @return a list of the edges that hit this node
-     */
-    public Edge[] getEdges();
+public interface Node<T extends Node<T>> {  
     
     /**
      * @return estimated distance to target node
      */
-    public int getHeuristicDistance(Node target);
+    public double getHeuristicDistance(T target);
 
+    /**
+     * @return a list of the node's neighbors
+     */
+    public List<T> getNeighbors();
+
+    /**
+     * 
+     * @param neighbor - neighbor to add
+     */
+    public void addNeighbor(T neighbor);
 }
