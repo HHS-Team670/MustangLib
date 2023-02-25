@@ -98,9 +98,9 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     public void drive(ChassisSpeeds chassisSpeeds) {
         // Logger.consoleLog(chassisSpeeds.vxMetersPerSecond + ", " +
         // chassisSpeeds.vyMetersPerSecond + ", " + chassisSpeeds.omegaRadiansPerSecond);
-        SmartDashboard.putNumber("chassis x velocity", chassisSpeeds.vxMetersPerSecond);
-        SmartDashboard.putNumber("chassis y velocity", chassisSpeeds.vyMetersPerSecond);
-        SmartDashboard.putNumber("chassis omega velocity", chassisSpeeds.omegaRadiansPerSecond);
+        // SmartDashboard.putNumber("chassis x velocity", chassisSpeeds.vxMetersPerSecond);
+        // SmartDashboard.putNumber("chassis y velocity", chassisSpeeds.vyMetersPerSecond);
+        // SmartDashboard.putNumber("chassis omega velocity", chassisSpeeds.omegaRadiansPerSecond);
         m_chassisSpeeds = chassisSpeeds;
     }
 
@@ -175,10 +175,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             setModuleStates(states);
         }
         odometer.update(getGyroscopeRotation(), getModulePositions());
-        SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
-        SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
-        SmartDashboard.putNumber("Odometry rotation: ",
-                odometer.getPoseMeters().getRotation().getDegrees());
+        // SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
+        // SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
+        // SmartDashboard.putNumber("Odometry rotation: ",
+                odometer.getPoseMeters().getRotation().getDegrees();
     }     
     
     public void initPoseEstimator(VisionSubsystemBase vision) {
