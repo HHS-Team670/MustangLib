@@ -1,10 +1,17 @@
 package frc.team670.mustanglib.utils;
 
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import org.photonvision.EstimatedRobotPose;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
@@ -12,11 +19,13 @@ import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
+import frc.team670.robot.constants.FieldConstants;
 
 public class SwervePoseEstimator {
 
   private final SwerveDrive driveBase;
   private VisionSubsystemBase vision;
+  private Set<Pose2d> closestTargetsSet = new HashSet<>(3);
 
   /**
    * Standard deviations of model states. Increase these numbers to trust your model's state
@@ -58,6 +67,49 @@ public class SwervePoseEstimator {
     SmartDashboard.putData(field2d);
   }
 
+  private void addAllTargetsToField(List<Pose2d> targets) {
+    targets.forEach(
+      (t) -> {
+        addTargetToField(t);
+      }
+    );
+  }
+
+  private void addTargetToField(Pose2d target) {
+    field2d.getObject(String.format("Target %f, %f", target.getX(), target.getY())).setPose(target);
+  }
+
+  private void removeTargetFromField(Pose2d target) {
+    field2d.getObject(String.format("Target %f, %f", target.getX(), target.getY())).close();
+  }
+
+  private void updateTargets(List<Pose2d> newClosestTargets) {
+    if (closestTargetsSet.isEmpty()) {
+      closestTargetsSet.addAll(newClosestTargets);
+      closestTargetsSet.forEach(
+        (cTarget) -> {
+            addTargetToField(cTarget);
+        }
+      );
+      return;
+    }
+
+    // remove targets that are not in closest closest 3 targets
+    closestTargetsSet.forEach(
+      (cTarget) -> {   
+        if (!newClosestTargets.contains(cTarget)) {
+          closestTargetsSet.remove(cTarget);
+          removeTargetFromField(cTarget);
+        }
+      }
+    );
+
+    // add targets that are not already in
+    closestTargetsSet.addAll(newClosestTargets);
+    addAllTargetsToField(newClosestTargets);
+  }
+
+
   public void addTrajectory(Trajectory traj) {
     field2d.getObject("Trajectory").setTrajectory(traj);
   }
@@ -77,7 +129,7 @@ public class SwervePoseEstimator {
       }
     }
     poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
-
+    updateTargets(getSortedTargetTranslations().subList(0, 2));
     field2d.setRobotPose(getCurrentPose());
     SmartDashboard.putString("Estimated pose", getFormattedPose());
   }
@@ -110,5 +162,31 @@ public class SwervePoseEstimator {
   public void resetFieldPosition() {
     setCurrentPose(new Pose2d());
   }
+
+  private List<Pose2d> getSortedTargetTranslations() {
+    List<Pose2d> targets = new ArrayList<>();
+
+    for (Translation2d p : FieldConstants.Grids.complexLowTranslations)
+      targets.add(FieldConstants.allianceFlip(new Pose2d(p, new Rotation2d())));
+    for (Pose2d p : FieldConstants.LoadingZone.loadingZoneIntakeTranslations)
+      targets.add(FieldConstants.allianceFlip(p));
+
+    Translation2d robotTranslation = getCurrentPose().getTranslation();
+    targets.sort(new Comparator<Pose2d>() {
+      @Override
+      public int compare(Pose2d p1, Pose2d p2) {
+        if (p1.getTranslation().getDistance(robotTranslation) > p2.getTranslation()
+            .getDistance(robotTranslation))
+          return 1;
+        else if (p1.getTranslation().getDistance(robotTranslation) < p2.getTranslation()
+            .getDistance(robotTranslation))
+          return -1;
+        else
+          return 0;
+      }
+    });
+    return targets;
+  }
+
 
 }
