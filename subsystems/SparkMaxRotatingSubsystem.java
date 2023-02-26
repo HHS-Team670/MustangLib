@@ -89,6 +89,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
     public SparkMaxRotatingSubsystem(Config config) {
         this.rotator = SparkMAXFactory.buildFactorySparkMAX(config.getDeviceID(), config.getMotorType());
         this.rotator_encoder = rotator.getEncoder();
+        this.rotator.setIdleMode(config.setRotatorIdleMode());
         this.rotator_controller = rotator.getPIDController();
 
         this.ROTATOR_GEAR_RATIO = config.getRotatorGearRatio();
