@@ -10,6 +10,7 @@ public class LEDColor {
     public static final LEDColor GREEN = new LEDColor(56);
     public static final LEDColor RED = new LEDColor(0);
     public static final LEDColor PURPLE = new LEDColor(241);
+    public static final LEDColor YELLOW = new LEDColor(45);
 
     public final int h;
     public final int s;

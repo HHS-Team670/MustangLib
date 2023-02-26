@@ -278,7 +278,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * Clears the setpoint of this subsystem
      */
     public void clearSetpoint() {
-        rotator_controller.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+        //rotator_controller.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+        setSystemMotionTarget(NO_SETPOINT);
     }
 
     public SparkMAXLite getRotator() {
