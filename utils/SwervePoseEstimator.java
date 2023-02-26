@@ -1,11 +1,13 @@
 package frc.team670.mustanglib.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.photonvision.EstimatedRobotPose;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -65,9 +67,13 @@ public class SwervePoseEstimator {
         swerve.getGyroscopeRotation(), swerve.getModulePositions(), swerve.getOdometerPose(),
         stateStdDevs, visionMeasurementStdDevs);
     SmartDashboard.putData(field2d);
+    
+    List<Pose2d> allTargets = Arrays.asList(FieldConstants.Grids.scoringPoses);
+    allTargets.addAll(Arrays.asList(FieldConstants.LoadingZone.loadingZoneIntakeTranslations));
+    addTargetsToField(allTargets);
   }
 
-  private void addAllTargetsToField(List<Pose2d> targets) {
+  private void addTargetsToField(List<Pose2d> targets) {
     targets.forEach(
       (t) -> {
         addTargetToField(t);
@@ -106,7 +112,7 @@ public class SwervePoseEstimator {
 
     // add targets that are not already in
     closestTargetsSet.addAll(newClosestTargets);
-    addAllTargetsToField(newClosestTargets);
+    addTargetsToField(newClosestTargets);
   }
 
 
@@ -120,16 +126,14 @@ public class SwervePoseEstimator {
 
   public void update() {
     if (vision != null) {
-      EstimatedRobotPose[] visionPoses =
-          vision.getEstimatedGlobalPose(poseEstimator.getEstimatedPosition());
-
-      for (EstimatedRobotPose pose : visionPoses) {
-        if (pose != null)
-          poseEstimator.addVisionMeasurement(pose.estimatedPose.toPose2d(), pose.timestampSeconds);
+      for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
+        if (p != null) {
+          poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(), p.timestampSeconds);
+        }
       }
     }
     poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
-    updateTargets(getSortedTargetTranslations().subList(0, 2));
+    // updateTargets(getSortedTargetTranslations().subList(0, 2));
     field2d.setRobotPose(getCurrentPose());
     SmartDashboard.putString("Estimated pose", getFormattedPose());
   }
@@ -163,7 +167,7 @@ public class SwervePoseEstimator {
     setCurrentPose(new Pose2d());
   }
 
-  private List<Pose2d> getSortedTargetTranslations() {
+  public List<Pose2d> getSortedTargetTranslations() {
     List<Pose2d> targets = new ArrayList<>();
 
     for (Translation2d p : FieldConstants.Grids.complexLowTranslations)
