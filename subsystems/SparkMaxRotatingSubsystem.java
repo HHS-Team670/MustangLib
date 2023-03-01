@@ -180,7 +180,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * target, like if you need to unjam something.
      * 
      * @param setpoint The temporary setpoint for the system, in motor rotations
-     */
+     */ 
     protected void setTemporaryMotionTarget(double setpoint) {
         tempSetpoint = setpoint;
         rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
