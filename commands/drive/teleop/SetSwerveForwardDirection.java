@@ -12,18 +12,15 @@ import frc.team670.robot.subsystems.arm.Arm;
 public class SetSwerveForwardDirection extends InstantCommand implements MustangCommand{
     
     private SwerveDrive swerveDrive;
-    private Arm arm;
 
-    public SetSwerveForwardDirection(SwerveDrive driveBase , Arm arm) {
+    public SetSwerveForwardDirection(SwerveDrive driveBase) {
         this.swerveDrive = driveBase;
-        this.arm = arm;
         
     }
 
     public void initialize() {
         swerveDrive.zeroGyroscope(); 
         swerveDrive.realignModules(); 
-        arm.resetPositionFromAbsolute();
     }
 
     @Override

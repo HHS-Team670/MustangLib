@@ -1,6 +1,7 @@
 package frc.team670.mustanglib.subsystems;
 
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
@@ -164,7 +165,12 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      * @param setpoint
      */
     protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
-        rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, arbitraryFF);
+        if(setpoint != NO_SETPOINT) {
+            rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, arbitraryFF);
+            
+        } else {
+            rotator_controller.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+        }
         this.setpoint = setpoint;
     }
 
@@ -279,6 +285,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase imp
      */
     public void clearSetpoint() {
         rotator_controller.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+        setpoint = NO_SETPOINT;
     }
 
     public SparkMAXLite getRotator() {
