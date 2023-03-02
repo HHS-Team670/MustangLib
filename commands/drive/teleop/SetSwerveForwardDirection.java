@@ -13,7 +13,7 @@ public class SetSwerveForwardDirection extends InstantCommand implements Mustang
     private SwerveDrive swerveDrive;
 
     public SetSwerveForwardDirection(SwerveDrive driveBase) {
-        this.swerveDrive = driveBase;        
+        this.swerveDrive = driveBase;
     }
 
     public void initialize() {
