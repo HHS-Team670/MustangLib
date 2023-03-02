@@ -242,6 +242,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         for (int i = 0; i < zeroedPos.length; i++) {
             zeroedPos[i] = new SwerveModulePosition();
         }
+        setGyroscopeRotation(Rotation2d.fromDegrees(getGyroscopeRotation(false).getDegrees() + pose.getRotation().getDegrees()));
         odometer.resetPosition(pose.getRotation(), getModulePositions(), pose);
     }
 
