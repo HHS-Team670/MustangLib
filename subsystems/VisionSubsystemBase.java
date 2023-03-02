@@ -6,7 +6,9 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -55,11 +57,31 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      */
     public EstimatedRobotPose[] getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
         EstimatedRobotPose[] poses = new EstimatedRobotPose[cameras.length];
-        for (int i = 0; i < poses.length; i++) 
+        for (int i = 0; i < poses.length; i++)
             poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
-        
+
         return poses;
     }
+    // public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+    // double avgX, avgY, avgDeg, avgTime;
+    // avgX = avgY = avgDeg = avgTime = 0;
+    // for (int i = 0; i < cameras.length; i++) {
+    // EstimatedRobotPose p =
+    // cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
+    // if (p == null) return null;
+
+    // avgX += p.estimatedPose.toPose2d().getX();
+    // avgY += p.estimatedPose.toPose2d().getX();
+    // avgDeg += p.estimatedPose.toPose2d().getRotation().getDegrees();
+    // avgTime += p.timestampSeconds;
+    // }
+    // avgX /= cameras.length;
+    // avgY /= cameras.length;
+    // avgDeg /= cameras.length;
+    // avgTime /= cameras.length;
+
+    // return new Pair<>(new Pose2d(avgX, avgY, new Rotation2d(avgDeg)), avgTime);
+    // }
 
     public void switchLEDS(boolean on, boolean override) {
         pd.setSwitchableChannel(on);
@@ -104,12 +126,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 AprilTagFieldLayout fieldLayout) {
             this.photonCamera = photonCamera;
 
-            photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.LOWEST_AMBIGUITY,
-                    photonCamera, robotToCam);
+            // photonPoseEstimator = new PhotonPoseEstimator(fieldLayout,
+            // PoseStrategy.LOWEST_AMBIGUITY, photonCamera, robotToCam);
 
-            // photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP,
-            //         photonCamera, robotToCam);
-            // photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+            // @eric TODO: Comment out above code and uncomment code below to test multi tag pnp
+            photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP,
+                    photonCamera, robotToCam);
+            photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
 
         }
 
@@ -131,74 +154,5 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             return photonCamera;
         }
     }
-
-    // public boolean isValidImage() {
-    // double lastDistanceCapTime = Math.abs(getVisionCaptureTime() - Timer.getFPGATimestamp());
-    // if (lastDistanceCapTime < 2) {
-    // return true;
-    // }
-    // return false;
-    // }
-    // public double getVisionCaptureTime() {
-    // return visionCapTime;
-    // }
-    // public class VisionMeasurement {
-    // public Pose2d pose;
-    // public double capTime;
-
-    // public VisionMeasurement(Pose2d pose, double capTime) {
-    // this.capTime = capTime;
-    // this.pose = pose;
-    // }
-    // }
-    // public double getDistanceToTargetCm() {
-    // return getDistanceToTargetM() * 100;
-    // }
-
-    // public double getDistanceToTargetInches() {
-    // return getDistanceToTargetM() * 100 / 2.54;
-    // }
-
-    // public double getAngleToTarget() {
-    // return hasTarget ? angle : RobotConstantsBase.VISION_ERROR_CODE;
-    // }
-
-    // public VisionMeasurement getPoseVisionMeasurements(double heading, Pose2d targetPose, Pose2d
-    // cameraOffset) {
-    // // specific to fixed target point from a single side
-    // if (hasTarget()){
-    // Translation2d camToTargetTranslation =
-    // PhotonUtils.estimateCameraToTargetTranslation(distance, Rotation2d.fromDegrees(angle));
-    // Transform2d camToTargetTrans = PhotonUtils.estimateCameraToTarget(camToTargetTranslation,
-    // targetPose, Rotation2d.fromDegrees(heading));
-    // Pose2d targetOffset = cameraOffset.transformBy(camToTargetTrans.inverse());
-    // return new VisionMeasurement(targetOffset, visionCapTime);
-    // }
-    // return null;
-    // }
-
-    // public void setStartPoseDeg(double x, double y, double angle) {
-    // startPose = new Pose2d(x, y, Rotation2d.fromDegrees(angle));
-    // }
-
-    // public void setStartPoseRad(double x, double y, double angle) {
-    // startPose = new Pose2d(x, y, new Rotation2d(angle));
-    // }
-
-    // public PhotonCamera getCamera(){
-    // return camera;
-    // }
-
-    // public Pair<PhotonCamera, Transform3d>[] getCamerasAndOffsets(){
-    // return camerasAndOffsets;
-    // }
-
-    // public PhotonCamera[] getCameras() {
-    // PhotonCamera[] cameras = new PhotonCamera[camerasAndOffsets.length];
-    // for (int i = 0; i < cameras.length; i++) {
-    // cameras[i] = camerasAndOffsets[i].getFirst();
-    // }
-    // return cameras;
-    // }
 
 }

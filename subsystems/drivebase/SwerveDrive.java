@@ -3,6 +3,8 @@ package frc.team670.mustanglib.subsystems.drivebase;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
+import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
+import frc.team670.robot.pathfinder.PoseEdge;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -16,25 +18,28 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.RobotBase;
+import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.constants.SwerveConfig;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
-    
+
     private SwerveDriveOdometry odometer;
     private SwervePoseEstimator poseEstimator;
     private final NavX m_navx;
     private VisionSubsystemBase vision;
 
+    MustangPPSwerveControllerCommand swerveControllerCommand;
+
     private final SwerveModule[] m_modules;
     private final SwerveDriveKinematics m_kinematics;
     private ChassisSpeeds m_chassisSpeeds;
     private Rotation2d gyroOffset = new Rotation2d();
-    
+
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
-    
+
     private final double MAX_VELOCITY, MAX_VOLTAGE;
 
     public SwerveDrive(SwerveConfig config) {
@@ -93,14 +98,19 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
                 getModulePositions());
+        poseEstimator = new SwervePoseEstimator(this);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         // Logger.consoleLog(chassisSpeeds.vxMetersPerSecond + ", " +
-        // chassisSpeeds.vyMetersPerSecond + ", " + chassisSpeeds.omegaRadiansPerSecond);
-        // SmartDashboard.putNumber("chassis x velocity", chassisSpeeds.vxMetersPerSecond);
-        // SmartDashboard.putNumber("chassis y velocity", chassisSpeeds.vyMetersPerSecond);
-        // SmartDashboard.putNumber("chassis omega velocity", chassisSpeeds.omegaRadiansPerSecond);
+        // chassisSpeeds.vyMetersPerSecond + ", " +
+        // chassisSpeeds.omegaRadiansPerSecond);
+        // SmartDashboard.putNumber("chassis x velocity",
+        // chassisSpeeds.vxMetersPerSecond);
+        // SmartDashboard.putNumber("chassis y velocity",
+        // chassisSpeeds.vyMetersPerSecond);
+        // SmartDashboard.putNumber("chassis omega velocity",
+        // chassisSpeeds.omegaRadiansPerSecond);
         m_chassisSpeeds = chassisSpeeds;
     }
 
@@ -109,7 +119,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
+     * Sets the gyroscope angle to zero. This can be used to set the direction the
+     * robot is
      * currently facing to the 'forwards' direction.
      */
     public void zeroGyroscope() {
@@ -133,7 +144,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public Rotation2d getGyroscopeRotation(boolean offset) {
-        // Logger.consoleLog("Magnetomter calibrated:" + m_navx.isMagnetometerCalibrated());
+        // Logger.consoleLog("Magnetomter calibrated:" +
+        // m_navx.isMagnetometerCalibrated());
         // SmartDashboard.putString("gyro magnetometer calibrated", "" +
         // m_navx.isMagnetometerCalibrated());
         // TODO: remove
@@ -142,14 +154,14 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
-                Rotation2d angle =
-                        Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
+                Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
                 return angle;
             }
             return Rotation2d.fromDegrees(-m_navx.getFusedHeading());
         }
 
-        // We have to invert the angle of the NavX so that rotating the robot counter-clockwise
+        // We have to invert the angle of the NavX so that rotating the robot
+        // counter-clockwise
         // makes the angle increase.
         if (offset) {
             return Rotation2d.fromDegrees(-m_navx.getYawFieldCentric()).minus(gyroOffset);
@@ -164,26 +176,22 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             zeroGyroscope();
         }
 
-        if (poseEstimator == null) {
-            if (vision != null && gyroOffset != null) initPoseEstimator(vision);
-        } else {
+        if (vision != null) {
+            poseEstimator.initialize(vision);
             poseEstimator.update();
         }
 
-        if (RobotBase.getInstance().isTeleopEnabled()) {
+        // if (RobotBase.getInstance().isTeleopEnabled()) {
+        if (RobotBase.getInstance().isTeleopEnabled() && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) {  // @tarini TODO: TEST if still jittering with this
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
         odometer.update(getGyroscopeRotation(), getModulePositions());
-        // SmartDashboard.putNumber("Odometry x: ", odometer.getPoseMeters().getX());
-        // SmartDashboard.putNumber("Odometry y: ", odometer.getPoseMeters().getY());
-        // SmartDashboard.putNumber("Odometry rotation: ",
-                odometer.getPoseMeters().getRotation().getDegrees();
-    }     
-    
-    public void initPoseEstimator(VisionSubsystemBase vision) {
+        odometer.getPoseMeters().getRotation().getDegrees();
+    }
+
+    public void initVision(VisionSubsystemBase vision) {
         this.vision = vision;
-        poseEstimator = new SwervePoseEstimator(vision, this);
     }
 
     public SwervePoseEstimator getPoseEstimator() {
@@ -219,6 +227,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         frontRightPrevAngle = frontRightAngle;
         backLeftPrevAngle = backLeftAngle;
         backRightPrevAngle = backRightAngle;
+
+        for (SwerveModule m : m_modules) {
+            SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle: %f", m.getDriveVelocity(), m.getSteerAngle()));
+        }
     }
 
     public void realignModules() {
@@ -264,5 +276,13 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             states[i] = m_modules[i].getState();
         }
         return states;
+    }
+
+    public void setSwerveControllerCommand(MustangPPSwerveControllerCommand command) {
+        this.swerveControllerCommand = command;
+    }
+
+    public MustangPPSwerveControllerCommand getSwerveControllerCommand() {
+        return this.swerveControllerCommand;
     }
 }
