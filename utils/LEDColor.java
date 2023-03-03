@@ -9,30 +9,37 @@ public class LEDColor {
     public static final LEDColor BLUE = new LEDColor(120);
     public static final LEDColor GREEN = new LEDColor(56);
     public static final LEDColor RED = new LEDColor(0);
-    public static final LEDColor PURPLE = new LEDColor(241);
-    public static final LEDColor YELLOW = new LEDColor(45);
+    public static final LEDColor LIGHT_BLUE = new LEDColor(241);
 
-    public final int h;
-    public final int s;
-    public final int v;
+    public static final LEDColor SEXY_PURPLE = new LEDColor(100, 15, 130); // 39, 26, 92
+   // public static final LEDColor SEXi_PURPLE = new LEDColor(82, 17, 112);
 
-    public LEDColor(int h) {
-        this.h = h;
-        this.s = 255;
-        this.v = 255;
+    //public static final LEDColor YELLOW = new LEDColor(255, 225, 0); //280, 210, 1 sexy green - kedar
+    
+    //public static final LEDColor CONE = new LEDColor(250, 80, 0);
+    public static final LEDColor SEXY_YELLOW = new LEDColor(250, 60, 0);
+
+    public final int x;
+    public final int y;
+    public final int z;
+
+    public LEDColor(int x) {
+        this.x = x;
+        this.y = 255;
+        this.z = 255;
     }
 
-    public LEDColor(int h, int s, int v) {
-        this.h = h;
-        this.s = s;
-        this.v = v;
+    public LEDColor(int x, int y, int z) {
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     public LEDColor dimmer() {
-        return new LEDColor(h, s, v / 3);
+        return new LEDColor(x, y, z / 3);
     }
 
     public LEDColor brighter() {
-        return new LEDColor(h, s, v * 3);
+        return new LEDColor(x, y, z * 3);
     }
 }
