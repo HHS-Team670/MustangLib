@@ -26,7 +26,7 @@ import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
 
-    private SwerveDriveOdometry odometer;
+    // private SwerveDriveOdometry odometer;
     private SwervePoseEstimator poseEstimator;
     private final NavX m_navx;
     private VisionSubsystemBase vision;
@@ -96,8 +96,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         m_navx = new NavX(config.NAVX_PORT);
         m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-        odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
-                getModulePositions());
+        // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
+        //         getModulePositions());
         poseEstimator = new SwervePoseEstimator(this);
     }
 
@@ -119,8 +119,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the
-     * robot is
+     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
      * currently facing to the 'forwards' direction.
      */
     public void zeroGyroscope() {
@@ -154,7 +153,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
-                Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
+                Rotation2d angle =
+                        Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
                 return angle;
             }
             return Rotation2d.fromDegrees(-m_navx.getFusedHeading());
@@ -182,12 +182,20 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
 
         // if (RobotBase.getInstance().isTeleopEnabled()) {
-        if (RobotBase.getInstance().isTeleopEnabled() && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) {  // @tarini TODO: TEST if still jittering with this
+        if (RobotBase.getInstance().isTeleopEnabled()
+                && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) { // @tarini
+                                                                                                  // TODO:
+                                                                                                  // TEST
+                                                                                                  // if
+                                                                                                  // still
+                                                                                                  // jittering
+                                                                                                  // with
+                                                                                                  // this
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
-        odometer.update(getGyroscopeRotation(), getModulePositions());
-        odometer.getPoseMeters().getRotation().getDegrees();
+        // odometer.update(getGyroscopeRotation(), getModulePositions());
+        // odometer.getPoseMeters().getRotation().getDegrees();
     }
 
     public void initVision(VisionSubsystemBase vision) {
@@ -229,7 +237,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         backRightPrevAngle = backRightAngle;
 
         for (SwerveModule m : m_modules) {
-            SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle: %f", m.getDriveVelocity(), m.getSteerAngle()));
+            SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle: %f",
+                    m.getDriveVelocity(), m.getSteerAngle()));
         }
     }
 
@@ -240,8 +249,9 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[1].realign();
     }
 
-    public Pose2d getOdometerPose() {
-        return odometer.getPoseMeters();
+    public Pose2d getPose() {
+        // return odometer.getPoseMeters();
+        return poseEstimator.getCurrentPose();
     }
 
     public double getPitch() {
@@ -254,8 +264,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         for (int i = 0; i < zeroedPos.length; i++) {
             zeroedPos[i] = new SwerveModulePosition();
         }
-        setGyroscopeRotation(Rotation2d.fromDegrees(getGyroscopeRotation(false).getDegrees() + pose.getRotation().getDegrees()));
-        odometer.resetPosition(pose.getRotation(), getModulePositions(), pose);
+        setGyroscopeRotation(Rotation2d.fromDegrees(
+                getGyroscopeRotation(false).getDegrees() + pose.getRotation().getDegrees()));
+        // odometer.resetPosition(pose.getRotation(), getModulePositions(), pose);
+        poseEstimator.setCurrentPose(pose);
     }
 
     public SwerveModule[] getModules() {

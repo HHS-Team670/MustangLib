@@ -31,22 +31,20 @@ public class SwervePoseEstimator {
   // private Set<Pose2d> closestTargetsSet = new HashSet<>(3);
 
   /**
-   * Standard deviations of model states. Increase these numbers to trust your
-   * model's state
-   * estimates less. This matrix is in the form [x, y, theta]ᵀ, with units in
-   * meters and radians,
+   * Standard deviations of model states. Increase these numbers to trust your model's state
+   * estimates less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians,
    * then meters.
    */
-  private static final Vector<N3> stateStdDevs = VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+  private static final Vector<N3> stateStdDevs =
+      VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
 
   /**
-   * Standard deviations of the vision measurements. Increase these numbers to
-   * trust global
-   * measurements from vision less. This matrix is in the form [x, y, theta]ᵀ,
-   * with units in meters
+   * Standard deviations of the vision measurements. Increase these numbers to trust global
+   * measurements from vision less. This matrix is in the form [x, y, theta]ᵀ, with units in meters
    * and radians.
    */
-  private static final Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+  private static final Vector<N3> visionMeasurementStdDevs =
+      VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
   private SwerveDrivePoseEstimator poseEstimator;
 
@@ -57,9 +55,9 @@ public class SwervePoseEstimator {
   public SwervePoseEstimator(SwerveDrive swerve) {
     this.driveBase = swerve;
     this.vision = null;
-    poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),
-        swerve.getGyroscopeRotation(), swerve.getModulePositions(), swerve.getOdometerPose(),
-        stateStdDevs, visionMeasurementStdDevs);
+    poseEstimator =
+        new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(), swerve.getGyroscopeRotation(),
+            swerve.getModulePositions(), swerve.getPose(), stateStdDevs, visionMeasurementStdDevs);
     SmartDashboard.putData(field2d);
   }
 
@@ -67,8 +65,9 @@ public class SwervePoseEstimator {
     SmartDashboard.putString("ALLIANCE ON INIT", DriverStation.getAlliance() + "");
     this.vision = vision;
     // poseEstimator = new SwerveDrivePoseEstimator(driveBase.getSwerveKinematics(),
-    //     driveBase.getGyroscopeRotation(), driveBase.getModulePositions(), driveBase.getOdometerPose(),
-    //     stateStdDevs, visionMeasurementStdDevs);
+    // driveBase.getGyroscopeRotation(), driveBase.getModulePositions(),
+    // driveBase.getOdometerPose(),
+    // stateStdDevs, visionMeasurementStdDevs);
     SmartDashboard.putData(field2d);
     List<Pose2d> allTargets = new ArrayList<>();
     for (Pose2d p : FieldConstants.Grids.scoringPoses) {
@@ -83,10 +82,9 @@ public class SwervePoseEstimator {
   }
 
   private void addTargetsToField(List<Pose2d> targets) {
-    targets.forEach(
-        (t) -> {
-          addTargetToField(t);
-        });
+    targets.forEach((t) -> {
+      addTargetToField(t);
+    });
   }
 
   private void addTargetToField(Pose2d target) {
@@ -132,7 +130,7 @@ public class SwervePoseEstimator {
 
   public void update() {
     if (vision != null) {
-      SmartDashboard.putBoolean("VISION IS: ", vision!=null);
+      SmartDashboard.putBoolean("VISION IS: ", vision != null);
       for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
         if (p != null) {
           SmartDashboard.putString("there's vision pose bruh", "bruh");
@@ -157,8 +155,7 @@ public class SwervePoseEstimator {
   }
 
   /**
-   * Resets the current pose to the specified pose. This should ONLY be called
-   * when the robot's
+   * Resets the current pose to the specified pose. This should ONLY be called when the robot's
    * position on the field is known, like at the beginning of a match.
    * 
    * @param newPose new pose
@@ -169,8 +166,7 @@ public class SwervePoseEstimator {
   }
 
   /**
-   * Resets the position on the field to 0,0 0-degrees, with forward being
-   * downfield. This resets
+   * Resets the position on the field to 0,0 0-degrees, with forward being downfield. This resets
    * what "forward" is for field oriented driving.
    */
   public void resetFieldPosition() {
