@@ -57,7 +57,7 @@ public class SwervePoseEstimator {
     this.vision = null;
     poseEstimator =
         new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(), swerve.getGyroscopeRotation(),
-            swerve.getModulePositions(), swerve.getPose(), stateStdDevs, visionMeasurementStdDevs);
+            swerve.getModulePositions(), new Pose2d(), stateStdDevs, visionMeasurementStdDevs);
     SmartDashboard.putData(field2d);
   }
 
