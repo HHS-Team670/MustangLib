@@ -7,7 +7,7 @@ import frc.team670.mustanglib.utils.LEDColor;
 /**
  * Represents an addresable LED strip
  * 
- * @author AkshatAdsule, LakshBhambhani, VeganBurg
+ * @author AkshatAdsule, edwar-d, LakshBhambhani
  */
 public abstract class LEDSubsystem extends MustangSubsystemBase {
     /**
@@ -56,7 +56,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             blinkCounter++;
             if(blinkCounter >= blinkEndCount) {
                 for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                    m_ledBuffer.setHSV(i, blinkColor.h, blinkColor.s, blinkColor.v);
+                    m_ledBuffer.setHSV(i, blinkColor.x, blinkColor.y, blinkColor.z);
                 }
             }
             if(blinkCounter >= blinkEndCount * 2) {
@@ -107,11 +107,24 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     /**
      * Changes the LED strip so that all the LEDs are one color
+     * Colors is in RGB FORMAT
      * @param Color The color
-     */
-    public void solid(LEDColor color){
+    **/
+
+    public void solidrgb(LEDColor color){
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setHSV(i, color.h, color.s, color.v);
+            m_ledBuffer.setRGB(i,color.x, color.y, color.z );
+        }
+    }
+    /**
+     * Changes the LED strip so that all the LEDs are one color
+     * Colors is in HSV FORMAT
+     * @param Color The color
+    **/
+
+    public void solidhsv(LEDColor color){
+        for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
+            m_ledBuffer.setHSV(i, color.x, color.y, color.z );
         }
     }
 
@@ -128,7 +141,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             blinkColor = color;
             blinkEndCount = duration;
             for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setHSV(i, color.h, color.s, color.v * 2);
+                m_ledBuffer.setHSV(i, color.x, color.y, color.z * 2);
             }
         }
     }
@@ -152,11 +165,11 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         int ratioBright = (int)(length * ratio);
 
         for (int i = 0; i < ratioBright; i++) { // active
-            m_ledBuffer.setHSV(i, active.h, active.s, active.v);
+            m_ledBuffer.setHSV(i, active.x, active.y, active.z);
         }
 
         for (int i = ratioBright; i < length; i++) { // inactive
-            m_ledBuffer.setHSV(i, inactive.h, inactive.s,  inactive.v);
+            m_ledBuffer.setHSV(i, inactive.x, inactive.y,  inactive.z);
         }
     }
 
