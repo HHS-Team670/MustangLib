@@ -1,16 +1,10 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
-import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
-import frc.team670.mustanglib.swervelib.SwerveModule;
-import frc.team670.mustanglib.utils.SwervePoseEstimator;
-import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
-import frc.team670.robot.pathfinder.PoseEdge;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -18,11 +12,14 @@ import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.RobotBase;
-import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.constants.SwerveConfig;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
+import frc.team670.mustanglib.swervelib.SwerveModule;
+import frc.team670.mustanglib.utils.SwervePoseEstimator;
+import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
 
@@ -37,6 +34,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private final SwerveDriveKinematics m_kinematics;
     private ChassisSpeeds m_chassisSpeeds;
     private Rotation2d gyroOffset = new Rotation2d();
+    private Rotation2d desiredHeading = null;   // for rotation snapping
 
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
 
@@ -140,6 +138,14 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public Rotation2d getGyroscopeRotation() {
         return getGyroscopeRotation(true);
+    }
+
+    public void setDesiredHeading(Rotation2d rot) {
+        this.desiredHeading = rot;
+    }
+
+    public Rotation2d getDesiredHeading() {
+        return this.desiredHeading;
     }
 
     public Rotation2d getGyroscopeRotation(boolean offset) {

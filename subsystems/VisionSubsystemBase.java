@@ -126,10 +126,6 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 AprilTagFieldLayout fieldLayout) {
             this.photonCamera = photonCamera;
 
-            // photonPoseEstimator = new PhotonPoseEstimator(fieldLayout,
-            // PoseStrategy.LOWEST_AMBIGUITY, photonCamera, robotToCam);
-
-            // @eric TODO: Comment out above code and uncomment code below to test multi tag pnp
             photonPoseEstimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP,
                     photonCamera, robotToCam);
             photonPoseEstimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
