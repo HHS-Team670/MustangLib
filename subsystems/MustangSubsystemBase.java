@@ -34,7 +34,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
     private static NetworkTable table = instance.getTable("/SmartDashboard");
 
-    private boolean debugSubsystemFields = false;
+    private boolean debugSubsystemFields = true;
 
     private FileWriter logFileWriter;
     private String headerLabels = "DEFAULT_LABELS";

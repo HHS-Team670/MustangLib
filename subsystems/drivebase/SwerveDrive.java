@@ -182,7 +182,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
 
         // if (RobotBase.getInstance().isTeleopEnabled()) {
-        if (RobotBase.getInstance().isTeleopEnabled() && !swerveControllerCommand.isScheduled()) {  // @tarini TODO: TEST if still jittering with this
+        if (swerveControllerCommand == null ||  (RobotBase.getInstance().isTeleopEnabled() && !swerveControllerCommand.isScheduled())) {  // @tarini TODO: TEST if still jittering with this
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }

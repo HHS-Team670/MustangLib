@@ -2,6 +2,7 @@ package frc.team670.mustanglib.commands.drive.teleop;
 
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -17,7 +18,6 @@ public class SetSwerveForwardDirection extends InstantCommand implements Mustang
     public SetSwerveForwardDirection(SwerveDrive driveBase , Arm arm) {
         this.swerveDrive = driveBase;
         this.arm = arm;
-        
     }
 
     public void initialize() {
