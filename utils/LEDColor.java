@@ -19,6 +19,8 @@ public class LEDColor {
     //public static final LEDColor CONE = new LEDColor(250, 80, 0);
     public static final LEDColor SEXY_YELLOW = new LEDColor(250, 60, 0);
 
+    public static final LEDColor WHITE = new LEDColor(255,255,255);
+
     public final int x;
     public final int y;
     public final int z;
