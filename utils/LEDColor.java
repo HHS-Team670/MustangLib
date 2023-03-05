@@ -7,11 +7,11 @@ package frc.team670.mustanglib.utils;
  */
 public class LEDColor {
     public static final LEDColor BLUE = new LEDColor(120);
-    public static final LEDColor GREEN = new LEDColor(56);
+    public static final LEDColor GREEN = new LEDColor(25, 185, 22);
     public static final LEDColor RED = new LEDColor(0);
     public static final LEDColor LIGHT_BLUE = new LEDColor(241);
 
-    public static final LEDColor SEXY_PURPLE = new LEDColor(100, 15, 130); // 39, 26, 92
+    public static final LEDColor SEXY_PURPLE = new LEDColor(37, 4, 61); // 39, 26, 92
    // public static final LEDColor SEXi_PURPLE = new LEDColor(82, 17, 112);
 
     //public static final LEDColor YELLOW = new LEDColor(255, 225, 0); //280, 210, 1 sexy green - kedar
