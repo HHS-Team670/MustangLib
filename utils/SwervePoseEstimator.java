@@ -1,13 +1,9 @@
 package frc.team670.mustanglib.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import org.photonvision.EstimatedRobotPose;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -17,7 +13,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
@@ -50,8 +45,6 @@ public class SwervePoseEstimator {
 
   private final Field2d field2d = new Field2d();
 
-  // private double previousPipelineTimestamp = 0;
-
   public SwervePoseEstimator(SwerveDrive swerve) {
     this.driveBase = swerve;
     this.vision = null;
@@ -62,12 +55,8 @@ public class SwervePoseEstimator {
   }
 
   public void initialize(VisionSubsystemBase vision) {
-    SmartDashboard.putString("ALLIANCE ON INIT", DriverStation.getAlliance() + "");
     this.vision = vision;
-    // poseEstimator = new SwerveDrivePoseEstimator(driveBase.getSwerveKinematics(),
-    // driveBase.getGyroscopeRotation(), driveBase.getModulePositions(),
-    // driveBase.getOdometerPose(),
-    // stateStdDevs, visionMeasurementStdDevs);
+
     SmartDashboard.putData(field2d);
     List<Pose2d> allTargets = new ArrayList<>();
     for (Pose2d p : FieldConstants.Grids.scoringPoses) {
@@ -78,46 +67,17 @@ public class SwervePoseEstimator {
       p = FieldConstants.allianceFlip(p);
       allTargets.add(p);
     }
-    addTargetsToField(allTargets);
+    // addTargetsToField(allTargets);
   }
 
-  private void addTargetsToField(List<Pose2d> targets) {
-    targets.forEach((t) -> {
-      addTargetToField(t);
-    });
-  }
-
-  private void addTargetToField(Pose2d target) {
-    field2d.getObject(String.format("Target %f, %f", target.getX(), target.getY())).setPose(target);
-  }
-
-  // private void removeTargetFromField(Pose2d target) {
-  // field2d.getObject(String.format("Target %f, %f", target.getX(),
-  // target.getY())).close();
+  // private void addTargetsToField(List<Pose2d> targets) {
+  //   targets.forEach((t) -> {
+  //     addTargetToField(t);
+  //   });
   // }
 
-  // private void updateTargets(List<Pose2d> newClosestTargets) {
-  // if (closestTargetsSet.isEmpty()) {
-  // closestTargetsSet.addAll(newClosestTargets);
-  // closestTargetsSet.forEach(
-  // (cTarget) -> {
-  // addTargetToField(cTarget);
-  // });
-  // return;
-  // }
-
-  // // remove targets that are not in closest closest 3 targets
-  // closestTargetsSet.forEach(
-  // (cTarget) -> {
-  // if (!newClosestTargets.contains(cTarget)) {
-  // closestTargetsSet.remove(cTarget);
-  // removeTargetFromField(cTarget);
-  // }
-  // });
-
-  // // add targets that are not already in
-  // closestTargetsSet.addAll(newClosestTargets);
-  // addTargetsToField(newClosestTargets);
+  // private void addTargetToField(Pose2d target) {
+  //   field2d.getObject(String.format("Target %f, %f", target.getX(), target.getY())).setPose(target);
   // }
 
   public void addTrajectory(Trajectory traj) {
@@ -171,6 +131,10 @@ public class SwervePoseEstimator {
    */
   public void resetFieldPosition() {
     setCurrentPose(new Pose2d());
+  }
+
+  public VisionSubsystemBase getVision() {
+    return vision;
   }
 
   public List<Pose2d> getSortedTargetTranslations() {

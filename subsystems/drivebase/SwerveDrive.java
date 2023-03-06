@@ -183,8 +183,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
 
         if (vision != null) {
-            poseEstimator.initialize(vision);
-            poseEstimator.update();
+            if (poseEstimator.getVision() == null) poseEstimator.initialize(vision);
+            else poseEstimator.update();
         }
 
         // if (RobotBase.getInstance().isTeleopEnabled()) {
