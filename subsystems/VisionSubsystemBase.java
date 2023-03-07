@@ -6,12 +6,14 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.math.Pair;
+import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team670.mustanglib.utils.Logger;
 
 
 /**
@@ -20,25 +22,48 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  */
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
-    protected PhotonCameraWrapper[] cameras;
     private PowerDistribution pd;
+    protected PhotonCameraWrapper[] cameras;
+
+    private PhotonCamera[] cams;
+    private Transform3d[] cameraOffsets;
+    private AprilTagFieldLayout visionFieldLayout;
     // protected double visionCapTime;
     // private boolean hasTarget;
-
-    private boolean ledsTurnedOn;
     // private AprilTagFieldLayout visionFieldLayout;
+    private boolean ledsTurnedOn;
     private boolean overriden;
+    private boolean init = false;
+
 
 
     public VisionSubsystemBase(PowerDistribution pd, AprilTagFieldLayout visionFieldLayout,
-            PhotonCamera[] cameras, Transform3d[] cameraOffsets) {
+            PhotonCamera[] cams, Transform3d[] cameraOffsets) {
         this.pd = pd;
-        // this.visionFieldLayout = visionFieldLayout;
-        PhotonCameraWrapper[] cams = new PhotonCameraWrapper[cameras.length];
-        for (int i = 0; i < cameras.length; i++) {
-            cams[i] = new PhotonCameraWrapper(cameras[i], cameraOffsets[i], visionFieldLayout);
+        this.cams = cams;
+        this.visionFieldLayout = visionFieldLayout;
+        this.cameraOffsets = cameraOffsets;
+    }
+
+    /**
+     *  DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN. CALL IN PERIODiC OR AUTONINIT.
+     *  More details here: https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
+     */
+    public void initalize() {
+        if (DriverStation.getAlliance() == Alliance.Invalid) {
+            init = false;
+            return;
         }
-        this.cameras = cams;
+
+        var origin = DriverStation.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide;
+        visionFieldLayout.setOrigin(origin);
+        
+        PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
+        for (int i = 0; i < cameras.length; i++) {
+            c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
+        }
+        this.cameras = c;
+        init = true;
     }
 
     public boolean hasTarget() {
@@ -56,6 +81,11 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      *         create the estimate
      */
     public EstimatedRobotPose[] getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
+        if (!init) {
+            Logger.consoleLog("Vision not initalized!", this);
+            return null;
+        }
+
         EstimatedRobotPose[] poses = new EstimatedRobotPose[cameras.length];
         for (int i = 0; i < poses.length; i++)
             poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
@@ -111,11 +141,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     public PhotonCamera[] getCameras() {
-        PhotonCamera[] cameras = new PhotonCamera[this.cameras.length];
-        for (int i = 0; i < cameras.length; i++) {
-            cameras[i] = this.cameras[i].getCamera();
-        }
-        return cameras;
+        return this.cams;
     }
 
     private class PhotonCameraWrapper {
