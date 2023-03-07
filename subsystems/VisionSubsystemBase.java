@@ -50,6 +50,8 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      *  More details here: https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
      */
     public void initalize() {
+        SmartDashboard.putString("VISION INIT: DRIVER STATION ALLIANCE:", "" + DriverStation.getAlliance());
+        // does nothing if DS not initialized yet
         if (DriverStation.getAlliance() == Alliance.Invalid) {
             init = false;
             return;
@@ -73,6 +75,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 return false;
         }
         return true;
+    }
+
+    public boolean isInitialized() {
+        return init;
     }
 
     /**
