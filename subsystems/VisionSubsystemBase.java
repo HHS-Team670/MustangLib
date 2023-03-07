@@ -26,15 +26,15 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     // private boolean hasTarget;
 
     private boolean ledsTurnedOn;
-
+    // private AprilTagFieldLayout visionFieldLayout;
     private boolean overriden;
 
 
     public VisionSubsystemBase(PowerDistribution pd, AprilTagFieldLayout visionFieldLayout,
             PhotonCamera[] cameras, Transform3d[] cameraOffsets) {
         this.pd = pd;
+        // this.visionFieldLayout = visionFieldLayout;
         PhotonCameraWrapper[] cams = new PhotonCameraWrapper[cameras.length];
-
         for (int i = 0; i < cameras.length; i++) {
             cams[i] = new PhotonCameraWrapper(cameras[i], cameraOffsets[i], visionFieldLayout);
         }
