@@ -242,10 +242,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         backLeftPrevAngle = backLeftAngle;
         backRightPrevAngle = backRightAngle;
 
-        for (SwerveModule m : m_modules) {
-            SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle: %f",
-                    m.getDriveVelocity(), m.getSteerAngle()));
-        }
+        // for (SwerveModule m : m_modules) {
+        //     SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle: %f",
+        //             m.getDriveVelocity(), m.getSteerAngle()));
+        // }
     }
 
     public void realignModules() {
@@ -265,7 +265,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public void resetOdometry(Pose2d pose) {
-        SmartDashboard.putString("reset", "reset");
         SwerveModulePosition[] zeroedPos = new SwerveModulePosition[4];
         for (int i = 0; i < zeroedPos.length; i++) {
             zeroedPos[i] = new SwerveModulePosition();
