@@ -181,7 +181,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 vision.initalize();     // at this point, DS is initalized. Okay calling vision init here.
                 poseEstimator.initialize(vision);
             } else {
-                if (!vision.isInitialized()) vision.initalize();
+                // if (!vision.isInitialized()) vision.initalize();
                 poseEstimator.update();
             }
         }
