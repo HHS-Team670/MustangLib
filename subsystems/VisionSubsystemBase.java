@@ -61,7 +61,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         visionFieldLayout.setOrigin(origin);
         
         PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
-        for (int i = 0; i < cameras.length; i++) {
+        for (int i = 0; i < cams.length; i++) {
             c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
         }
         this.cameras = c;
