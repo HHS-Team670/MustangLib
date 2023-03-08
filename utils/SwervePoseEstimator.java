@@ -129,7 +129,7 @@ public class SwervePoseEstimator {
 
     private Pose2d getAbsoluteFieldOrientedPose(Pose2d pose) {
         if (DriverStation.getAlliance() == Alliance.Red) {
-            return new Pose2d(pose.getX(), FieldConstants.fieldWidth - pose.getY(), pose.getRotation().times(-1));
+            return FieldConstants.allianceOrientedAllianceFlip(pose);
         } else {
             return getCurrentPose();
         }
