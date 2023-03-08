@@ -34,7 +34,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private final SwerveDriveKinematics m_kinematics;
     private ChassisSpeeds m_chassisSpeeds;
     private Rotation2d gyroOffset = new Rotation2d();
-    private Rotation2d desiredHeading = null;   // for rotation snapping
+    private Rotation2d desiredHeading = null; // for rotation snapping
 
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
 
@@ -95,7 +95,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_navx = new NavX(config.NAVX_PORT);
         m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
-        //         getModulePositions());
+        // getModulePositions());
         poseEstimator = new SwervePoseEstimator(this);
     }
 
@@ -149,12 +149,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public Rotation2d getGyroscopeRotation(boolean offset) {
-        // Logger.consoleLog("Magnetomter calibrated:" +
-        // m_navx.isMagnetometerCalibrated());
-        // SmartDashboard.putString("gyro magnetometer calibrated", "" +
-        // m_navx.isMagnetometerCalibrated());
-        // TODO: remove
-
         if (m_navx.isMagnetometerCalibrated()) {
 
             // We will only get valid fused headings if the magnetometer is calibrated
@@ -183,25 +177,20 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
 
         if (vision != null) {
-            if (poseEstimator.getVision() == null) poseEstimator.initialize(vision);
-            else poseEstimator.update();
+            if (poseEstimator.getVision() == null) {
+                vision.initalize();     // at this point, DS is initalized. Okay calling vision init here.
+                poseEstimator.initialize(vision);
+            } else {
+                // if (!vision.isInitialized()) vision.initalize();
+                poseEstimator.update();
+            }
         }
 
-        // if (RobotBase.getInstance().isTeleopEnabled()) {
         if (RobotBase.getInstance().isTeleopEnabled()
-                && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) { // @tarini
-                                                                                                  // TODO:
-                                                                                                  // TEST
-                                                                                                  // if
-                                                                                                  // still
-                                                                                                  // jittering
-                                                                                                  // with
-                                                                                                  // this
+                && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) {
             SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
             setModuleStates(states);
         }
-        // odometer.update(getGyroscopeRotation(), getModulePositions());
-        // odometer.getPoseMeters().getRotation().getDegrees();
     }
 
     public void initVision(VisionSubsystemBase vision) {
