@@ -131,7 +131,7 @@ public class SwervePoseEstimator {
         if (DriverStation.getAlliance() == Alliance.Red) {
             return FieldConstants.allianceOrientedAllianceFlip(pose);
         } else {
-            return getCurrentPose();
+            return pose;
         }
     }
     
@@ -141,7 +141,7 @@ public class SwervePoseEstimator {
         states.forEach(
             s -> {
                 if (DriverStation.getAlliance() == Alliance.Red) {
-                    adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond, s.accelerationMetersPerSecondSq, new Pose2d(s.poseMeters.getX(), s.poseMeters.getY(), s.poseMeters.getRotation()), -s.curvatureRadPerMeter));
+                    adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond, s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPose(s.poseMeters), -s.curvatureRadPerMeter));
                 }
             }
         );
