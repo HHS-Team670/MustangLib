@@ -34,7 +34,8 @@ public class SwervePoseEstimator {
      * then meters.
      */
     private static final Vector<N3> stateStdDevs =
-            VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+            VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.1)); // default
+            // VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
 
     /**
      * Standard deviations of the vision measurements. Increase these numbers to trust global
@@ -42,7 +43,8 @@ public class SwervePoseEstimator {
      * meters and radians.
      */
     private static final Vector<N3> visionMeasurementStdDevs =
-            VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+            VecBuilder.fill(0.9, 0.9, Units.degreesToRadians(0.9));  // default
+            // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
     private SwerveDrivePoseEstimator poseEstimator;
 
