@@ -99,7 +99,6 @@ public class SwervePoseEstimator {
             SmartDashboard.putBoolean("VISION IS: ", vision != null);
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
                 if (p != null) {
-                    SmartDashboard.putString("there's vision pose bruh", "bruh");
                     poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
                             p.timestampSeconds);
                 }
@@ -131,7 +130,8 @@ public class SwervePoseEstimator {
 
     private Pose2d getAbsoluteFieldOrientedPose(Pose2d pose) {
         if (DriverStation.getAlliance() == Alliance.Red) {
-            return FieldConstants.allianceOrientedAllianceFlip(pose);
+            Pose2d p = FieldConstants.allianceOrientedAllianceFlip(pose);
+            return new Pose2d(p.getX(), p.getY(), p.getRotation().times(-1));
         } else {
             return pose;
         }

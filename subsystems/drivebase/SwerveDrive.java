@@ -171,7 +171,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     @Override
     public void mustangPeriodic() {
-
+        SmartDashboard.putString("Est pose", String.format("%.2f, %.2f, %.2f degrees", getPose().getX(), getPose().getY(), getPose().getRotation().getDegrees()));
         if (gyroOffset == null && !m_navx.isCalibrating()) {
             zeroGyroscope();
         }
