@@ -98,9 +98,8 @@ public class SwervePoseEstimator {
         if (vision != null) {
             SmartDashboard.putBoolean("VISION IS: ", vision != null);
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
-                if (p != null) {
-                    SmartDashboard.putString("there's vision pose bruh", "bruh");
-                    poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
+                if (p != null && !DriverStation.isAutonomous()) {
+                    poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),   // TODO: testing auton without vision
                             p.timestampSeconds);
                 }
             }
