@@ -46,11 +46,11 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     /**
-     *  DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN. CALL IN PERIODiC OR AUTONINIT.
+     *  DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN. CALL IN PERIODIC OR AUTONINIT.
      *  More details here: https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
      */
     public void initalize() {
-        SmartDashboard.putString("VISION INIT: DRIVER STATION ALLIANCE:", "" + DriverStation.getAlliance());
+        // SmartDashboard.putString("VISION INIT: DRIVER STATION ALLIANCE:", "" + DriverStation.getAlliance());
         // does nothing if DS not initialized yet
         if (DriverStation.getAlliance() == Alliance.Invalid) {
             init = false;
@@ -66,6 +66,17 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
         this.cameras = c;
         init = true;
+    }
+
+    public void setAprilTagFieldLayout(AprilTagFieldLayout field) {
+        this.visionFieldLayout = field;
+        var origin = DriverStation.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide;
+        visionFieldLayout.setOrigin(origin);
+        // rest cams with new field
+        PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
+        for (int i = 0; i < cams.length; i++) {
+            c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
+        }
     }
 
     public boolean hasTarget() {
