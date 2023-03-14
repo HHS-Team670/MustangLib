@@ -127,6 +127,12 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             m_ledBuffer.setHSV(i, color.x, color.y, color.z );
         }
     }
+    /**
+     * Changes the LED strip such that all LEDs are off
+     */
+    public void off(){
+        solidhsv(new LEDColor(0,0,0));
+    }
 
 
     /**
