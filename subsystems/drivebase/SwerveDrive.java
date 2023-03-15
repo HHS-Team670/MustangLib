@@ -97,6 +97,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
         // getModulePositions());
         poseEstimator = new SwervePoseEstimator(this);
+
+        SmartDashboard.putNumber("MAX VELOCITY M/S", MAX_VELOCITY);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
