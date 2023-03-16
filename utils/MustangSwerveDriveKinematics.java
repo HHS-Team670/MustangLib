@@ -21,9 +21,10 @@ public class MustangSwerveDriveKinematics extends SwerveDriveKinematics {
         Pose2d robot_pose_vel = new Pose2d(chassisSpeeds.vxMetersPerSecond * RobotConstantsBase.LOOP_TIME,
                 chassisSpeeds.vyMetersPerSecond * RobotConstantsBase.LOOP_TIME,
                 Rotation2d.fromRadians(chassisSpeeds.omegaRadiansPerSecond * RobotConstantsBase.LOOP_TIME));
-        Twist2d t2d = (new Pose2d()).log(robot_pose_vel);
+        Twist2d t2d = (new MustangPose2d()).log(robot_pose_vel);
 
-        ChassisSpeeds updatedChassisSpeeds = new ChassisSpeeds(t2d.dx, t2d.dy, t2d.dtheta);
+        ChassisSpeeds updatedChassisSpeeds = new ChassisSpeeds(t2d.dx / RobotConstantsBase.LOOP_TIME,
+                t2d.dy / RobotConstantsBase.LOOP_TIME, t2d.dtheta / RobotConstantsBase.LOOP_TIME);
         return super.toSwerveModuleStates(updatedChassisSpeeds);
 
     }
