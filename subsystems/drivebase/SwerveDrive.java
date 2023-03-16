@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -18,6 +17,7 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
+import frc.team670.mustanglib.utils.MustangSwerveDriveKinematics;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
 
@@ -31,7 +31,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     MustangPPSwerveControllerCommand swerveControllerCommand;
 
     private final SwerveModule[] m_modules;
-    private final SwerveDriveKinematics m_kinematics;
+    private final MustangSwerveDriveKinematics m_kinematics;
     private ChassisSpeeds m_chassisSpeeds;
     private Rotation2d gyroOffset = new Rotation2d();
     private Rotation2d desiredHeading = null; // for rotation snapping
@@ -78,7 +78,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 config.BACK_RIGHT_MODULE_STEER_MOTOR, config.BACK_RIGHT_MODULE_STEER_ENCODER,
                 config.BACK_RIGHT_MODULE_STEER_OFFSET);
 
-        m_kinematics = new SwerveDriveKinematics(
+        m_kinematics = new MustangSwerveDriveKinematics(
                 // Front left
                 new Translation2d(config.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
                         config.DRIVETRAIN_WHEELBASE_METERS / 2.0),
@@ -119,7 +119,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
+     * Sets the gyroscope angle to zero. This can be used to set the direction the
+     * robot is
      * currently facing to the 'forwards' direction.
      */
     public void zeroGyroscope() {
@@ -130,7 +131,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         gyroOffset = rot;
     }
 
-    public SwerveDriveKinematics getSwerveKinematics() {
+    public MustangSwerveDriveKinematics getSwerveKinematics() {
         return m_kinematics;
     }
 
@@ -155,8 +156,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
-                Rotation2d angle =
-                        Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
+                Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
                 return angle;
             }
             return Rotation2d.fromDegrees(-m_navx.getFusedHeading());
@@ -180,7 +180,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         if (vision != null) {
             if (poseEstimator.getVision() == null) {
-                vision.initalize();     // at this point, DS is initalized. Okay calling vision init here.
+                vision.initalize(); // at this point, DS is initalized. Okay calling vision init here.
                 poseEstimator.initialize(vision);
             } else {
                 // if (!vision.isInitialized()) vision.initalize();
@@ -234,8 +234,9 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         backRightPrevAngle = backRightAngle;
 
         // for (SwerveModule m : m_modules) {
-        //     SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle: %f",
-        //             m.getDriveVelocity(), m.getSteerAngle()));
+        // SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle:
+        // %f",
+        // m.getDriveVelocity(), m.getSteerAngle()));
         // }
     }
 

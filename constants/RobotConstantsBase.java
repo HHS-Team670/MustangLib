@@ -12,9 +12,12 @@ public class RobotConstantsBase {
      */
     public static final int SPARK_TICKS_PER_ROTATION = 1024;
 
-    // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+    // Reasonable baseline values for a RAMSETE follower in units of meters and
+    // seconds
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = .7;
+
+    public static final double LOOP_TIME = 0.02;
 
     public static final int VISION_ERROR_CODE = -99999;
 
