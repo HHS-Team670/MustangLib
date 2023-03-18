@@ -7,6 +7,7 @@ import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
+import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,7 +33,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     // private boolean hasTarget;
     // private AprilTagFieldLayout visionFieldLayout;
     private boolean ledsTurnedOn;
-    private boolean overriden;
+    private boolean overridden;
     private boolean init = false;
 
 
@@ -46,20 +47,23 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     /**
-     *  DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN. CALL IN PERIODIC OR AUTONINIT.
-     *  More details here: https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
+     * DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN. CALL IN PERIODIC OR AUTONINIT.
+     * More details here: https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
      */
     public void initalize() {
-        // SmartDashboard.putString("VISION INIT: DRIVER STATION ALLIANCE:", "" + DriverStation.getAlliance());
+        // SmartDashboard.putString("VISION INIT: DRIVER STATION ALLIANCE:", "" +
+        // DriverStation.getAlliance());
         // does nothing if DS not initialized yet
         if (DriverStation.getAlliance() == Alliance.Invalid) {
             init = false;
             return;
         }
 
-        var origin = DriverStation.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide;
+        var origin = DriverStation.getAlliance() == Alliance.Blue
+                ? OriginPosition.kBlueAllianceWallRightSide
+                : OriginPosition.kRedAllianceWallRightSide;
         visionFieldLayout.setOrigin(origin);
-        
+
         PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
         for (int i = 0; i < cams.length; i++) {
             c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
@@ -70,7 +74,9 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     public void setAprilTagFieldLayout(AprilTagFieldLayout field) {
         this.visionFieldLayout = field;
-        var origin = DriverStation.getAlliance() == Alliance.Blue ? OriginPosition.kBlueAllianceWallRightSide : OriginPosition.kRedAllianceWallRightSide;
+        var origin = DriverStation.getAlliance() == Alliance.Blue
+                ? OriginPosition.kBlueAllianceWallRightSide
+                : OriginPosition.kRedAllianceWallRightSide;
         visionFieldLayout.setOrigin(origin);
         // rest cams with new field
         PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
@@ -104,10 +110,21 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
 
         EstimatedRobotPose[] poses = new EstimatedRobotPose[cameras.length];
-        for (int i = 0; i < poses.length; i++)
-            poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
+        for (int i = 0; i < poses.length; i++) {
+            var bestTarget = cameras[i].getCamera().getLatestResult().getBestTarget();
+            if (bestTarget != null) {
+                if (bestTarget.getPoseAmbiguity() > 0.15) {
+                    poses[i] = null;
+                } else {
+                    poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
+                }
+            } else {
+                poses[i] = null;
+            }
 
+        }
         return poses;
+
     }
     // public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
     // double avgX, avgY, avgDeg, avgTime;
@@ -133,15 +150,15 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     public void switchLEDS(boolean on, boolean override) {
         pd.setSwitchableChannel(on);
         ledsTurnedOn = on;
-        overriden = override;
+        overridden = override;
     }
 
     public void switchLEDS(boolean on) {
         switchLEDS(on, false);
     }
 
-    public boolean LEDSOverriden() {
-        return overriden;
+    public boolean LEDSOverridden() {
+        return overridden;
     }
 
     public boolean LEDsTurnedOn() {

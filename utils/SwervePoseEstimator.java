@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.photonvision.EstimatedRobotPose;
+import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -33,7 +34,7 @@ public class SwervePoseEstimator {
      * estimates less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians,
      * then meters.
      */
-    private static final Vector<N3> stateStdDevs =
+    private Vector<N3> stateStdDevs =
             VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.1)); // default
             // VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
 
@@ -42,7 +43,7 @@ public class SwervePoseEstimator {
      * measurements from vision less. This matrix is in the form [x, y, theta]ᵀ, with units in
      * meters and radians.
      */
-    private static final Vector<N3> visionMeasurementStdDevs =
+    private Vector<N3> visionMeasurementStdDevs =
             VecBuilder.fill(0.9, 0.9, Units.degreesToRadians(0.9));  // default
             // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
@@ -61,6 +62,10 @@ public class SwervePoseEstimator {
 
     public void initialize(VisionSubsystemBase vision) {
         this.vision = vision;
+
+        SmartDashboard.putNumber("vision std x: ", 0.9);
+        SmartDashboard.putNumber("vision std y: ", 0.9);
+        SmartDashboard.putNumber("vision std deg: ", 0.9);
 
         SmartDashboard.putData(field2d);
         List<Pose2d> allTargets = new ArrayList<>();
@@ -86,6 +91,15 @@ public class SwervePoseEstimator {
     // target.getY())).setPose(target);
     // }
 
+    public void updateStdFromDashboard() {
+        SmartDashboard.getNumber(getFormattedPose(), 0);
+        poseEstimator.setVisionMeasurementStdDevs(new Matrix<>(VecBuilder.fill(
+            SmartDashboard.getNumber("vision std x: ", 0.9),
+            SmartDashboard.getNumber("vision std y: ", 0.9),
+            Units.degreesToRadians(SmartDashboard.getNumber("vision std deg: ", 0.9))
+        )));
+    }
+
     public void addTrajectory(Trajectory traj) {
         field2d.getObject("Trajectory").setTrajectory(getAbsoluteFieldOrientedTrajectory(traj));
     }
@@ -98,13 +112,19 @@ public class SwervePoseEstimator {
         if (vision != null) {
             // SmartDashboard.putBoolean("VISION IS: ", vision != null);
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
-                if (p != null && !DriverStation.isAutonomous()) {
+                // if (p != null && !DriverStation.isAutonomous()) {
+                if (p != null) {
                 // if (p != null) {
-                    poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),   // TODO: testing auton without vision
+                    field2d.getObject("camera pose").setPose(p.estimatedPose.toPose2d());
+                    // SmartDashboard.putNumber("camera x", p.estimatedPose.toPose2d().getX());
+                    // SmartDashboard.putNumber("camera y", p.estimatedPose.toPose2d().getY());
+                    
+                    poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
                             p.timestampSeconds);
                 }
             }
         }
+        updateStdFromDashboard();
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         // updateTargets(getSortedTargetTranslations().subList(0, 2));
         field2d.setRobotPose(getAbsoluteFieldOrientedPose());
