@@ -25,6 +25,7 @@ public class MustangSwerveDriveKinematics extends SwerveDriveKinematics {
 
         ChassisSpeeds updatedChassisSpeeds = new ChassisSpeeds(t2d.dx / RobotConstantsBase.LOOP_TIME,
                 t2d.dy / RobotConstantsBase.LOOP_TIME, t2d.dtheta / RobotConstantsBase.LOOP_TIME);
+        System.out.println(updatedChassisSpeeds);
         return super.toSwerveModuleStates(updatedChassisSpeeds);
 
     }

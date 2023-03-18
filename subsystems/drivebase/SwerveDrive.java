@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
@@ -17,7 +18,6 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
-import frc.team670.mustanglib.utils.MustangSwerveDriveKinematics;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
 
@@ -31,7 +31,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     MustangPPSwerveControllerCommand swerveControllerCommand;
 
     private final SwerveModule[] m_modules;
-    private final MustangSwerveDriveKinematics m_kinematics;
+    private final SwerveDriveKinematics m_kinematics;
     private ChassisSpeeds m_chassisSpeeds;
     private Rotation2d gyroOffset = new Rotation2d();
     private Rotation2d desiredHeading = null; // for rotation snapping
@@ -78,7 +78,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 config.BACK_RIGHT_MODULE_STEER_MOTOR, config.BACK_RIGHT_MODULE_STEER_ENCODER,
                 config.BACK_RIGHT_MODULE_STEER_OFFSET);
 
-        m_kinematics = new MustangSwerveDriveKinematics(
+        m_kinematics = new SwerveDriveKinematics(
                 // Front left
                 new Translation2d(config.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
                         config.DRIVETRAIN_WHEELBASE_METERS / 2.0),
@@ -131,7 +131,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         gyroOffset = rot;
     }
 
-    public MustangSwerveDriveKinematics getSwerveKinematics() {
+    public SwerveDriveKinematics getSwerveKinematics() {
         return m_kinematics;
     }
 
@@ -293,5 +293,15 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public MustangPPSwerveControllerCommand getSwerveControllerCommand() {
         return this.swerveControllerCommand;
+    }
+
+    public void park() {
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        // needs the 0.1 or else it won't even rotate the wheels
+        states[0] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // front right
+        states[1] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // front left
+        states[2] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // back left
+        states[3] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // back right
+        setModuleStates(states);
     }
 }
