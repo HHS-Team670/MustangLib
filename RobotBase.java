@@ -41,15 +41,15 @@ public class RobotBase extends TimedRobot {
   private static RobotBase instance;
 
   public static boolean overrideAtCompetition = true;
-  
+
   RobotContainerBase robotContainer;
 
-  public RobotBase(RobotContainerBase robotContainer){
+  public RobotBase(RobotContainerBase robotContainer) {
     this.robotContainer = robotContainer;
     RobotBase.instance = this;
   }
 
-  public RobotContainerBase getRobotContainer(){
+  public RobotContainerBase getRobotContainer() {
     return robotContainer;
   }
 
@@ -67,45 +67,45 @@ public class RobotBase extends TimedRobot {
 
     MustangScheduler.getInstance();
 
-
-
-    //Log file setup. Logs can be found at /home/lvuser/logs
+    // Log file setup. Logs can be found at /home/lvuser/logs
     SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
     Date currentDate = new Date();
     String dateString = dateFormatter.format(currentDate);
     File logDirectory = new File("/home/lvuser/logs/" + dateString);
-    
-    //Deletes old log files
+
+    // Deletes old log files
     // for(File directory : (new File("/home/lvuser/logs")).listFiles()) {
-    //   try {
-    //     Date directoryDate = dateFormatter.parse(directory.getName());
-    //     long timeDifferenceMillis = currentDate.getTime() - directoryDate.getTime();
-    //     if(timeDifferenceMillis > 3 * 24 * 3600 * 1000) { //If too much time has passed (in millisecond), delete directory
-    //       recursivelyDeleteDirectory(directory);
-    //     }
-    //   } catch (ParseException e) {
-    //     Logger.consoleError("Failed to parse date from log directory " + directory.getName());
-    //     e.printStackTrace();
-    //   }
+    // try {
+    // Date directoryDate = dateFormatter.parse(directory.getName());
+    // long timeDifferenceMillis = currentDate.getTime() - directoryDate.getTime();
+    // if(timeDifferenceMillis > 3 * 24 * 3600 * 1000) { //If too much time has
+    // passed (in millisecond), delete directory
+    // recursivelyDeleteDirectory(directory);
+    // }
+    // } catch (ParseException e) {
+    // Logger.consoleError("Failed to parse date from log directory " +
+    // directory.getName());
+    // e.printStackTrace();
+    // }
     // }
 
-    //Creates log directory for the current code runthrough
-    if(logDirectory.mkdirs()) {
+    // Creates log directory for the current code runthrough
+    if (logDirectory.mkdirs()) {
       Logger.consoleLog("Successfully created logging directory at " + logDirectory.getAbsolutePath());
     } else {
       Logger.consoleLog("Failed to create logging directory at " + logDirectory.getAbsolutePath());
     }
 
-    //Creates new subsystem files in the log directory
-    for(MustangSubsystemBase subsystem : RobotContainerBase.allSubsystems) {
+    // Creates new subsystem files in the log directory
+    for (MustangSubsystemBase subsystem : RobotContainerBase.allSubsystems) {
       subsystem.createLogFile(logDirectory);
     }
   }
 
   private static boolean recursivelyDeleteDirectory(File directoryToBeDeleted) {
     File[] allContents = directoryToBeDeleted.listFiles();
-    if(allContents != null) {
-      for(File file : allContents) {
+    if (allContents != null) {
+      for (File file : allContents) {
         recursivelyDeleteDirectory(file);
       }
     }
@@ -138,13 +138,15 @@ public class RobotBase extends TimedRobot {
     int millisSinceStartup = (int) (System.currentTimeMillis() - startTimeMillis);
     int secondsSinceStartup = (int) (millisSinceStartup / 1000);
     int sec = secondsSinceStartup % 60;
-    int min = (secondsSinceStartup / 60)%60;
-    int hours = (secondsSinceStartup/60)/60;
-    int milliseconds = millisSinceStartup - ((millisSinceStartup/1000) * 1000);
-    String strSec=(sec<10)?"0"+Integer.toString(sec):Integer.toString(sec);
-    String strmin=(min<10)?"0"+Integer.toString(min):Integer.toString(min);
-    String strHours=(hours<10)?"0"+Integer.toString(hours):Integer.toString(hours);
-    String strMillis = (milliseconds<100) ? "0" + ((milliseconds<10) ? "0" + milliseconds : Integer.toString(milliseconds)) : Integer.toString(milliseconds);
+    int min = (secondsSinceStartup / 60) % 60;
+    int hours = (secondsSinceStartup / 60) / 60;
+    int milliseconds = millisSinceStartup - ((millisSinceStartup / 1000) * 1000);
+    String strSec = (sec < 10) ? "0" + Integer.toString(sec) : Integer.toString(sec);
+    String strmin = (min < 10) ? "0" + Integer.toString(min) : Integer.toString(min);
+    String strHours = (hours < 10) ? "0" + Integer.toString(hours) : Integer.toString(hours);
+    String strMillis = (milliseconds < 100)
+        ? "0" + ((milliseconds < 10) ? "0" + milliseconds : Integer.toString(milliseconds))
+        : Integer.toString(milliseconds);
     timeSinceStartupAsString = strHours + ":" + strmin + ":" + strSec + "." + strMillis;
   }
 
@@ -200,7 +202,7 @@ public class RobotBase extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     if (m_autonomousCommand != null) {
-      MustangScheduler.getInstance().cancel((MustangCommand)(m_autonomousCommand));
+      MustangScheduler.getInstance().cancel((MustangCommand) (m_autonomousCommand));
     }
     Logger.consoleLog("Teleop Init");
     robotContainer.teleopInit();
@@ -212,6 +214,8 @@ public class RobotBase extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     MustangScheduler.getInstance().run();
+    robotContainer.teleopPeriodic();
+
   }
 
   @Override

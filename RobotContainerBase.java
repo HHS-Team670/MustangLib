@@ -16,7 +16,6 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.MustangController;
 
-
 /**
  * This class is where the bulk of the robot should be declared. Since
  * Command-based is a "declarative" paradigm, very little robot logic should
@@ -44,17 +43,17 @@ public abstract class RobotContainerBase {
       if (s.getHealth(false).equals(HealthState.GREEN)) {
         // MustangScheduler.getInstance().registerSubsystem(s); //TODO: Test this today
         // if(s.getDefaultMustangCommand() != null){
-        //   MustangScheduler.getInstance().setDefaultCommand(s, s.getDefaultMustangCommand());
+        // MustangScheduler.getInstance().setDefaultCommand(s,
+        // s.getDefaultMustangCommand());
         // }
-      }
-      else if (s.getHealth(false).equals(HealthState.RED)) {
+      } else if (s.getHealth(false).equals(HealthState.RED)) {
         MustangScheduler.getInstance().cancel(s.getDefaultMustangCommand());
         MustangScheduler.getInstance().unregisterSubsystem(s);
       }
       s.pushHealthToDashboard();
     }
   }
-  
+
   public abstract void robotInit();
 
   public abstract MustangCommand getAutonomousCommand();
@@ -73,10 +72,12 @@ public abstract class RobotContainerBase {
 
   public abstract void autonomousPeriodic();
 
+  public abstract void teleopPeriodic();
+
   public abstract MustangController getOperatorController();
-  
+
   public abstract MustangController getDriverController();
-  
+
   public abstract MustangController getBackupController();
 
   public static List<MustangSubsystemBase> getSubsystems() {

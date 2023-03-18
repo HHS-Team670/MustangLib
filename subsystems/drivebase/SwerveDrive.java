@@ -119,7 +119,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
+     * Sets the gyroscope angle to zero. This can be used to set the direction the
+     * robot is
      * currently facing to the 'forwards' direction.
      */
     public void zeroGyroscope() {
@@ -155,8 +156,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
-                Rotation2d angle =
-                        Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
+                Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
                 return angle;
             }
             return Rotation2d.fromDegrees(-m_navx.getFusedHeading());
@@ -180,7 +180,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         if (vision != null) {
             if (poseEstimator.getVision() == null) {
-                vision.initalize();     // at this point, DS is initalized. Okay calling vision init here.
+                vision.initalize(); // at this point, DS is initalized. Okay calling vision init here.
                 poseEstimator.initialize(vision);
             } else {
                 // if (!vision.isInitialized()) vision.initalize();
@@ -234,8 +234,9 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         backRightPrevAngle = backRightAngle;
 
         // for (SwerveModule m : m_modules) {
-        //     SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle: %f",
-        //             m.getDriveVelocity(), m.getSteerAngle()));
+        // SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle:
+        // %f",
+        // m.getDriveVelocity(), m.getSteerAngle()));
         // }
     }
 
@@ -292,5 +293,15 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public MustangPPSwerveControllerCommand getSwerveControllerCommand() {
         return this.swerveControllerCommand;
+    }
+
+    public void park() {
+        SwerveModuleState[] states = new SwerveModuleState[4];
+        // needs the 0.1 or else it won't even rotate the wheels
+        states[0] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // front right
+        states[1] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // front left
+        states[2] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // back left
+        states[3] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // back right
+        setModuleStates(states);
     }
 }
