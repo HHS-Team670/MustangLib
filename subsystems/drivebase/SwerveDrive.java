@@ -18,6 +18,7 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
+import frc.team670.mustanglib.utils.MustangSwerveDriveKinematics;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
 
@@ -78,7 +79,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 config.BACK_RIGHT_MODULE_STEER_MOTOR, config.BACK_RIGHT_MODULE_STEER_ENCODER,
                 config.BACK_RIGHT_MODULE_STEER_OFFSET);
 
-        m_kinematics = new SwerveDriveKinematics(
+        m_kinematics = new MustangSwerveDriveKinematics(
                 // Front left
                 new Translation2d(config.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
                         config.DRIVETRAIN_WHEELBASE_METERS / 2.0),
