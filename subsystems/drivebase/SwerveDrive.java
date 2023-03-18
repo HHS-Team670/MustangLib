@@ -50,7 +50,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[0] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(0, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.FRONT_LEFT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_CONFIGURATION, config.FRONT_LEFT_MODULE_DRIVE_MOTOR,
                 config.FRONT_LEFT_MODULE_STEER_MOTOR, config.FRONT_LEFT_MODULE_STEER_ENCODER,
                 config.FRONT_LEFT_MODULE_STEER_OFFSET);
 
@@ -58,7 +58,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[1] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_CONFIGURATION, config.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
                 config.FRONT_RIGHT_MODULE_STEER_MOTOR, config.FRONT_RIGHT_MODULE_STEER_ENCODER,
                 config.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
@@ -66,7 +66,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.BACK_LEFT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_CONFIGURATION, config.BACK_LEFT_MODULE_DRIVE_MOTOR,
                 config.BACK_LEFT_MODULE_STEER_MOTOR, config.BACK_LEFT_MODULE_STEER_ENCODER,
                 config.BACK_LEFT_MODULE_STEER_OFFSET);
 
@@ -74,7 +74,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[3] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(6, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.BACK_RIGHT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_CONFIGURATION, config.BACK_RIGHT_MODULE_DRIVE_MOTOR,
                 config.BACK_RIGHT_MODULE_STEER_MOTOR, config.BACK_RIGHT_MODULE_STEER_ENCODER,
                 config.BACK_RIGHT_MODULE_STEER_OFFSET);
 
