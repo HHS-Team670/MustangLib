@@ -1,5 +1,8 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -40,6 +43,11 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
 
     private final double MAX_VELOCITY, MAX_VOLTAGE;
+
+    private long prevTime;
+    private Queue<Long> q;
+    private long average;
+
 
     public SwerveDrive(SwerveConfig config) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
@@ -100,6 +108,14 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         poseEstimator = new SwervePoseEstimator(this);
 
         SmartDashboard.putNumber("MAX VELOCITY M/S", MAX_VELOCITY);
+
+
+        prevTime = System.currentTimeMillis();
+        q = new LinkedList<>();
+        for (int i = 0; i<5; i++) {
+            q.add((long) 20);
+        }
+        average = (long) 20;
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -174,6 +190,18 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     @Override
     public void mustangPeriodic() {
+
+        long currentTime = System.currentTimeMillis();
+        long difference = currentTime - prevTime;
+        long removedDifference = q.remove();
+        long newAverage = ((average * (long) 5) - removedDifference + difference) / (long) 5;
+        average = newAverage;
+        q.add(difference);
+        prevTime = currentTime;
+
+        SmartDashboard.putNumber("average loop cycle", (double) average);
+        SmartDashboard.putString("running average queue", q + "");
+        SmartDashboard.putNumber("removed difference", (double) removedDifference);
 
         if (gyroOffset == null && !m_navx.isCalibrating()) {
             zeroGyroscope();
