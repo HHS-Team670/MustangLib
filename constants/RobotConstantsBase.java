@@ -17,7 +17,7 @@ public class RobotConstantsBase {
     public static final double kRamseteB = 2;
     public static final double kRamseteZeta = .7;
 
-    public static final double LOOP_TIME = 1;
+    public static final double LOOP_TIME = 0.02;
 
     public static final int VISION_ERROR_CODE = -99999;
 
