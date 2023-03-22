@@ -140,7 +140,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * @param color The color to blink with
      * @param duration The duration of the blink
      */
-    public void blink(LEDColor color, int duration) {
+    public void blinkhsv(LEDColor color, int duration) {
         if(!isBlinking) {
             blinkCounter = 0;
             isBlinking = true;
@@ -151,13 +151,27 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             }
         }
     }
-
+    public void blinkrgb(LEDColor color, int duration) {
+        if(!isBlinking) {
+            blinkCounter = 0;
+            isBlinking = true;
+            blinkColor = color;
+            blinkEndCount = duration;
+            for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setRGB(i, color.x, color.y, color.z * 2);
+            }
+        }
+    }
     /**
      * Makes the LED strip blink for {@link #DEFAULT_BLINK_DURATION}.
      * @param color
      */
-    public void blink(LEDColor color){
-        blink(color, DEFAULT_BLINK_DURATION);
+    public void blinkhsv(LEDColor color){
+        blinkhsv(color, DEFAULT_BLINK_DURATION);
+    }
+
+    public void blinkrgb(LEDColor color){
+        blinkrgb(color, DEFAULT_BLINK_DURATION);
     }
 
     /**
