@@ -28,6 +28,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     private int blinkEndCount;
     protected boolean isBlinking;
     private LEDColor blinkColor;
+    private boolean changed=false;
 
     /**
      * Creates a new LEDSubsystem
@@ -52,19 +53,22 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     @Override
     public void mustangPeriodic() {
         // Handle turning off blink
-        if(isBlinking) { 
-            blinkCounter++;
-            if(blinkCounter >= blinkEndCount) {
-                for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                    m_ledBuffer.setHSV(i, blinkColor.x, blinkColor.y, blinkColor.z);
+        if(changed||isBlinking){
+            changed=false;
+            if(isBlinking) { 
+                blinkCounter++;
+                if(blinkCounter >= blinkEndCount) {
+                    for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                        m_ledBuffer.setHSV(i, blinkColor.x, blinkColor.y, blinkColor.z);
+                    }
+                }
+                if(blinkCounter >= blinkEndCount * 2) {
+                    blinkCounter = 0;
+                    isBlinking = false;
                 }
             }
-            if(blinkCounter >= blinkEndCount * 2) {
-                blinkCounter = 0;
-                isBlinking = false;
-            }
-        }
-        m_led.setData(m_ledBuffer);
+            m_led.setData(m_ledBuffer);
+    }
     }
 
     @Override
@@ -92,6 +96,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         m_rainbowFirstPixelHue += 3;
         // Check bounds
         m_rainbowFirstPixelHue %= 180;
+        changed=true;
     }
 
     public void mustangRainbow() {
@@ -103,6 +108,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         m_mustangRainbowFirstSaturation += 5;
         // Check bounds
         m_mustangRainbowFirstSaturation %= 255;
+        changed=true;
     }
 
     /**
@@ -115,6 +121,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setRGB(i,color.x, color.y, color.z );
         }
+        changed=true;
     }
     /**
      * Changes the LED strip so that all the LEDs are one color
@@ -126,12 +133,14 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setHSV(i, color.x, color.y, color.z );
         }
+        changed=true;
     }
     /**
      * Changes the LED strip such that all LEDs are off
      */
     public void off(){
         solidhsv(new LEDColor(0,0,0));
+        
     }
 
 
@@ -150,6 +159,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
                 m_ledBuffer.setHSV(i, color.x, color.y, color.z * 2);
             }
         }
+        changed=true;
     }
     public void blinkrgb(LEDColor color, int duration) {
         if(!isBlinking) {
@@ -161,6 +171,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
                 m_ledBuffer.setRGB(i, color.x, color.y, color.z * 2);
             }
         }
+        changed=true;
     }
     /**
      * Makes the LED strip blink for {@link #DEFAULT_BLINK_DURATION}.
@@ -168,6 +179,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
     public void blinkhsv(LEDColor color){
         blinkhsv(color, DEFAULT_BLINK_DURATION);
+        
     }
 
     public void blinkrgb(LEDColor color){
@@ -191,6 +203,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         for (int i = ratioBright; i < length; i++) { // inactive
             m_ledBuffer.setHSV(i, inactive.x, inactive.y,  inactive.z);
         }
+        changed=true;
     }
 
     /**
@@ -209,6 +222,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
     public void setBuffer(AddressableLEDBuffer buffer){
         this.m_ledBuffer = buffer;
+        changed=true;
     }
 
 }
