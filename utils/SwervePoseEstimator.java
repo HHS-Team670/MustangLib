@@ -114,17 +114,16 @@ public class SwervePoseEstimator {
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
                 // if (p != null && !DriverStation.isAutonomous()) {
                 if (p != null) {
-                // if (p != null) {
                     field2d.getObject("camera pose").setPose(p.estimatedPose.toPose2d());
                     // SmartDashboard.putNumber("camera x", p.estimatedPose.toPose2d().getX());
                     // SmartDashboard.putNumber("camera y", p.estimatedPose.toPose2d().getY());
                     
-                    poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
-                            p.timestampSeconds);
+                    // poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
+                    //         p.timestampSeconds);
                 }
             }
         }
-        updateStdFromDashboard();
+        // updateStdFromDashboard();
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         // updateTargets(getSortedTargetTranslations().subList(0, 2));
         field2d.setRobotPose(getAbsoluteFieldOrientedPose());
