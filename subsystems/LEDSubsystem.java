@@ -129,7 +129,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      **/
 
     public void solidrgb(LEDColor color) {
-        if (color == null || color.equals(this.color)) {
+        if (this.color == null || !color.equals(this.color)) {
             changed = true;
             this.color = color;
             for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
