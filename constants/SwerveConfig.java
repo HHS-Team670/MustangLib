@@ -32,10 +32,10 @@ public class SwerveConfig {
     public double MAX_VOLTAGE;
 
     public SerialPort.Port NAVX_PORT;
-    public GearRatio SWERVE_MODULE_CONFIGURATION;
+    public GearRatio SWERVE_MODULE_GEAR_RATIO;
 
     public SwerveConfig(double driveBaseTrackWidth, double driveBaseWheelBase, double maxVelocity, double maxVoltage,
-            SerialPort.Port navXPort, GearRatio swerveModuleConfiguration,
+            SerialPort.Port navXPort, GearRatio swerveModuleGearRatio,
             int frontLeftModuleDriveMotor, int frontLeftModuleSteerMotor, int frontLeftModuleSteerEncoder,
             double frontLeftModuleSteerOffset,
             int frontRightModuleDriveMotor, int frontRightModuleSteerMotor, int frontRightModuleSteerEncoder,
@@ -71,7 +71,7 @@ public class SwerveConfig {
         BACK_RIGHT_MODULE_STEER_MOTOR = backRightModuleSteerMotor;
         BACK_RIGHT_MODULE_STEER_ENCODER = backRightModuleSteerEncoder;
         BACK_RIGHT_MODULE_STEER_OFFSET = backRightModuleSteerOffset;
-        SWERVE_MODULE_CONFIGURATION = swerveModuleConfiguration;
+        SWERVE_MODULE_GEAR_RATIO = swerveModuleGearRatio;
     }
 
 }
