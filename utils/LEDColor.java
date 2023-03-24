@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.util.Color;
  * 
  */
 public class LEDColor extends Color {
+
     public static final LEDColor BLUE = new LEDColor(0, 0, 255);
 
     public static final LEDColor GREEN = new LEDColor(25, 185, 22);// rgb
@@ -23,11 +24,15 @@ public class LEDColor extends Color {
 
     public static final LEDColor WHITE = new LEDColor(255, 255, 255);// rgb
 
+    public LEDColor(double red, double green, double blue) {
+        super(red, green, blue);
+    }
+
     public LEDColor dimmer() {
-        return new LEDColor(x / 1.25, y / 1.25, z / 1.25);
+        return new LEDColor(red / 1.25, blue / 1.25, green / 1.25);
     }
 
     public LEDColor brighter() {
-        return new LEDColor(x * 1.25, y * 1.25, z * 1.25);
+        return new LEDColor(red * 1.25, blue * 1.25, green * 1.25);
     }
 }
