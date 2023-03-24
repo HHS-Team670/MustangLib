@@ -24,7 +24,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     private int m_rainbowFirstPixelHue;
     private int m_mustangRainbowFirstSaturation;
-
+    private LEDColor color = new LEDColor(0, 0, 0);
     private int blinkCounter;
     private int blinkEndCount;
     protected boolean isBlinking;
@@ -87,6 +87,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
     public void rainbow(boolean isMaxBrightness) {
         // For every pixel
+        color = null;
         int brightness = isMaxBrightness ? 255 : 60;
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
@@ -105,6 +106,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     public void mustangRainbow() {
         // For every pixel
+        color = null;
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setHSV(i, 60, m_mustangRainbowFirstSaturation + (i * 255 / m_ledBuffer.getLength()) % 255, 255);
         }
@@ -127,10 +129,12 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      **/
 
     public void solidrgb(LEDColor color) {
-        for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
-            if (colorChanged(i, color)) {
-                changed = true;
+        if (color == null || color.equals(this.color)) {
+            changed = true;
+            this.color = color;
+            for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
                 m_ledBuffer.setRGB(i, color.red, color.green, color.blue);
+
             }
         }
 
@@ -152,6 +156,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
     public void blinkrgb(LEDColor color, int duration) {
         if (!isBlinking) {
+            this.color = null;
             blinkCounter = 0;
             isBlinking = true;
             blinkColor = color;
@@ -182,7 +187,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     public void progressBar(LEDColor active, LEDColor inactive, double ratio) {
         ratio /= 2; // due to our leds having 2 leds per 'index'
         int ratioBright = (int) (length * ratio);
-
+        color = null;
         for (int i = 0; i < ratioBright; i++) { // active
             if (colorChanged(i, active)) {
                 changed = true;
