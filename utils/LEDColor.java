@@ -1,46 +1,33 @@
 package frc.team670.mustanglib.utils;
 
+import edu.wpi.first.wpilibj.util.Color;
+
 /**
  * Represents colors that our LED subsystem supports
- * Uses Hue, Saturation, and Value (HSV) insteadof RGB
+ * Extends WPILib Color
+ * Stores Colors in rgb format
  * 
  */
-public class LEDColor {
-    public static final LEDColor BLUE = new LEDColor(120); //hsv
+public class LEDColor extends Color {
+    public static final LEDColor BLUE = new LEDColor(0, 0, 255);
 
-    public static final LEDColor GREEN = new LEDColor(25, 185, 22);//rgb
+    public static final LEDColor GREEN = new LEDColor(25, 185, 22);// rgb
 
-    public static final LEDColor RED = new LEDColor(0);//hsv
+    public static final LEDColor RED = new LEDColor(255, 0, 0);// rgb
 
-    public static final LEDColor LIGHT_BLUE = new LEDColor(241);//hsv (actually green)
+    public static final LEDColor LIGHT_BLUE = new LEDColor(4, 0, 255);// hsv (actually green)
 
-    public static final LEDColor SEXY_PURPLE = new LEDColor(37, 4, 61); //rgb
+    public static final LEDColor SEXY_PURPLE = new LEDColor(37, 4, 61); // rgb
 
-    public static final LEDColor SEXY_YELLOW = new LEDColor(250, 60, 0); //rgb
+    public static final LEDColor SEXY_YELLOW = new LEDColor(250, 60, 0); // rgb
 
-    public static final LEDColor WHITE = new LEDColor(255,255,255);//rgb
-
-    public final int x;
-    public final int y;
-    public final int z;
-
-    public LEDColor(int x) {
-        this.x = x;
-        this.y = 255;
-        this.z = 255;
-    }
-
-    public LEDColor(int x, int y, int z) {
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+    public static final LEDColor WHITE = new LEDColor(255, 255, 255);// rgb
 
     public LEDColor dimmer() {
-        return new LEDColor(x, y, z / 3);
+        return new LEDColor(x / 1.25, y / 1.25, z / 1.25);
     }
 
     public LEDColor brighter() {
-        return new LEDColor(x, y, z * 3);
+        return new LEDColor(x * 1.25, y * 1.25, z * 1.25);
     }
 }
