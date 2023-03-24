@@ -61,7 +61,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
                 blinkCounter++;
                 if (blinkCounter >= blinkEndCount) {
                     for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                        m_ledBuffer.setRGB(i, blinkColor.red, blinkColor.green, blinkColor.blue);
+                        m_ledBuffer.setRGB(i, (int) blinkColor.red, (int) blinkColor.green, (int) blinkColor.blue);
                     }
                 }
                 if (blinkCounter >= blinkEndCount * 2) {
@@ -144,7 +144,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * Changes the LED strip such that all LEDs are off
      */
     public void off() {
-        solidrgb(new LEDColor(0, 0, 0));
+        solidrgb(new LEDColor(0.0, 0.0, 0.0));
 
     }
 
@@ -162,7 +162,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             blinkColor = color;
             blinkEndCount = duration;
             for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, color.red, color.green, color.blue);
+                m_ledBuffer.setRGB(i, (int) color.red, (int) color.green, (int) color.blue);
             }
         }
         changed = true;
@@ -191,14 +191,14 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         for (int i = 0; i < ratioBright; i++) { // active
             if (colorChanged(i, active)) {
                 changed = true;
-                m_ledBuffer.setRGB(i, active.red, active.green, active.blue);
+                m_ledBuffer.setRGB(i, (int) active.red, (int) active.green, (int) active.blue);
 
             }
         }
 
         for (int i = ratioBright; i < length; i++) { // inactive
             if (colorChanged(i, inactive)) {
-                m_ledBuffer.setRGB(i, inactive.red, inactive.green, inactive.blue);
+                m_ledBuffer.setRGB(i, (int) inactive.red, (int) inactive.green, (int) inactive.blue);
                 changed = true;
             }
         }
