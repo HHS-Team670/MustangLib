@@ -133,7 +133,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             changed = true;
             this.color = color;
             for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, color.red, color.green, color.blue);
+                m_ledBuffer.setRGB(i, (int) color.red, (int) color.green, (int) color.blue);
 
             }
         }
