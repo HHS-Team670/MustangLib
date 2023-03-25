@@ -44,7 +44,7 @@ public class SwervePoseEstimator {
      * meters and radians.
      */
     private Vector<N3> visionMeasurementStdDevs =
-            VecBuilder.fill(0.9, 0.9, Units.degreesToRadians(0.9));  // default
+            VecBuilder.fill(0.9, 0.9, Units.degreesToRadians(99999999));  // default
             // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
     private SwerveDrivePoseEstimator poseEstimator;
@@ -118,8 +118,8 @@ public class SwervePoseEstimator {
                     // SmartDashboard.putNumber("camera x", p.estimatedPose.toPose2d().getX());
                     // SmartDashboard.putNumber("camera y", p.estimatedPose.toPose2d().getY());
                     
-                    // poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
-                    //         p.timestampSeconds);
+                    poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
+                            p.timestampSeconds);
                 }
             }
         }
