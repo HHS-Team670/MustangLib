@@ -178,13 +178,13 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             zeroGyroscope();
         }
 
-        if (vision != null) {
-            if (poseEstimator.getVision() == null) {
-                vision.initalize(); // at this point, DS is initalized. Okay calling vision init here.
-                poseEstimator.initialize(vision);
-            }
-        }
-        poseEstimator.update();
+        // if (vision != null) {
+        //     if (poseEstimator.getVision() == null) {
+        //         vision.initalize(); // at this point, DS is initalized. Okay calling vision init here.
+        //         poseEstimator.initialize(vision);
+        //     }
+        // }
+        // poseEstimator.update();
 
         if (RobotBase.getInstance().isTeleopEnabled()
                 && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) {
