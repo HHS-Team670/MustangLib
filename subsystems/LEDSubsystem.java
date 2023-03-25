@@ -3,6 +3,7 @@ package frc.team670.mustanglib.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import frc.team670.mustanglib.utils.LEDColor;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * Represents an addresable LED strip
@@ -23,19 +24,21 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     private int m_rainbowFirstPixelHue;
     private int m_mustangRainbowFirstSaturation;
-
+    private LEDColor color = new LEDColor(0, 0, 0);
     private int blinkCounter;
     private int blinkEndCount;
     protected boolean isBlinking;
     private LEDColor blinkColor;
+    private boolean changed = false;
 
     /**
      * Creates a new LEDSubsystem
-     * @param port The port at which the LED strip is connected to
+     * 
+     * @param port   The port at which the LED strip is connected to
      * @param length The number of LEDS in the LED strip
      */
     public LEDSubsystem(int port, int length) {
-       this(port, 0, length);
+        this(port, 0, length);
     }
 
     public LEDSubsystem(int port, int startIndex, int endIndex) {
@@ -52,23 +55,27 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     @Override
     public void mustangPeriodic() {
         // Handle turning off blink
-        if(isBlinking) { 
-            blinkCounter++;
-            if(blinkCounter >= blinkEndCount) {
-                for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                    m_ledBuffer.setHSV(i, blinkColor.x, blinkColor.y, blinkColor.z);
+        if (changed || isBlinking) {
+            changed = false;
+            if (isBlinking) {
+                blinkCounter++;
+                if (blinkCounter >= blinkEndCount) {
+                    for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                        m_ledBuffer.setRGB(i, (int) blinkColor.red, (int) blinkColor.green, (int) blinkColor.blue);
+                    }
+                }
+                if (blinkCounter >= blinkEndCount * 2) {
+                    blinkCounter = 0;
+                    isBlinking = false;
                 }
             }
-            if(blinkCounter >= blinkEndCount * 2) {
-                blinkCounter = 0;
-                isBlinking = false;
-            }
+            m_led.setData(m_ledBuffer);
         }
-        m_led.setData(m_ledBuffer);
     }
 
     @Override
-    public void debugSubsystem() {}
+    public void debugSubsystem() {
+    }
 
     @Override
     public HealthState checkHealth() {
@@ -80,22 +87,26 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
     public void rainbow(boolean isMaxBrightness) {
         // For every pixel
+        color = null;
         int brightness = isMaxBrightness ? 255 : 60;
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             // Calculate the hue - hue is easier for rainbows because the color
             // shape is a circle so only one value needs to precess
             final var hue = (m_rainbowFirstPixelHue + (i * 180 / m_ledBuffer.getLength())) % 180;
             // Set the value
+
             m_ledBuffer.setHSV(i, hue, 255, brightness);
         }
         // Increase by to make the rainbow "move"
         m_rainbowFirstPixelHue += 3;
         // Check bounds
         m_rainbowFirstPixelHue %= 180;
+        changed = true;
     }
 
     public void mustangRainbow() {
         // For every pixel
+        color = null;
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setHSV(i, 60, m_mustangRainbowFirstSaturation + (i * 255 / m_ledBuffer.getLength()) % 255, 255);
         }
@@ -103,112 +114,116 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         m_mustangRainbowFirstSaturation += 5;
         // Check bounds
         m_mustangRainbowFirstSaturation %= 255;
+        changed = true;
+    }
+
+    private boolean colorChanged(int index, LEDColor newColor) {
+        return !(m_ledBuffer.getLED(index).equals(newColor));
     }
 
     /**
      * Changes the LED strip so that all the LEDs are one color
      * Colors is in RGB FORMAT
+     * 
      * @param Color The color
-    **/
+     **/
 
-    public void solidrgb(LEDColor color){
-        for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setRGB(i,color.x, color.y, color.z );
-        }
-    }
-    /**
-     * Changes the LED strip so that all the LEDs are one color
-     * Colors is in HSV FORMAT
-     * @param Color The color
-    **/
+    public void solidrgb(LEDColor color) {
+        if (this.color == null || !color.equals(this.color)) {
+            changed = true;
+            this.color = color;
+            for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setRGB(i, (int) color.red, (int) color.green, (int) color.blue);
 
-    public void solidhsv(LEDColor color){
-        for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
-            m_ledBuffer.setHSV(i, color.x, color.y, color.z );
+            }
         }
+
     }
+
     /**
      * Changes the LED strip such that all LEDs are off
      */
-    public void off(){
-        solidhsv(new LEDColor(0,0,0));
-    }
+    public void off() {
+        solidrgb(new LEDColor(0.0, 0.0, 0.0));
 
+    }
 
     /**
      * Makes the LED strip blink for a certain duration
-     * @param color The color to blink with
+     * 
+     * @param color    The color to blink with
      * @param duration The duration of the blink
      */
-    public void blinkhsv(LEDColor color, int duration) {
-        if(!isBlinking) {
-            blinkCounter = 0;
-            isBlinking = true;
-            blinkColor = color;
-            blinkEndCount = duration;
-            for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setHSV(i, color.x, color.y, color.z * 2);
-            }
-        }
-    }
     public void blinkrgb(LEDColor color, int duration) {
-        if(!isBlinking) {
+        if (!isBlinking) {
+            this.color = null;
             blinkCounter = 0;
             isBlinking = true;
             blinkColor = color;
             blinkEndCount = duration;
-            for(int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, color.x, color.y, color.z * 2);
+            for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setRGB(i, (int) color.red, (int) color.green, (int) color.blue);
             }
         }
-    }
-    /**
-     * Makes the LED strip blink for {@link #DEFAULT_BLINK_DURATION}.
-     * @param color
-     */
-    public void blinkhsv(LEDColor color){
-        blinkhsv(color, DEFAULT_BLINK_DURATION);
+        changed = true;
     }
 
-    public void blinkrgb(LEDColor color){
+    /**
+     * Makes the LED strip blink for {@link #DEFAULT_BLINK_DURATION}.
+     * 
+     * @param color
+     */
+    public void blinkrgb(LEDColor color) {
         blinkrgb(color, DEFAULT_BLINK_DURATION);
     }
 
     /**
      * "Fills" the led strip with the active color, proportional to the ratio given
-     * @param active The "filled" color
+     * 
+     * @param active   The "filled" color
      * @param inactive The "empty" color
-     * @param ratio The ratio of the active color vs the inactive color
+     * @param ratio    The ratio of the active color vs the inactive color
      */
     public void progressBar(LEDColor active, LEDColor inactive, double ratio) {
         ratio /= 2; // due to our leds having 2 leds per 'index'
-        int ratioBright = (int)(length * ratio);
-
+        int ratioBright = (int) (length * ratio);
+        color = null;
         for (int i = 0; i < ratioBright; i++) { // active
-            m_ledBuffer.setHSV(i, active.x, active.y, active.z);
+            if (colorChanged(i, active)) {
+                changed = true;
+                m_ledBuffer.setRGB(i, (int) active.red, (int) active.green, (int) active.blue);
+
+            }
         }
 
         for (int i = ratioBright; i < length; i++) { // inactive
-            m_ledBuffer.setHSV(i, inactive.x, inactive.y,  inactive.z);
+            if (colorChanged(i, inactive)) {
+                m_ledBuffer.setRGB(i, (int) inactive.red, (int) inactive.green, (int) inactive.blue);
+                changed = true;
+            }
         }
+
     }
 
     /**
      * "Fills" the led strip with the active color, proportional to the ratio given.
      * The inactive color will be dimmer than the given color
+     * 
      * @param color The "filled" color
      * @param ratio The ratio between the active color vs the inactive color
      */
-    public void progressBar(LEDColor color, double ratio){
+    public void progressBar(LEDColor color, double ratio) {
         progressBar(color, color.dimmer(), ratio);
     }
 
     /**
      * Sets the led buffer
+     * 
      * @param buffer The new buffer
      */
-    public void setBuffer(AddressableLEDBuffer buffer){
+    public void setBuffer(AddressableLEDBuffer buffer) {
         this.m_ledBuffer = buffer;
+        changed = true;
     }
 
 }
