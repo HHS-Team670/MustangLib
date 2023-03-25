@@ -112,8 +112,7 @@ public class SwervePoseEstimator {
         if (vision != null) {
             // SmartDashboard.putBoolean("VISION IS: ", vision != null);
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
-                // if (p != null && !DriverStation.isAutonomous()) {
-                if (p != null) {
+                if (p != null && !DriverStation.isAutonomous()) {
                     field2d.getObject("camera pose").setPose(p.estimatedPose.toPose2d());
                     // SmartDashboard.putNumber("camera x", p.estimatedPose.toPose2d().getX());
                     // SmartDashboard.putNumber("camera y", p.estimatedPose.toPose2d().getY());
