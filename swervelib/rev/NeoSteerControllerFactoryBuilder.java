@@ -59,8 +59,8 @@ public final class NeoSteerControllerFactoryBuilder {
         @Override
         public void addDashboardEntries(ShuffleboardContainer container, ControllerImplementation controller) {
             Logger.consoleLog("Called super.addDashboardEntries");
-            // SteerControllerFactory.super.addDashboardEntries(container, controller);
-            // container.addNumber("Absolute Encoder Angle", () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
+            SteerControllerFactory.super.addDashboardEntries(container, controller);
+            container.addNumber("Absolute Encoder Angle", () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
         }
 
         @Override
