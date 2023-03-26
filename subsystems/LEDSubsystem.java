@@ -30,6 +30,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     protected boolean isBlinking;
     private LEDColor blinkColor;
     private boolean changed = false;
+    private int animationCount = 0;
 
     /**
      * Creates a new LEDSubsystem
@@ -93,9 +94,10 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     }
 
     /**
-     * Creates a rainbow effect on the LED Strip
+     * Creates a solid rainbow on the robot
      */
-    public void rainbow(boolean isMaxBrightness) {
+    public void solidRainbow(boolean isMaxBrightness, int rainbowPixelHue) {
+        m_rainbowFirstPixelHue = rainbowPixelHue;
         // For every pixel
         color = null;
         int brightness = isMaxBrightness ? 255 : 60;
@@ -107,24 +109,41 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
             m_ledBuffer.setHSV(i, hue, 255, brightness);
         }
-        // Increase by to make the rainbow "move"
-        m_rainbowFirstPixelHue += 3;
-        // Check bounds
-        m_rainbowFirstPixelHue %= 180;
+
         changed = true;
     }
 
-    public void mustangRainbow() {
+    /**
+     * Creates an animated rainbow effect on the LED Strip
+     */
+    public void animatedRainbow(boolean isMaxBrightness, int updateSpeed, int rainbowSpeed) {
+        if(animationCount > updateSpeed) {
+            animationCount = 0;
+            solidRainbow(false, m_rainbowFirstPixelHue + rainbowSpeed);
+        }
+        animationCount++;
+    }
+
+    
+
+    public void solidMustangRainbow(int mustangRainbowFirstSaturation) {
+        m_mustangRainbowFirstSaturation = mustangRainbowFirstSaturation;
         // For every pixel
         color = null;
         for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
             m_ledBuffer.setHSV(i, 60, m_mustangRainbowFirstSaturation + (i * 255 / m_ledBuffer.getLength()) % 255, 255);
         }
-        // Increase by to make the rainbow "move"
-        m_mustangRainbowFirstSaturation += 5;
         // Check bounds
         m_mustangRainbowFirstSaturation %= 255;
         changed = true;
+    }
+
+    public void animatedMustangRainbow(int updateSpeed, int rainbowSpeed) {
+        if(animationCount > updateSpeed) {
+            animationCount = 0;
+            solidMustangRainbow(m_mustangRainbowFirstSaturation + rainbowSpeed);
+        }
+        animationCount++;
     }
 
     private boolean colorChanged(int index, LEDColor newColor) {

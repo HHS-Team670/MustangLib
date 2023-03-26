@@ -20,6 +20,7 @@ import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
+import frc.team670.robot.constants.RobotConstants;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
 
@@ -50,7 +51,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[0] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(0, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.FRONT_LEFT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_GEAR_RATIO, config.FRONT_LEFT_MODULE_DRIVE_MOTOR,
                 config.FRONT_LEFT_MODULE_STEER_MOTOR, config.FRONT_LEFT_MODULE_STEER_ENCODER,
                 config.FRONT_LEFT_MODULE_STEER_OFFSET);
 
@@ -58,7 +59,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[1] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_GEAR_RATIO, config.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
                 config.FRONT_RIGHT_MODULE_STEER_MOTOR, config.FRONT_RIGHT_MODULE_STEER_ENCODER,
                 config.FRONT_RIGHT_MODULE_STEER_OFFSET);
 
@@ -66,7 +67,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.BACK_LEFT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_GEAR_RATIO, config.BACK_LEFT_MODULE_DRIVE_MOTOR,
                 config.BACK_LEFT_MODULE_STEER_MOTOR, config.BACK_LEFT_MODULE_STEER_ENCODER,
                 config.BACK_LEFT_MODULE_STEER_OFFSET);
 
@@ -74,7 +75,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         m_modules[3] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(6, 0),
-                Mk4iSwerveModuleHelper.GearRatio.L1, config.BACK_RIGHT_MODULE_DRIVE_MOTOR,
+                config.SWERVE_MODULE_GEAR_RATIO, config.BACK_RIGHT_MODULE_DRIVE_MOTOR,
                 config.BACK_RIGHT_MODULE_STEER_MOTOR, config.BACK_RIGHT_MODULE_STEER_ENCODER,
                 config.BACK_RIGHT_MODULE_STEER_OFFSET);
 
@@ -157,6 +158,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
+                SmartDashboard.putNumber("gyro offset", gyroOffset.getDegrees());
                 return angle;
             }
             return Rotation2d.fromDegrees(-m_navx.getFusedHeading());
@@ -185,6 +187,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             }
         }
         poseEstimator.update();
+        SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
 
         if (RobotBase.getInstance().isTeleopEnabled()
                 && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) {
@@ -251,7 +254,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public double getPitch() {
-        return m_navx.getPitch();
+        return m_navx.getPitch() - RobotConstants.PITCH_OFFSET;
     }
 
     public void resetOdometry(Pose2d pose) {
