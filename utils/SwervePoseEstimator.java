@@ -103,12 +103,13 @@ public class SwervePoseEstimator {
             // find average distance
             double avgDistance = 0;
             int tagsSeen = 0;
-            for (var cam : vision.getCameras()) {
+            for (int i = 0; i < vision.getCameras().length; i++) {
+                var cam = vision.getCameras()[i];
                 var result = cam.getLatestResult();
                 if (result.hasTargets()) {
-                    for (int i = 0; i < result.targets.size(); i++) {
+                    for (int j = 0; j < result.targets.size(); j++) {
                         tagsSeen++;
-                        var t = result.targets.get(i);
+                        var t = result.targets.get(j);
                         avgDistance += t.getBestCameraToTarget().getTranslation()
                                 .getDistance(RobotConstants.CAMERA_OFFSETS[i].getTranslation());
                     }
