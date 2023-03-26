@@ -20,6 +20,7 @@ import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.commands.drivebase.MustangPPSwerveControllerCommand;
+import frc.team670.robot.constants.RobotConstants;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
 
@@ -157,6 +158,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
+                SmartDashboard.putNumber("gyro offset", gyroOffset.getDegrees());
                 return angle;
             }
             return Rotation2d.fromDegrees(-m_navx.getFusedHeading());
@@ -178,13 +180,14 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             zeroGyroscope();
         }
 
-        // if (vision != null) {
-        //     if (poseEstimator.getVision() == null) {
-        //         vision.initalize(); // at this point, DS is initalized. Okay calling vision init here.
-        //         poseEstimator.initialize(vision);
-        //     }
-        // }
-        // poseEstimator.update();
+        if (vision != null) {
+            if (poseEstimator.getVision() == null) {
+                vision.initalize(); // at this point, DS is initalized. Okay calling vision init here.
+                poseEstimator.initialize(vision);
+            }
+        }
+        poseEstimator.update();
+        SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
 
         if (RobotBase.getInstance().isTeleopEnabled()
                 && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) {
@@ -251,7 +254,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public double getPitch() {
-        return m_navx.getPitch();
+        return m_navx.getPitch() - RobotConstants.PITCH_OFFSET;
     }
 
     public void resetOdometry(Pose2d pose) {
