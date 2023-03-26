@@ -10,17 +10,21 @@ import edu.wpi.first.wpilibj.util.Color;
  */
 public class LEDColor {
 
-    public static final LEDColor BLUE = new LEDColor(240, 100, 255);
+    public static final LEDColor BLUE = new LEDColor(120, 255, 200);//120
 
-    public static final LEDColor GREEN = new LEDColor(119, 88, 255);
+    public static final LEDColor GREEN = new LEDColor(60, 255, 200);
 
     public static final LEDColor RED = new LEDColor(0, 100, 255);
 
-    public static final LEDColor SEXY_PURPLE = new LEDColor(275, 93, 255);
+    public static final LEDColor SEXY_PURPLE = new LEDColor(140, 255, 200);
 
-    public static final LEDColor SEXY_YELLOW = new LEDColor(14, 100, 255);
+    public static final LEDColor SEXY_YELLOW = new LEDColor(20, 255, 200);
 
     public static final LEDColor WHITE = new LEDColor(0, 0, 255);
+
+    public static final LEDColor PINK = new LEDColor(169,255,200);
+
+    public static final LEDColor LIGHT_BLUE = new LEDColor(100, 255, 200);
 
     public final int h, s, v;
 
@@ -32,7 +36,7 @@ public class LEDColor {
     }
 
     public LEDColor(int h) {
-        this(h, 100, 255);
+        this(h, 255, 255);
 
     }
 
