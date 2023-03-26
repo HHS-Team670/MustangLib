@@ -61,7 +61,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
                 blinkCounter++;
                 if (blinkCounter >= blinkEndCount) {
                     for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                        m_ledBuffer.setRGB(i, (int) blinkColor.red, (int) blinkColor.green, (int) blinkColor.blue);
+                        m_ledBuffer.setHSV(i, (int) blinkColor.h, (int) blinkColor.s, (int) blinkColor.v);
                     }
                 }
                 if (blinkCounter >= blinkEndCount * 2) {
@@ -123,17 +123,17 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     /**
      * Changes the LED strip so that all the LEDs are one color
-     * Colors is in RGB FORMAT
+     * Colors is in HSV FORMAT
      * 
      * @param Color The color
      **/
 
-    public void solidrgb(LEDColor color) {
+    public void solidhsv(LEDColor color) {
         if (this.color == null || !color.equals(this.color)) {
             changed = true;
             this.color = color;
             for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, (int) color.red, (int) color.green, (int) color.blue);
+                m_ledBuffer.setHSV(i, (int) color.h, (int) color.s, (int) color.v);
 
             }
         }
@@ -144,7 +144,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * Changes the LED strip such that all LEDs are off
      */
     public void off() {
-        solidrgb(new LEDColor(0.0, 0.0, 0.0));
+        solidhsv(new LEDColor(0, 0, 0));
 
     }
 
@@ -154,7 +154,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * @param color    The color to blink with
      * @param duration The duration of the blink
      */
-    public void blinkrgb(LEDColor color, int duration) {
+    public void blinkhsv(LEDColor color, int duration) {
         if (!isBlinking) {
             this.color = null;
             blinkCounter = 0;
@@ -162,7 +162,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
             blinkColor = color;
             blinkEndCount = duration;
             for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                m_ledBuffer.setRGB(i, (int) color.red, (int) color.green, (int) color.blue);
+                m_ledBuffer.setHSV(i, color.h, color.s, color.v);
             }
         }
         changed = true;
@@ -173,8 +173,8 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * 
      * @param color
      */
-    public void blinkrgb(LEDColor color) {
-        blinkrgb(color, DEFAULT_BLINK_DURATION);
+    public void blinkhsv(LEDColor color) {
+        blinkhsv(color, DEFAULT_BLINK_DURATION);
     }
 
     /**
@@ -191,14 +191,14 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         for (int i = 0; i < ratioBright; i++) { // active
             if (colorChanged(i, active)) {
                 changed = true;
-                m_ledBuffer.setRGB(i, (int) active.red, (int) active.green, (int) active.blue);
+                m_ledBuffer.setHSV(i, (int) active.h, (int) active.s, (int) active.v);
 
             }
         }
 
         for (int i = ratioBright; i < length; i++) { // inactive
             if (colorChanged(i, inactive)) {
-                m_ledBuffer.setRGB(i, (int) inactive.red, (int) inactive.green, (int) inactive.blue);
+                m_ledBuffer.setHSV(i, (int) inactive.h, (int) inactive.s, (int) inactive.v);
                 changed = true;
             }
         }
