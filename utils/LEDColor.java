@@ -34,12 +34,6 @@ public class LEDColor {
 
     public static final LEDColor SEXY_YELLOW = new LEDColor(12);
 
-   
-
-    
-
-    
-
     public final int h, s, v;
 
     public LEDColor(int h, int s, int v) {

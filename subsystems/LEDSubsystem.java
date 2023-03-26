@@ -52,23 +52,33 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         m_led.start();
     }
 
-    @Override
     public void mustangPeriodic() {
         // Handle turning off blink
-        if (changed || isBlinking) {
-            changed = false;
-            if (isBlinking) {
+        if(isBlinking){
+             if (isBlinking) {
                 blinkCounter++;
-                if (blinkCounter >= blinkEndCount) {
+                if (blinkCounter <= blinkEndCount) {
                     for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
                         m_ledBuffer.setHSV(i, (int) blinkColor.h, (int) blinkColor.s, (int) blinkColor.v);
                     }
                 }
-                if (blinkCounter >= blinkEndCount * 2) {
-                    blinkCounter = 0;
-                    isBlinking = false;
+                
+                if (blinkCounter > blinkEndCount) {
+                    for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                        m_ledBuffer.setHSV(i, 0, 0 , 0);
+
+                    }
+                    if(blinkCounter > blinkEndCount*2){
+                        blinkCounter = 0;
+                        isBlinking = false;
+                    }
                 }
             }
+             m_led.setData(m_ledBuffer);
+        }
+        if (changed) {
+            changed = false;
+           
             m_led.setData(m_ledBuffer);
         }
     }
