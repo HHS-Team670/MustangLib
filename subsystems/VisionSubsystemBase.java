@@ -113,11 +113,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         for (int i = 0; i < poses.length; i++) {
             var bestTarget = cameras[i].getCamera().getLatestResult().getBestTarget();
             if (bestTarget != null) {
-                if (bestTarget.getPoseAmbiguity() > 0.15) {
-                    poses[i] = null;
-                } else {
-                    poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
-                }
+                // if (bestTarget.getPoseAmbiguity() > 0.15) {
+                //     poses[i] = null;
+                // } else {
+                //     poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
+                // }
+
+                poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
             } else {
                 poses[i] = null;
             }
