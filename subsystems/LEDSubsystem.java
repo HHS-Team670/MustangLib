@@ -27,9 +27,10 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     private LEDColor color = new LEDColor(0, 0, 0);
     private int blinkCounter;
     private int blinkEndCount;
-    protected boolean isBlinking;
+    protected boolean isBlinking = false;
     private LEDColor blinkColor;
     private boolean changed = false;
+    private boolean isMoving = false;
     private int animationCount = 0;
 
     /**
@@ -55,33 +56,34 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     public void mustangPeriodic() {
         // Handle turning off blink
-        if(isBlinking){
-             if (isBlinking) {
+        if (isBlinking) {
+            if (isBlinking) {
                 blinkCounter++;
                 if (blinkCounter <= blinkEndCount) {
                     for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
                         m_ledBuffer.setHSV(i, (int) blinkColor.h, (int) blinkColor.s, (int) blinkColor.v);
                     }
                 }
-                
+
                 if (blinkCounter > blinkEndCount) {
                     for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                        m_ledBuffer.setHSV(i, 0, 0 , 0);
+                        m_ledBuffer.setHSV(i, 0, 0, 0);
 
                     }
-                    if(blinkCounter > blinkEndCount*2){
+                    if (blinkCounter > blinkEndCount * 2) {
                         blinkCounter = 0;
                         isBlinking = false;
                     }
                 }
             }
-             m_led.setData(m_ledBuffer);
-        }
-        if (changed) {
-            changed = false;
-           
             m_led.setData(m_ledBuffer);
         }
+
+        if (isMoving || changed) {
+            changed = false;
+            m_led.setData(m_ledBuffer);
+        }
+
     }
 
     @Override
@@ -109,7 +111,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
             m_ledBuffer.setHSV(i, hue, 255, brightness);
         }
-
+        isMoving = true;
         changed = true;
     }
 
@@ -117,14 +119,12 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * Creates an animated rainbow effect on the LED Strip
      */
     public void animatedRainbow(boolean isMaxBrightness, int updateSpeed, int rainbowSpeed) {
-        if(animationCount > updateSpeed) {
+        if (animationCount > updateSpeed) {
             animationCount = 0;
             solidRainbow(false, m_rainbowFirstPixelHue + rainbowSpeed);
         }
         animationCount++;
     }
-
-    
 
     public void solidMustangRainbow(int mustangRainbowFirstSaturation) {
         m_mustangRainbowFirstSaturation = mustangRainbowFirstSaturation;
@@ -139,7 +139,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     }
 
     public void animatedMustangRainbow(int updateSpeed, int rainbowSpeed) {
-        if(animationCount > updateSpeed) {
+        if (animationCount > updateSpeed) {
             animationCount = 0;
             solidMustangRainbow(m_mustangRainbowFirstSaturation + rainbowSpeed);
         }
@@ -194,7 +194,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
                 m_ledBuffer.setHSV(i, color.h, color.s, color.v);
             }
         }
-        changed = true;
+        // changed = true;
     }
 
     /**
