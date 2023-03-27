@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import org.photonvision.EstimatedRobotPose;
+import edu.wpi.first.math.MatBuilder;
 import edu.wpi.first.math.Matrix;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -22,6 +23,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 import frc.team670.robot.constants.FieldConstants;
+import frc.team670.robot.constants.RobotConstants;
 
 public class SwervePoseEstimator {
 
@@ -34,18 +36,16 @@ public class SwervePoseEstimator {
      * estimates less. This matrix is in the form [x, y, theta]ᵀ, with units in meters and radians,
      * then meters.
      */
-    private Vector<N3> stateStdDevs =
-            VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.1)); // default
-            // VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
+    private Vector<N3> stateStdDevs = VecBuilder.fill(0.1, 0.1, Units.degreesToRadians(0.1)); // default
+    // VecBuilder.fill(0.05, 0.05, Units.degreesToRadians(5));
 
     /**
      * Standard deviations of the vision measurements. Increase these numbers to trust global
      * measurements from vision less. This matrix is in the form [x, y, theta]ᵀ, with units in
      * meters and radians.
      */
-    private Vector<N3> visionMeasurementStdDevs =
-            VecBuilder.fill(0.9, 0.9, Units.degreesToRadians(99999999));  // default
-            // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
+    private Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.9, 0.9, 99999999); // default
+    // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
     private SwerveDrivePoseEstimator poseEstimator;
 
@@ -77,27 +77,15 @@ public class SwervePoseEstimator {
             p = FieldConstants.allianceFlip(p);
             allTargets.add(p);
         }
-        // addTargetsToField(allTargets);
     }
 
-    // private void addTargetsToField(List<Pose2d> targets) {
-    // targets.forEach((t) -> {
-    // addTargetToField(t);
-    // });
-    // }
-
-    // private void addTargetToField(Pose2d target) {
-    // field2d.getObject(String.format("Target %f, %f", target.getX(),
-    // target.getY())).setPose(target);
-    // }
 
     public void updateStdFromDashboard() {
         SmartDashboard.getNumber(getFormattedPose(), 0);
         poseEstimator.setVisionMeasurementStdDevs(new Matrix<>(VecBuilder.fill(
-            SmartDashboard.getNumber("vision std x: ", 0.9),
-            SmartDashboard.getNumber("vision std y: ", 0.9),
-            Units.degreesToRadians(SmartDashboard.getNumber("vision std deg: ", 0.9))
-        )));
+                SmartDashboard.getNumber("vision std x: ", 0.9),
+                SmartDashboard.getNumber("vision std y: ", 0.9),
+                Units.degreesToRadians(SmartDashboard.getNumber("vision std deg: ", 0.9)))));
     }
 
     public void addTrajectory(Trajectory traj) {
@@ -109,16 +97,38 @@ public class SwervePoseEstimator {
     }
 
     public void update() {
-        if (vision != null) {
-            // SmartDashboard.putBoolean("VISION IS: ", vision != null);
+        if (vision != null && !DriverStation.isAutonomous()) {
+            // scale vision "trust" exponentially by distance
+
+            // find average distance
+            double avgDistance = 0;
+            int tagsSeen = 0;
+            for (int i = 0; i < vision.getCameras().length; i++) {
+                var cam = vision.getCameras()[i];
+                var result = cam.getLatestResult();
+                if (result.hasTargets()) {
+                    for (int j = 0; j < result.targets.size(); j++) {
+                        tagsSeen++;
+                        var t = result.targets.get(j);
+                        avgDistance += t.getBestCameraToTarget().getTranslation()
+                                .getDistance(RobotConstants.CAMERA_OFFSETS[i].getTranslation());
+                    }
+
+                }
+            }
+            avgDistance /= tagsSeen;
+
+            // scale vision xy std dev by distance
+            double visionXYStdDev = 0.01 * Math.pow(avgDistance, 2.0) / tagsSeen;
+
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
-                if (p != null && !DriverStation.isAutonomous()) {
-                    field2d.getObject("camera pose").setPose(p.estimatedPose.toPose2d());
-                    // SmartDashboard.putNumber("camera x", p.estimatedPose.toPose2d().getX());
-                    // SmartDashboard.putNumber("camera y", p.estimatedPose.toPose2d().getY());
-                    
+                if (p != null) {
+                    // poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
+                    //         p.timestampSeconds);
                     poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
-                            p.timestampSeconds);
+                            p.timestampSeconds, VecBuilder.fill(visionXYStdDev, visionXYStdDev, 99999999));
+
+                    field2d.getObject("camera pose").setPose(p.estimatedPose.toPose2d());
                 }
             }
         }
@@ -154,20 +164,21 @@ public class SwervePoseEstimator {
             return pose;
         }
     }
-    
+
     private Trajectory getAbsoluteFieldOrientedTrajectory(Trajectory traj) {
         List<State> states = traj.getStates();
         List<State> adjusted = new ArrayList<>(states.size());
-        states.forEach(
-            s -> {
-                if (DriverStation.getAlliance() == Alliance.Red) {
-                    adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond, s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPose(s.poseMeters), -s.curvatureRadPerMeter));
-                }
+        states.forEach(s -> {
+            if (DriverStation.getAlliance() == Alliance.Red) {
+                adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond,
+                        s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPose(s.poseMeters),
+                        -s.curvatureRadPerMeter));
             }
-        );
+        });
 
         return adjusted.isEmpty() ? traj : new Trajectory(adjusted);
     }
+
     /**
      * Resets the current pose to the specified pose. This should ONLY be called when the robot's
      * position on the field is known, like at the beginning of a match.
