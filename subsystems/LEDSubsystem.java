@@ -56,7 +56,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     public void mustangPeriodic() {
         // Handle turning off blink
-        if (isBlinking) {
+      
             if (isBlinking) {
                 blinkCounter++;
                 if (blinkCounter <= blinkEndCount) {
@@ -75,9 +75,10 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
                         isBlinking = false;
                     }
                 }
+                m_led.setData(m_ledBuffer);
             }
-            m_led.setData(m_ledBuffer);
-        }
+            
+        
 
         if (isMoving || changed) {
             changed = false;
