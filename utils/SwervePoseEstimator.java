@@ -29,7 +29,6 @@ public class SwervePoseEstimator {
 
     private final SwerveDrive driveBase;
     private VisionSubsystemBase vision;
-    // private Set<Pose2d> closestTargetsSet = new HashSet<>(3);
 
     /**
      * Standard deviations of model states. Increase these numbers to trust your model's state
@@ -67,26 +66,13 @@ public class SwervePoseEstimator {
         SmartDashboard.putNumber("vision std y: ", 0.9);
         SmartDashboard.putNumber("vision std deg: ", 0.9);
 
+        // load single sub to smartdashboard
+        Pose2d singlesub = FieldConstants.allianceOrientedAllianceFlip(FieldConstants.LoadingZone.IntakePoses[0]);
+        field2d.getObject("Single Substation").setPose(singlesub);
         SmartDashboard.putData(field2d);
-        List<Pose2d> allTargets = new ArrayList<>();
-        for (Pose2d p : FieldConstants.Grids.scoringPoses) {
-            p = FieldConstants.allianceFlip(p);
-            allTargets.add(p);
-        }
-        for (Pose2d p : FieldConstants.LoadingZone.IntakePoses) {
-            p = FieldConstants.allianceFlip(p);
-            allTargets.add(p);
-        }
+        SmartDashboard.putString("Single Substation", getFormattedPose(singlesub));
     }
 
-
-    public void updateStdFromDashboard() {
-        SmartDashboard.getNumber(getFormattedPose(), 0);
-        poseEstimator.setVisionMeasurementStdDevs(new Matrix<>(VecBuilder.fill(
-                SmartDashboard.getNumber("vision std x: ", 0.9),
-                SmartDashboard.getNumber("vision std y: ", 0.9),
-                Units.degreesToRadians(SmartDashboard.getNumber("vision std deg: ", 0.9)))));
-    }
 
     public void addTrajectory(Trajectory traj) {
         field2d.getObject("Trajectory").setTrajectory(getAbsoluteFieldOrientedTrajectory(traj));
@@ -132,15 +118,18 @@ public class SwervePoseEstimator {
                 }
             }
         }
-        // updateStdFromDashboard();
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
-        // updateTargets(getSortedTargetTranslations().subList(0, 2));
         field2d.setRobotPose(getAbsoluteFieldOrientedPose());
-        SmartDashboard.putString("Estimated pose", getFormattedPose());
+        SmartDashboard.putString("Estimated Pose", getFormattedPose());
     }
 
     private String getFormattedPose() {
         var pose = getCurrentPose();
+        return String.format("(%.2f, %.2f) %.2f degrees", pose.getX(), pose.getY(),
+                pose.getRotation().getDegrees());
+    }
+
+    private String getFormattedPose(Pose2d pose) {
         return String.format("(%.2f, %.2f) %.2f degrees", pose.getX(), pose.getY(),
                 pose.getRotation().getDegrees());
     }
@@ -201,6 +190,8 @@ public class SwervePoseEstimator {
     public VisionSubsystemBase getVision() {
         return vision;
     }
+
+
 
     public List<Pose2d> getSortedTargetTranslations() {
         List<Pose2d> targets = new ArrayList<>();
