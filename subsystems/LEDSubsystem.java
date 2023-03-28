@@ -56,23 +56,24 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     public void mustangPeriodic() {
         // Handle turning off blink
-
         if (isBlinking) {
-            blinkCounter++;
-            if (blinkCounter <= blinkEndCount) {
-                for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                    m_ledBuffer.setHSV(i, (int) blinkColor.h, (int) blinkColor.s, (int) blinkColor.v);
+            if (isBlinking) {
+                blinkCounter++;
+                if (blinkCounter <= blinkEndCount) {
+                    for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                        m_ledBuffer.setHSV(i, (int) blinkColor.h, (int) blinkColor.s, (int) blinkColor.v);
+                    }
                 }
-            }
 
-            if (blinkCounter > blinkEndCount) {
-                for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                    m_ledBuffer.setHSV(i, 0, 0, 0);
+                if (blinkCounter > blinkEndCount) {
+                    for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                        m_ledBuffer.setHSV(i, 0, 0, 0);
 
-                }
-                if (blinkCounter > blinkEndCount * 2) {
-                    blinkCounter = 0;
-                    isBlinking = false;
+                    }
+                    if (blinkCounter > blinkEndCount * 2) {
+                        blinkCounter = 0;
+                        isBlinking = false;
+                    }
                 }
             }
             m_led.setData(m_ledBuffer);
@@ -80,6 +81,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
         if (isMoving || changed) {
             changed = false;
+            isMoving = false;
             m_led.setData(m_ledBuffer);
         }
 
@@ -232,6 +234,18 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         }
 
     }
+
+    /*
+     * Creates sections that light up based on colors added to array from top to bottom.
+     */
+     public void multiColor(LEDColor[]colors){
+        int section = length/colors.length;
+        for (int k = colors.length-1; k >= 0; k--){
+            for(int i = 0; i < section; i ++){
+                m_ledBuffer.setHSV(i, colors[k].h, colors[k].s, colors[k].v);
+            }
+        }
+     }
 
     /**
      * "Fills" the led strip with the active color, proportional to the ratio given.
