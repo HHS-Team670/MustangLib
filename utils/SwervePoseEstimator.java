@@ -11,6 +11,7 @@ import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -68,10 +69,7 @@ public class SwervePoseEstimator {
         SmartDashboard.putNumber("vision std deg: ", 0.9);
 
         // load single sub to smartdashboard
-        Pose2d singlesub = FieldConstants.LoadingZone.IntakePoses[0];
-        if (DriverStation.getAlliance() == Alliance.Red) {
-            singlesub = new Pose2d(FieldConstants.fieldLength - singlesub.getX(), singlesub.getY(), singlesub.getRotation().times(-1));
-        }
+        Pose2d singlesub = FieldConstants.allianceFlip(FieldConstants.LoadingZone.IntakePoses[0]);
         field2d.getObject("Single Substation").setPose(singlesub);
         SmartDashboard.putData(field2d);
         SmartDashboard.putString("Single Substation", getFormattedPose(singlesub));
@@ -110,7 +108,7 @@ public class SwervePoseEstimator {
             SmartDashboard.putNumber("Average distance", avgDistance);
 
             // scale vision xy std dev by distance
-            double visionXYStdDev = 0.01 * Math.pow(avgDistance, 2.0) / tagsSeen;
+            double visionXYStdDev = 0.01 * Math.pow(avgDistance, 3) / tagsSeen;
 
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
                 if (p != null) {
@@ -119,12 +117,12 @@ public class SwervePoseEstimator {
                     poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
                             p.timestampSeconds, VecBuilder.fill(visionXYStdDev, visionXYStdDev, 99999999));
 
-                    field2d.getObject("camera pose").setPose(getAbsoluteFieldOrientedPose(p.estimatedPose.toPose2d()));
+                    field2d.getObject("camera pose").setPose(FieldConstants.allianceFlip(p.estimatedPose.toPose2d()));
                 }
             }
         }
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
-        field2d.setRobotPose(getAbsoluteFieldOrientedPose());
+        field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
         SmartDashboard.putString("Estimated Pose", getFormattedPose());
     }
 
@@ -147,11 +145,13 @@ public class SwervePoseEstimator {
         return poseEstimator.getEstimatedPosition();
     }
 
-    public Pose2d getAbsoluteFieldOrientedPose() {
-        return getAbsoluteFieldOrientedPose(getCurrentPose());
+    
+
+    private Pose2d getAbsoluteFieldOrientedPoseFromAllianceOriented() {
+        return getAbsoluteFieldOrientedPoseFromAllianceOriented(getCurrentPose());
     }
 
-    private Pose2d getAbsoluteFieldOrientedPose(Pose2d pose) {
+    private Pose2d getAbsoluteFieldOrientedPoseFromAllianceOriented(Pose2d pose) {
         if (DriverStation.getAlliance() == Alliance.Red) {
             return FieldConstants.allianceOrientedAllianceFlip(pose);
         } else {
@@ -165,7 +165,7 @@ public class SwervePoseEstimator {
         states.forEach(s -> {
             if (DriverStation.getAlliance() == Alliance.Red) {
                 adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond,
-                        s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPose(s.poseMeters),
+                        s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPoseFromAllianceOriented(s.poseMeters),
                         -s.curvatureRadPerMeter));
             }
         });
