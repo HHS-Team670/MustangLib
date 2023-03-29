@@ -72,18 +72,18 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         init = true;
     }
 
-    public void setAprilTagFieldLayout(AprilTagFieldLayout field) {
-        this.visionFieldLayout = field;
-        var origin = DriverStation.getAlliance() == Alliance.Blue
-                ? OriginPosition.kBlueAllianceWallRightSide
-                : OriginPosition.kRedAllianceWallRightSide;
-        visionFieldLayout.setOrigin(origin);
-        // rest cams with new field
-        PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
-        for (int i = 0; i < cams.length; i++) {
-            c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
-        }
-    }
+    // public void setAprilTagFieldLayout(AprilTagFieldLayout field) {
+    //     this.visionFieldLayout = field;
+    //     var origin = DriverStation.getAlliance() == Alliance.Blue
+    //             ? OriginPosition.kBlueAllianceWallRightSide
+    //             : OriginPosition.kRedAllianceWallRightSide;
+    //     visionFieldLayout.setOrigin(origin);
+    //     // rest cams with new field
+    //     PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
+    //     for (int i = 0; i < cams.length; i++) {
+    //         c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
+    //     }
+    // }
 
     public boolean hasTarget() {
         for (PhotonCameraWrapper pcw : cameras) {
@@ -113,11 +113,11 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         for (int i = 0; i < poses.length; i++) {
             var bestTarget = cameras[i].getCamera().getLatestResult().getBestTarget();
             if (bestTarget != null) {
-                // if (bestTarget.getPoseAmbiguity() > 0.15) {
-                //     poses[i] = null;
-                // } else {
-                //     poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
-                // }
+                if (bestTarget.getPoseAmbiguity() > 0.5) {
+                    poses[i] = null;
+                } else {
+                    poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
+                }
 
                 poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
             } else {
