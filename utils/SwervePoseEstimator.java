@@ -45,7 +45,7 @@ public class SwervePoseEstimator {
      * measurements from vision less. This matrix is in the form [x, y, theta]ᵀ, with units in
      * meters and radians.
      */
-    private Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.9, 0.9, 99999999); // default
+    private Vector<N3> visionMeasurementStdDevs = VecBuilder.fill(0.9, 0.9, 99999);
     // VecBuilder.fill(0.5, 0.5, Units.degreesToRadians(10));
 
     private SwerveDrivePoseEstimator poseEstimator;
@@ -108,14 +108,15 @@ public class SwervePoseEstimator {
             SmartDashboard.putNumber("Average distance", avgDistance);
 
             // scale vision xy std dev by distance
-            double visionXYStdDev = 0.01 * Math.pow(avgDistance, 3) / tagsSeen;
+            double visionXYStdDev = 0.01 * Math.pow(avgDistance, 2) / tagsSeen;
 
             for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
                 if (p != null) {
                     // poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
                     //         p.timestampSeconds);
+                    
                     poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
-                            p.timestampSeconds, VecBuilder.fill(visionXYStdDev, visionXYStdDev, 99999999));
+                            p.timestampSeconds, VecBuilder.fill(visionXYStdDev, visionXYStdDev, 99999));
 
                     field2d.getObject("camera pose").setPose(FieldConstants.allianceFlip(p.estimatedPose.toPose2d()));
                 }
@@ -123,13 +124,11 @@ public class SwervePoseEstimator {
         }
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
-        SmartDashboard.putString("Estimated Pose", getFormattedPose());
+        SmartDashboard.putString("Estimated Pose", getFormattedPose(getAbsoluteFieldOrientedPoseFromAllianceOriented()));
     }
 
     private String getFormattedPose() {
-        var pose = getCurrentPose();
-        return String.format("(%.2f, %.2f) %.2f degrees", pose.getX(), pose.getY(),
-                pose.getRotation().getDegrees());
+        return getFormattedPose(getCurrentPose());
     }
 
     private String getFormattedPose(Pose2d pose) {
