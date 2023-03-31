@@ -186,6 +186,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 poseEstimator.initialize(vision);
             }
         }
+        SmartDashboard.putBoolean("SWERVEDRIVE PERIODIC", true);
         poseEstimator.update();
         SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
 
