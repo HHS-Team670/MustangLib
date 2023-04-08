@@ -1,12 +1,10 @@
 package frc.team670.mustanglib.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import frc.team670.mustanglib.utils.PIDConstantSet;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
@@ -14,83 +12,60 @@ import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
 /**
  * Superclass for any rotating subsystem which uses a SparkMax to control the rotator.
- * 
- * @author ctychen
  */
 public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         implements TunableSubsystem {
 
-    protected SparkMAXLite rotator;
-    protected RelativeEncoder rotator_encoder;
-    protected SparkMaxPIDController rotator_controller;
-    protected double setpoint;
-    protected double tempSetpoint;
-    protected PIDConstantSet PIDs;
-    protected double MAX_OUTPUT, MIN_OUTPUT;
-    protected double MAX_ROT_RPM, MAX_SUB_RPM, MIN_RPM, MAX_ACC, ALLOWED_ERR;
-    protected int SMARTMOTION_SLOT;
-    protected double ROTATOR_GEAR_RATIO;
-    protected static final double NO_SETPOINT = 9999;
+    protected SparkMAXLite mRotator;
+    protected RelativeEncoder mEncoder;
+    protected SparkMaxPIDController mController;
+    protected double mSetpoint;
+    protected double mTempSetpoint;
+
+    private final Config kConfig;
+    protected static final double kNoSetPoint = 9999;
 
     public record Config(int kDeviceID, int kSlot, MotorConfig.Motor_Type kMotorType,
             IdleMode kIdleMode, double kRotatorGearRatio, double kP, double kI, double kD,
             double kFF, double kIz, double kMaxOutput, double kMinOutput, double kMaxRotatorRPM,
             double kMinRotatorRPM, double kMaxAcceleration, double kAllowedError,
             float[] kSoftLimits, int kContinuousCurrent, int kPeakCurrent) {
-        public float convertDegreesToRotations(float d) {
-            return (float) ((d / 360) * kRotatorGearRatio());
-        }
     }
 
-    public SparkMaxRotatingSubsystem(Config config) {
-        this.rotator =
-                SparkMAXFactory.buildFactorySparkMAX(config.kDeviceID(), config.kMotorType());
-        this.rotator_encoder = rotator.getEncoder();
-        this.rotator.setIdleMode(config.kIdleMode());
-        this.rotator_controller = rotator.getPIDController();
+    public SparkMaxRotatingSubsystem(Config kConfig) {
+        this.kConfig = kConfig;
 
-        this.ROTATOR_GEAR_RATIO = config.kRotatorGearRatio();
-
-        // PID coefficients
-        this.PIDs = new PIDConstantSet(config.kP(), config.kI(), config.kIz(), config.kD(),
-                config.kFF());
-        this.MAX_OUTPUT = config.kMaxOutput();
-        this.MIN_OUTPUT = config.kMinOutput();
-
-        // Smart Motion Coefficients
-        this.MAX_ROT_RPM = config.kMaxRotatorRPM(); // rpm
-        this.MAX_SUB_RPM = getMaxSubsystemRPM(config.kMaxRotatorRPM());
-        this.MAX_ACC = config.kMaxAcceleration();
-        this.ALLOWED_ERR = config.kAllowedError();
+        this.mRotator = SparkMAXFactory.buildFactorySparkMAX(kConfig.kDeviceID, kConfig.kMotorType);
+        this.mEncoder = mRotator.getEncoder();
+        this.mRotator.setIdleMode(kConfig.kIdleMode);
+        this.mController = mRotator.getPIDController();
 
         // set PID coefficients
-        this.rotator_controller.setP(PIDs.P);
-        this.rotator_controller.setI(PIDs.I);
-        this.rotator_controller.setD(PIDs.D);
-        this.rotator_controller.setIZone(PIDs.I_ZONE);
-        this.rotator_controller.setFF(PIDs.FF);
-        this.rotator_controller.setOutputRange(this.MIN_OUTPUT, this.MAX_OUTPUT);
+        mController.setP(kConfig.kP);
+        mController.setI(kConfig.kI);
+        mController.setD(kConfig.kD);
+        mController.setIZone(kConfig.kIz);
+        mController.setFF(kConfig.kFF);
+        mController.setOutputRange(kConfig.kMinOutput, kConfig.kMaxOutput);
 
-        this.SMARTMOTION_SLOT = config.kSlot();
-        rotator_controller.setSmartMotionMaxVelocity(this.MAX_ROT_RPM, this.SMARTMOTION_SLOT);
-        rotator_controller.setSmartMotionMinOutputVelocity(this.MIN_RPM, this.SMARTMOTION_SLOT);
-        rotator_controller.setSmartMotionMaxAccel(this.MAX_ACC, this.SMARTMOTION_SLOT);
-        rotator_controller.setSmartMotionAllowedClosedLoopError(this.ALLOWED_ERR,
-                this.SMARTMOTION_SLOT);
+        mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM, kConfig.kSlot);
+        mController.setSmartMotionMinOutputVelocity(kConfig.kMinRotatorRPM, kConfig.kSlot);
+        mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration, kConfig.kSlot);
+        mController.setSmartMotionAllowedClosedLoopError(kConfig.kAllowedError, kConfig.kSlot);
 
-        rotator.setSmartCurrentLimit(config.kPeakCurrent(), config.kContinuousCurrent());
+        mRotator.setSmartCurrentLimit(kConfig.kPeakCurrent, kConfig.kContinuousCurrent);
 
-        if (config.kSoftLimits() == null || config.kSoftLimits().length > 2) {
-            rotator.enableSoftLimit(SoftLimitDirection.kForward, false);
-            rotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        if (kConfig.kSoftLimits == null || kConfig.kSoftLimits.length > 2) {
+            mRotator.enableSoftLimit(SoftLimitDirection.kForward, false);
+            mRotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
         } else {
-            rotator.setSoftLimit(SoftLimitDirection.kForward, config.kSoftLimits()[0]);
-            rotator.setSoftLimit(SoftLimitDirection.kReverse, config.kSoftLimits()[1]);
-            rotator.enableSoftLimit(SoftLimitDirection.kForward, true);
-            rotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
+            mRotator.setSoftLimit(SoftLimitDirection.kForward, kConfig.kSoftLimits[0]);
+            mRotator.setSoftLimit(SoftLimitDirection.kReverse, kConfig.kSoftLimits[1]);
+            mRotator.enableSoftLimit(SoftLimitDirection.kForward, true);
+            mRotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
         }
-        // getMaxSubsystemRPM(config.kMaxRotatorRPM());
-        setpoint = NO_SETPOINT;
+        // getMaxSubsystemRPM(config.kMaxRotatorRPM);
+        mSetpoint = kNoSetPoint;
 
         clearSetpoint();
 
@@ -101,11 +76,11 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @return The count, in motor rotations, from the subsystem's rotator's integrated encoder.
      */
     public double getUnadjustedPosition() {
-        return this.rotator_encoder.getPosition();
+        return this.mEncoder.getPosition();
     }
 
     public double getMaxSubsystemRPM(double rotRPM) {
-        return rotRPM / this.ROTATOR_GEAR_RATIO;
+        return rotRPM / kConfig.kRotatorGearRatio;
     }
 
     /**
@@ -122,14 +97,14 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param setpoint
      */
     protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
-        if (setpoint != NO_SETPOINT) {
-            rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
+        if (setpoint != kNoSetPoint) {
+            mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
                     arbitraryFF);
 
         } else {
-            rotator_controller.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+            mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
         }
-        this.setpoint = setpoint;
+        this.mSetpoint = setpoint;
     }
 
     /**
@@ -140,8 +115,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param setpoint The temporary setpoint for the system, in motor rotations
      */
     protected void setTemporaryMotionTarget(double setpoint) {
-        tempSetpoint = setpoint;
-        rotator_controller.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
+        mTempSetpoint = setpoint;
+        mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
     }
 
     /**
@@ -173,9 +148,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      *         subsystem turning through this angle
      */
     protected double getMotorRotationsFromAngle(double angle) {
-        double rotations = (angle / 360) * this.ROTATOR_GEAR_RATIO
-                + ((int) (getUnadjustedPosition() / this.ROTATOR_GEAR_RATIO))
-                        * this.ROTATOR_GEAR_RATIO;
+        double rotations = (angle / 360) * kConfig.kRotatorGearRatio
+                + ((int) (getUnadjustedPosition() / kConfig.kRotatorGearRatio))
+                        * kConfig.kRotatorGearRatio;
         // Logger.consoleLog("Indexer motor rotations from angle is %s", rotations);
         return rotations;
     }
@@ -187,10 +162,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param factor Multiplier for ff. For example, if you want to halve it, factor should be 0.5
      */
     protected void temporaryScaleSmartMotionMaxVelAndAccel(double factor) {
-        rotator_controller.setFF(PIDs.FF * factor);
-        rotator_controller.setSmartMotionMaxVelocity(this.MAX_ROT_RPM * factor,
-                this.SMARTMOTION_SLOT);
-        rotator_controller.setSmartMotionMaxAccel(this.MAX_ACC * factor, this.SMARTMOTION_SLOT);
+        mController.setFF(kConfig.kFF * factor);
+        mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM * factor, kConfig.kSlot);
+        mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration * factor, kConfig.kSlot);
     }
 
     /**
@@ -199,9 +173,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * testing, unjamming, or zeroing, to bring motion back to normal.
      */
     protected void resetSmartMotionSettingsToSystem() {
-        rotator_controller.setFF(PIDs.FF);
-        rotator_controller.setSmartMotionMaxVelocity(this.MAX_ROT_RPM, this.SMARTMOTION_SLOT);
-        rotator_controller.setSmartMotionMaxAccel(this.MAX_ACC, this.SMARTMOTION_SLOT);
+        mController.setFF(kConfig.kFF);
+        mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM, kConfig.kSlot);
+        mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration, kConfig.kSlot);
     }
 
     /**
@@ -210,7 +184,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      */
     public double getCurrentAngleInDegrees() {
         double rotations = getRotatorEncoder().getPosition();
-        double angle = 360 * ((rotations) / this.ROTATOR_GEAR_RATIO);
+        double angle = 360 * ((rotations) / kConfig.kRotatorGearRatio);
         return angle;
     }
 
@@ -219,45 +193,45 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @return true if the subsystem is close to its target position, within some margin of error.
      */
     public boolean hasReachedTargetPosition() {
-        return (MathUtils.doublesEqual(rotator_encoder.getPosition(), setpoint, ALLOWED_ERR));
+        return (MathUtils.doublesEqual(mEncoder.getPosition(), mSetpoint, kConfig.kAllowedError));
     }
 
     protected void enableCoastMode() {
-        rotator.setIdleMode(IdleMode.kCoast);
+        mRotator.setIdleMode(IdleMode.kCoast);
     }
 
     protected void enableBrakeMode() {
-        rotator.setIdleMode(IdleMode.kBrake);
+        mRotator.setIdleMode(IdleMode.kBrake);
     }
 
     /**
      * Stops the motion of the subsystem.
      */
     public synchronized void stop() {
-        rotator.set(0);
+        mRotator.set(0);
     }
 
     /**
      * Clears the setpoint of this subsystem
      */
     public void clearSetpoint() {
-        rotator_controller.setReference(0, CANSparkMax.ControlType.kDutyCycle);
-        setpoint = NO_SETPOINT;
+        mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+        mSetpoint = kNoSetPoint;
     }
 
-    public SparkMAXLite getRotator() {
-        return this.rotator;
+    public SparkMAXLite getmRotator() {
+        return this.mRotator;
     }
 
     public RelativeEncoder getRotatorEncoder() {
-        return this.rotator_encoder;
+        return this.mEncoder;
     }
 
     public SparkMaxPIDController getRotatorController() {
-        return this.rotator_controller;
+        return this.mController;
     }
 
     public void moveByPercentOutput(double output) {
-        rotator.set(output);
+        mRotator.set(output);
     }
 }
