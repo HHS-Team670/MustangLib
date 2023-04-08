@@ -30,8 +30,8 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
         this.rotPIDController = new RotationController(new ProfiledPIDController(3.5, 0, 0,
-                new Constraints(RobotConstants.kMaxAngularSpeedRadiansPerSecond,
-                        RobotConstants.kMaxAngularSpeedRadiansPerSecondSquared)));
+                new Constraints(RobotConstants.DriveBase.kMaxAngularSpeedRadiansPerSecond,
+                        RobotConstants.DriveBase.kMaxAngularSpeedRadiansPerSecondSquared)));
         this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
 
 

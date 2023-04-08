@@ -120,8 +120,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the
-     * robot is
+     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
      * currently facing to the 'forwards' direction.
      */
     public void zeroGyroscope() {
@@ -157,7 +156,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
-                Rotation2d angle = Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
+                Rotation2d angle =
+                        Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
                 SmartDashboard.putNumber("gyro offset", gyroOffset.getDegrees());
                 return angle;
             }
@@ -182,11 +182,12 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         if (vision != null) {
             if (poseEstimator.getVision() == null) {
-                if (!vision.isInitialized()) vision.initalize(); // at this point, DS is initalized. Okay calling vision init here.
+                if (!vision.isInitialized())
+                    vision.initalize(); // at this point, DS is initalized. Okay calling vision init
+                                        // here.
                 poseEstimator.initialize(vision);
             }
         }
-        SmartDashboard.putBoolean("SWERVEDRIVE PERIODIC", true);
         poseEstimator.update();
         SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
 
@@ -255,7 +256,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public double getPitch() {
-        return m_navx.getPitch() - RobotConstants.PITCH_OFFSET;
+        return m_navx.getPitch() - RobotConstants.DriveBase.kPitchOffset;
     }
 
     public void resetOdometry(Pose2d pose) {
