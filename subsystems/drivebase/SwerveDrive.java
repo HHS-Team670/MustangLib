@@ -7,16 +7,17 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.RobotBase;
-import frc.team670.mustanglib.constants.SwerveConfig;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
+import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
@@ -25,79 +26,93 @@ import frc.team670.robot.constants.RobotConstants;
 public abstract class SwerveDrive extends MustangSubsystemBase {
 
     // private SwerveDriveOdometry odometer;
-    private SwervePoseEstimator poseEstimator;
-    private final NavX m_navx;
-    private VisionSubsystemBase vision;
+    private SwervePoseEstimator mPoseEstimator;
+    private final NavX mNavx;
+    private VisionSubsystemBase mVision;
 
-    MustangPPSwerveControllerCommand swerveControllerCommand;
+    MustangPPSwerveControllerCommand mSwerveControllerCommand;
 
-    private final SwerveModule[] m_modules;
-    private final SwerveDriveKinematics m_kinematics;
-    private ChassisSpeeds m_chassisSpeeds;
-    private Rotation2d gyroOffset = new Rotation2d();
-    private Rotation2d desiredHeading = null; // for rotation snapping
+    private final SwerveModule[] mModules;
+    private final SwerveDriveKinematics mKinematics;
+    private ChassisSpeeds mChassisSpeeds;
+    private Rotation2d mGyroOffset = new Rotation2d();
+    private Rotation2d mDesiredHeading = null; // for rotation snapping
 
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
 
     private final double MAX_VELOCITY, MAX_VOLTAGE;
 
-    public SwerveDrive(SwerveConfig config) {
+
+    public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
+            double kMaxVelocity, double kMaxVoltage, SerialPort.Port kNavXPort,
+            GearRatio kSwerveModuleGearRatio, int kFrontLeftModuleDriveMotor,
+            int kFrontLeftModuleSteerMotor, int kFrontLeftModuleSteerEncoder,
+            double kFrontLeftModuleSteerOffset, int kFrontRightModuleDriveMotor,
+            int kFrontRightModuleSteerMotor, int kFrontRightModuleSteerEncoder,
+            double kFrontRightModuleSteerOffset, int kBackLeftModuleDriveMotor,
+            int kBackLeftModuleSteerMotor, int kBackLeftModuleSteerEncoder,
+            double kBackLeftModuleSteerOffset, int kBackRightModuleDriveMotor,
+            int kBackRightModuleSteerMotor, int kBackRightModuleSteerEncoder,
+            double kBackRightModuleSteerOffset) {
+    }
+
+    public SwerveDrive(Config config) {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-        MAX_VELOCITY = config.MAX_VELOCITY_METERS_PER_SECOND;
-        MAX_VOLTAGE = config.MAX_VOLTAGE;
-        m_modules = new SwerveModule[4];
+        MAX_VELOCITY = config.kMaxVelocity;
+        MAX_VOLTAGE = config.kMaxVoltage;
+        mModules = new SwerveModule[4];
 
         // front left
-        m_modules[0] = Mk4iSwerveModuleHelper.createNeo(
+        mModules[0] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(0, 0),
-                config.SWERVE_MODULE_GEAR_RATIO, config.FRONT_LEFT_MODULE_DRIVE_MOTOR,
-                config.FRONT_LEFT_MODULE_STEER_MOTOR, config.FRONT_LEFT_MODULE_STEER_ENCODER,
-                config.FRONT_LEFT_MODULE_STEER_OFFSET);
+                config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
+                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
+                config.kFrontLeftModuleSteerOffset);
 
         // front right
-        m_modules[1] = Mk4iSwerveModuleHelper.createNeo(
+        mModules[1] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
-                config.SWERVE_MODULE_GEAR_RATIO, config.FRONT_RIGHT_MODULE_DRIVE_MOTOR,
-                config.FRONT_RIGHT_MODULE_STEER_MOTOR, config.FRONT_RIGHT_MODULE_STEER_ENCODER,
-                config.FRONT_RIGHT_MODULE_STEER_OFFSET);
+                config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
+                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
+                config.kFrontRightModuleSteerOffset);
 
         // back left
-        m_modules[2] = Mk4iSwerveModuleHelper.createNeo(
+        mModules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
-                config.SWERVE_MODULE_GEAR_RATIO, config.BACK_LEFT_MODULE_DRIVE_MOTOR,
-                config.BACK_LEFT_MODULE_STEER_MOTOR, config.BACK_LEFT_MODULE_STEER_ENCODER,
-                config.BACK_LEFT_MODULE_STEER_OFFSET);
+                config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
+                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
+                config.kBackLeftModuleSteerOffset);
 
         // back right
-        m_modules[3] = Mk4iSwerveModuleHelper.createNeo(
+        mModules[3] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(6, 0),
-                config.SWERVE_MODULE_GEAR_RATIO, config.BACK_RIGHT_MODULE_DRIVE_MOTOR,
-                config.BACK_RIGHT_MODULE_STEER_MOTOR, config.BACK_RIGHT_MODULE_STEER_ENCODER,
-                config.BACK_RIGHT_MODULE_STEER_OFFSET);
+                config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
+                config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
+                config.kBackRightModuleSteerOffset);
 
-        m_kinematics = new SwerveDriveKinematics(
+        mKinematics = new SwerveDriveKinematics(
                 // Front left
-                new Translation2d(config.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        config.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                new Translation2d(config.kDriveBaseTrackWidth / 2.0,
+                        config.kDriveBaseWheelBase / 2.0),
                 // Front right
-                new Translation2d(config.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        -config.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                new Translation2d(config.kDriveBaseTrackWidth / 2.0,
+                        -config.kDriveBaseWheelBase / 2.0),
                 // Back left
-                new Translation2d(-config.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        config.DRIVETRAIN_WHEELBASE_METERS / 2.0),
+                new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
+                        config.kDriveBaseWheelBase / 2.0),
                 // Back right
-                new Translation2d(-config.DRIVETRAIN_TRACKWIDTH_METERS / 2.0,
-                        -config.DRIVETRAIN_WHEELBASE_METERS / 2.0));
+                new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
+                        -config.kDriveBaseWheelBase / 2.0));
 
-        m_navx = new NavX(config.NAVX_PORT);
-        m_chassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        mNavx = new NavX(config.kNavXPort);
+        mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
         // getModulePositions());
-        poseEstimator = new SwervePoseEstimator(this);
+        mPoseEstimator = new SwervePoseEstimator(this);
 
         SmartDashboard.putNumber("MAX VELOCITY M/S", MAX_VELOCITY);
     }
@@ -112,7 +127,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         // chassisSpeeds.vyMetersPerSecond);
         // SmartDashboard.putNumber("chassis omega velocity",
         // chassisSpeeds.omegaRadiansPerSecond);
-        m_chassisSpeeds = chassisSpeeds;
+        mChassisSpeeds = chassisSpeeds;
     }
 
     public void stop() {
@@ -124,86 +139,87 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
      * currently facing to the 'forwards' direction.
      */
     public void zeroGyroscope() {
-        gyroOffset = getGyroscopeRotation(false);
+        mGyroOffset = getGyroscopeRotation(false);
     }
 
     public void setGyroscopeRotation(Rotation2d rot) {
-        gyroOffset = rot;
+        mGyroOffset = rot;
     }
 
     public SwerveDriveKinematics getSwerveKinematics() {
-        return m_kinematics;
+        return mKinematics;
     }
 
     public ChassisSpeeds getChassisSpeeds() {
-        return m_chassisSpeeds;
+        return mChassisSpeeds;
     }
 
     public Rotation2d getGyroscopeRotation() {
         return getGyroscopeRotation(true);
     }
 
-    public void setDesiredHeading(Rotation2d rot) {
-        this.desiredHeading = rot;
+    public void setmDesiredHeading(Rotation2d rot) {
+        this.mDesiredHeading = rot;
     }
 
     public Rotation2d getDesiredHeading() {
-        return this.desiredHeading;
+        return this.mDesiredHeading;
     }
 
     public Rotation2d getGyroscopeRotation(boolean offset) {
-        if (m_navx.isMagnetometerCalibrated()) {
+        if (mNavx.isMagnetometerCalibrated()) {
 
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle =
-                        Rotation2d.fromDegrees(-m_navx.getFusedHeading()).minus(gyroOffset);
-                SmartDashboard.putNumber("gyro offset", gyroOffset.getDegrees());
+                        Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
+                SmartDashboard.putNumber("gyro offset", mGyroOffset.getDegrees());
                 return angle;
             }
-            return Rotation2d.fromDegrees(-m_navx.getFusedHeading());
+            return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
         }
 
         // We have to invert the angle of the NavX so that rotating the robot
         // counter-clockwise
         // makes the angle increase.
         if (offset) {
-            return Rotation2d.fromDegrees(-m_navx.getYawFieldCentric()).minus(gyroOffset);
+            return Rotation2d.fromDegrees(-mNavx.getYawFieldCentric()).minus(mGyroOffset);
         }
-        return Rotation2d.fromDegrees(-m_navx.getYawFieldCentric());
+        return Rotation2d.fromDegrees(-mNavx.getYawFieldCentric());
     }
 
     @Override
     public void mustangPeriodic() {
 
-        if (gyroOffset == null && !m_navx.isCalibrating()) {
+        if (mGyroOffset == null && !mNavx.isCalibrating()) {
             zeroGyroscope();
         }
 
-        if (vision != null) {
-            if (poseEstimator.getVision() == null) {
-                if (!vision.isInitialized())
-                    vision.initalize(); // at this point, DS is initalized. Okay calling vision init
-                                        // here.
-                poseEstimator.initialize(vision);
+        if (mVision != null) {
+            if (mPoseEstimator.getVision() == null) {
+                if (!mVision.isInitialized())
+                    mVision.initalize(); // at this point, DS is initalized. Okay calling vision
+                                         // init
+                                         // here.
+                mPoseEstimator.initialize(mVision);
             }
         }
-        poseEstimator.update();
+        mPoseEstimator.update();
         SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
 
         if (RobotBase.getInstance().isTeleopEnabled()
-                && (swerveControllerCommand == null || !swerveControllerCommand.isScheduled())) {
-            SwerveModuleState[] states = m_kinematics.toSwerveModuleStates(m_chassisSpeeds);
+                && (mSwerveControllerCommand == null || !mSwerveControllerCommand.isScheduled())) {
+            SwerveModuleState[] states = mKinematics.toSwerveModuleStates(mChassisSpeeds);
             setModuleStates(states);
         }
     }
 
     public void initVision(VisionSubsystemBase vision) {
-        this.vision = vision;
+        this.mVision = vision;
     }
 
     public SwervePoseEstimator getPoseEstimator() {
-        return poseEstimator;
+        return mPoseEstimator;
     }
 
     public void setModuleStates(SwerveModuleState[] states) {
@@ -226,17 +242,17 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             backRightAngle = backRightPrevAngle;
         }
 
-        m_modules[0].set(frontLeftSpeed, frontLeftAngle);
-        m_modules[1].set(frontRightSpeed, frontRightAngle);
-        m_modules[2].set(backLeftSpeed, backLeftAngle);
-        m_modules[3].set(backRightSpeed, backRightAngle);
+        mModules[0].set(frontLeftSpeed, frontLeftAngle);
+        mModules[1].set(frontRightSpeed, frontRightAngle);
+        mModules[2].set(backLeftSpeed, backLeftAngle);
+        mModules[3].set(backRightSpeed, backRightAngle);
 
         frontLeftPrevAngle = frontLeftAngle;
         frontRightPrevAngle = frontRightAngle;
         backLeftPrevAngle = backLeftAngle;
         backRightPrevAngle = backRightAngle;
 
-        // for (SwerveModule m : m_modules) {
+        // for (SwerveModule m : mModules) {
         // SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle:
         // %f",
         // m.getDriveVelocity(), m.getSteerAngle()));
@@ -244,19 +260,19 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public void realignModules() {
-        m_modules[2].realign();
-        m_modules[3].realign();
-        m_modules[0].realign();
-        m_modules[1].realign();
+        mModules[2].realign();
+        mModules[3].realign();
+        mModules[0].realign();
+        mModules[1].realign();
     }
 
     public Pose2d getPose() {
         // return odometer.getPoseMeters();
-        return poseEstimator.getCurrentPose();
+        return mPoseEstimator.getCurrentPose();
     }
 
     public double getPitch() {
-        return m_navx.getPitch() - RobotConstants.DriveBase.kPitchOffset;
+        return mNavx.getPitch() - RobotConstants.DriveBase.kPitchOffset;
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -267,35 +283,35 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         setGyroscopeRotation(Rotation2d.fromDegrees(
                 getGyroscopeRotation(false).getDegrees() + pose.getRotation().getDegrees()));
         // odometer.resetPosition(pose.getRotation(), getModulePositions(), pose);
-        poseEstimator.setCurrentPose(pose);
+        mPoseEstimator.setCurrentPose(pose);
     }
 
     public SwerveModule[] getModules() {
-        return m_modules;
+        return mModules;
     }
 
     public SwerveModulePosition[] getModulePositions() {
         SwerveModulePosition positions[] = new SwerveModulePosition[4];
-        for (int i = 0; i < m_modules.length; i++) {
-            positions[i] = m_modules[i].getPosition();
+        for (int i = 0; i < mModules.length; i++) {
+            positions[i] = mModules[i].getPosition();
         }
         return positions;
     }
 
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState states[] = new SwerveModuleState[4];
-        for (int i = 0; i < m_modules.length; i++) {
-            states[i] = m_modules[i].getState();
+        for (int i = 0; i < mModules.length; i++) {
+            states[i] = mModules[i].getState();
         }
         return states;
     }
 
-    public void setSwerveControllerCommand(MustangPPSwerveControllerCommand command) {
-        this.swerveControllerCommand = command;
+    public void setmSwerveControllerCommand(MustangPPSwerveControllerCommand command) {
+        this.mSwerveControllerCommand = command;
     }
 
     public MustangPPSwerveControllerCommand getSwerveControllerCommand() {
-        return this.swerveControllerCommand;
+        return this.mSwerveControllerCommand;
     }
 
     public void park() {

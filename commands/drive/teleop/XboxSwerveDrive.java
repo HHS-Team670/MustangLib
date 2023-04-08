@@ -46,7 +46,7 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         // clear desired heading if at the heading or joystick touched
         if (driveBase.getDesiredHeading() != null) {
             if (rotPIDController.atReference() || modifyAxis(-controller.getRightX()) != 0)
-                driveBase.setDesiredHeading(null);
+                driveBase.setmDesiredHeading(null);
         }
 
         double xVel = MAX_VELOCITY * modifyAxis(-controller.getLeftY());
@@ -135,21 +135,21 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
 
     public class SetDesiredHeading extends InstantCommand implements MustangCommand {
         Rotation2d desiredHeading;
-    
+
         public SetDesiredHeading(Rotation2d desiredHeading) {
             this.desiredHeading = desiredHeading;
         }
-        
+
         @Override
         public void initialize() {
-            driveBase.setDesiredHeading(desiredHeading);
+            driveBase.setmDesiredHeading(desiredHeading);
         }
-    
+
         @Override
         public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
             // TODO Auto-generated method stub
             return null;
         }
-        
+
     }
 }
