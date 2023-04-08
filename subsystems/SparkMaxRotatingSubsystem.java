@@ -22,7 +22,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     protected double mSetpoint;
     protected double mTempSetpoint;
 
-    private final Config kConfig;
+    protected final Config kConfig;
     protected static final double kNoSetPoint = 9999;
 
     public record Config(int kDeviceID, int kSlot, MotorConfig.Motor_Type kMotorType,
@@ -186,6 +186,26 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         double rotations = getRotatorEncoder().getPosition();
         double angle = 360 * ((rotations) / kConfig.kRotatorGearRatio);
         return angle;
+    }
+
+    /**
+     * Calculated voltage using VoltageCalculator
+     * 
+     * @param voltage
+     */
+    public void updateArbitraryFeedForward(double voltage) {
+        if (mSetpoint != kNoSetPoint) {
+            mController.setReference(mSetpoint, CANSparkMax.ControlType.kSmartMotion,
+                    kConfig.kSlot, voltage);
+        }
+    }
+
+    /**
+     * 
+     * @return The setpoint in motor rotations
+     */
+    public double getSetpoint() {
+        return mSetpoint;
     }
 
     /**

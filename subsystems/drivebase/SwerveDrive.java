@@ -1,5 +1,7 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
+import java.util.Map;
+import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -12,6 +14,8 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
@@ -33,7 +37,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     MustangPPSwerveControllerCommand mSwerveControllerCommand;
 
     private final SwerveModule[] mModules;
-    private final SwerveDriveKinematics mKinematics;
+    private final SwerveDriveKinematics kKinematics;
     private ChassisSpeeds mChassisSpeeds;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
@@ -94,7 +98,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
                 config.kBackRightModuleSteerOffset);
 
-        mKinematics = new SwerveDriveKinematics(
+        kKinematics = new SwerveDriveKinematics(
                 // Front left
                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
                         config.kDriveBaseWheelBase / 2.0),
@@ -147,7 +151,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public SwerveDriveKinematics getSwerveKinematics() {
-        return mKinematics;
+        return kKinematics;
     }
 
     public ChassisSpeeds getChassisSpeeds() {
@@ -209,7 +213,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         if (RobotBase.getInstance().isTeleopEnabled()
                 && (mSwerveControllerCommand == null || !mSwerveControllerCommand.isScheduled())) {
-            SwerveModuleState[] states = mKinematics.toSwerveModuleStates(mChassisSpeeds);
+            SwerveModuleState[] states = kKinematics.toSwerveModuleStates(mChassisSpeeds);
             setModuleStates(states);
         }
     }
@@ -322,5 +326,12 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         states[2] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // back left
         states[3] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // back right
         setModuleStates(states);
+    }
+
+    public SwerveAutoBuilder getAutoBuilderFromEvents(Map<String, Command> eventMap) {
+        return new SwerveAutoBuilder(this::getPose, this::resetOdometry, kKinematics,
+                RobotConstants.DriveBase.kAutonTranslationPID,
+                RobotConstants.DriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
+                new Subsystem[] {this});
     }
 }
