@@ -36,8 +36,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
 
     private boolean debugSubsystemFields = false;
 
-    private FileWriter logFileWriter;
-    private String headerLabels = "DEFAULT_LABELS";
+    // private FileWriter logFileWriter;
+    // private String headerLabels = "DEFAULT_LABELS";
 
     /**
      * Creates a new MustangSubsystemBase. By default, the subsystem's initial

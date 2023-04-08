@@ -1,6 +1,7 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import java.util.Map;
+import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -34,18 +35,13 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
 
-    MustangPPSwerveControllerCommand mSwerveControllerCommand;
-
     private final SwerveModule[] mModules;
     private final SwerveDriveKinematics kKinematics;
-    private ChassisSpeeds mChassisSpeeds;
+    // private ChassisSpeeds mChassisSpeeds;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
 
-    private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
-
-    private final double MAX_VELOCITY, MAX_VOLTAGE;
-
+    private final double kMaxVelocity, kMaxVoltage;
 
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity, double kMaxVoltage, SerialPort.Port kNavXPort,
@@ -61,9 +57,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public SwerveDrive(Config config) {
+        kMaxVelocity = config.kMaxVelocity;
+        kMaxVoltage = config.kMaxVoltage;
+
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-        MAX_VELOCITY = config.kMaxVelocity;
-        MAX_VOLTAGE = config.kMaxVoltage;
         mModules = new SwerveModule[4];
 
         // front left
@@ -113,25 +110,16 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                         -config.kDriveBaseWheelBase / 2.0));
 
         mNavx = new NavX(config.kNavXPort);
-        mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+        // mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
         // getModulePositions());
         mPoseEstimator = new SwervePoseEstimator(this);
 
-        SmartDashboard.putNumber("MAX VELOCITY M/S", MAX_VELOCITY);
+        SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
-        // Logger.consoleLog(chassisSpeeds.vxMetersPerSecond + ", " +
-        // chassisSpeeds.vyMetersPerSecond + ", " +
-        // chassisSpeeds.omegaRadiansPerSecond);
-        // SmartDashboard.putNumber("chassis x velocity",
-        // chassisSpeeds.vxMetersPerSecond);
-        // SmartDashboard.putNumber("chassis y velocity",
-        // chassisSpeeds.vyMetersPerSecond);
-        // SmartDashboard.putNumber("chassis omega velocity",
-        // chassisSpeeds.omegaRadiansPerSecond);
-        mChassisSpeeds = chassisSpeeds;
+        setModuleStates(kKinematics.toSwerveModuleStates(chassisSpeeds));
     }
 
     public void stop() {
@@ -155,7 +143,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     public ChassisSpeeds getChassisSpeeds() {
-        return mChassisSpeeds;
+        return kKinematics.toChassisSpeeds(getModuleStates());
     }
 
     public Rotation2d getGyroscopeRotation() {
@@ -210,12 +198,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
         mPoseEstimator.update();
         SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
-
-        if (RobotBase.getInstance().isTeleopEnabled()
-                && (mSwerveControllerCommand == null || !mSwerveControllerCommand.isScheduled())) {
-            SwerveModuleState[] states = kKinematics.toSwerveModuleStates(mChassisSpeeds);
-            setModuleStates(states);
-        }
     }
 
     public void initVision(VisionSubsystemBase vision) {
@@ -228,50 +210,44 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public void setModuleStates(SwerveModuleState[] states) {
 
-        double frontLeftSpeed = states[0].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
-        double frontRightSpeed = states[1].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
-        double backLeftSpeed = states[2].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
-        double backRightSpeed = states[3].speedMetersPerSecond / MAX_VELOCITY * MAX_VOLTAGE;
+        double frontLeftSpeed = states[0].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
+        double frontRightSpeed = states[1].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
+        double backLeftSpeed = states[2].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
+        double backRightSpeed = states[3].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
 
         double frontLeftAngle = states[0].angle.getRadians();
         double frontRightAngle = states[1].angle.getRadians();
         double backLeftAngle = states[2].angle.getRadians();
         double backRightAngle = states[3].angle.getRadians();
 
-        if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
-                && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
-            frontLeftAngle = frontLeftPrevAngle;
-            frontRightAngle = frontRightPrevAngle;
-            backLeftAngle = backLeftPrevAngle;
-            backRightAngle = backRightPrevAngle;
-        }
+        // angle check doesn't do anything. Probably contributes to error. Gets the same angle as
+        // prevAngle since the only time the angle is set is after retrieving these values.
+
+        // if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
+        // && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
+        // frontLeftAngle = frontLeftPrevAngle;
+        // frontRightAngle = frontRightPrevAngle;
+        // backLeftAngle = backLeftPrevAngle;
+        // backRightAngle = backRightPrevAngle;
+        // }
 
         mModules[0].set(frontLeftSpeed, frontLeftAngle);
         mModules[1].set(frontRightSpeed, frontRightAngle);
         mModules[2].set(backLeftSpeed, backLeftAngle);
         mModules[3].set(backRightSpeed, backRightAngle);
 
-        frontLeftPrevAngle = frontLeftAngle;
-        frontRightPrevAngle = frontRightAngle;
-        backLeftPrevAngle = backLeftAngle;
-        backRightPrevAngle = backRightAngle;
-
-        // for (SwerveModule m : mModules) {
-        // SmartDashboard.putString(m.toString(), String.format("velocity: %f\nangle:
-        // %f",
-        // m.getDriveVelocity(), m.getSteerAngle()));
-        // }
+        // frontLeftPrevAngle = frontLeftAngle;
+        // frontRightPrevAngle = frontRightAngle;
+        // backLeftPrevAngle = backLeftAngle;
+        // backRightPrevAngle = backRightAngle;
     }
 
     public void realignModules() {
-        mModules[2].realign();
-        mModules[3].realign();
-        mModules[0].realign();
-        mModules[1].realign();
+        for (SwerveModule m : mModules)
+            m.realign();
     }
 
     public Pose2d getPose() {
-        // return odometer.getPoseMeters();
         return mPoseEstimator.getCurrentPose();
     }
 
@@ -286,7 +262,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         }
         setGyroscopeRotation(Rotation2d.fromDegrees(
                 getGyroscopeRotation(false).getDegrees() + pose.getRotation().getDegrees()));
-        // odometer.resetPosition(pose.getRotation(), getModulePositions(), pose);
         mPoseEstimator.setCurrentPose(pose);
     }
 
@@ -310,14 +285,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         return states;
     }
 
-    public void setmSwerveControllerCommand(MustangPPSwerveControllerCommand command) {
-        this.mSwerveControllerCommand = command;
-    }
-
-    public MustangPPSwerveControllerCommand getSwerveControllerCommand() {
-        return this.mSwerveControllerCommand;
-    }
-
     public void park() {
         SwerveModuleState[] states = new SwerveModuleState[4];
         // needs the 0.1 or else it won't even rotate the wheels
@@ -332,6 +299,13 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         return new SwerveAutoBuilder(this::getPose, this::resetOdometry, kKinematics,
                 RobotConstants.DriveBase.kAutonTranslationPID,
                 RobotConstants.DriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
+                new Subsystem[] {this});
+    }
+
+    public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerTrajectory traj) {
+        return new MustangPPSwerveControllerCommand(traj, this::getPose, getSwerveKinematics(),
+                RobotConstants.DriveBase.xController, RobotConstants.DriveBase.yController,
+                RobotConstants.DriveBase.thetaController, this::setModuleStates,
                 new Subsystem[] {this});
     }
 }
