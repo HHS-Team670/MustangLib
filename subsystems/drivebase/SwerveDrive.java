@@ -17,10 +17,10 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
@@ -43,31 +43,38 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     private final double kMaxVelocity, kMaxVoltage;
 
+    private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
+
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
-            double kMaxVelocity, double kMaxVoltage, SerialPort.Port kNavXPort,
-            GearRatio kSwerveModuleGearRatio, int kFrontLeftModuleDriveMotor,
-            int kFrontLeftModuleSteerMotor, int kFrontLeftModuleSteerEncoder,
-            double kFrontLeftModuleSteerOffset, int kFrontRightModuleDriveMotor,
-            int kFrontRightModuleSteerMotor, int kFrontRightModuleSteerEncoder,
-            double kFrontRightModuleSteerOffset, int kBackLeftModuleDriveMotor,
-            int kBackLeftModuleSteerMotor, int kBackLeftModuleSteerEncoder,
-            double kBackLeftModuleSteerOffset, int kBackRightModuleDriveMotor,
-            int kBackRightModuleSteerMotor, int kBackRightModuleSteerEncoder,
-            double kBackRightModuleSteerOffset) {
+            double kMaxVelocity, double kMaxVoltage, double kMaxDriveCurrent,
+            double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
+            int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
+            int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset,
+            int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
+            int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset,
+            int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
+            int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset,
+            int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
+            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset) {
     }
 
     public SwerveDrive(Config config) {
         kMaxVelocity = config.kMaxVelocity;
         kMaxVoltage = config.kMaxVoltage;
 
+        kModuleConfig.setDriveCurrentLimit(kMaxVoltage);
+        kModuleConfig.setDriveCurrentLimit(config.kMaxDriveCurrent);
+        kModuleConfig.setSteerCurrentLimit(config.kMaxSteerCurrent);
+
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
         mModules = new SwerveModule[4];
+
 
         // front left
         mModules[0] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(0, 0),
-                config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
+                kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
                 config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
                 config.kFrontLeftModuleSteerOffset);
 
@@ -75,7 +82,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         mModules[1] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
-                config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
+                kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
                 config.kFrontRightModuleSteerOffset);
 
@@ -83,7 +90,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         mModules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
-                config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
+                kModuleConfig, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
                 config.kBackLeftModuleSteerOffset);
 
@@ -91,7 +98,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         mModules[3] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(6, 0),
-                config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
+                kModuleConfig, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
                 config.kBackRightModuleSteerOffset);
 
