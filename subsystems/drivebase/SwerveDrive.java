@@ -29,15 +29,12 @@ import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.constants.RobotConstants;
 
 public abstract class SwerveDrive extends MustangSubsystemBase {
-
-    // private SwerveDriveOdometry odometer;
     private SwervePoseEstimator mPoseEstimator;
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
 
     private final SwerveModule[] mModules;
     private final SwerveDriveKinematics kKinematics;
-    // private ChassisSpeeds mChassisSpeeds;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
 
