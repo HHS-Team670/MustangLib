@@ -189,6 +189,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         if (mGyroOffset == null && !mNavx.isCalibrating()) {
             zeroGyroscope();
+            realignModules();
         }
 
         if (mVision != null) {
