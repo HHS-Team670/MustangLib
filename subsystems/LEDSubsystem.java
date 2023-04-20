@@ -3,7 +3,6 @@ package frc.team670.mustanglib.subsystems;
 import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 import frc.team670.mustanglib.utils.LEDColor;
-import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * Represents an addresable LED strip

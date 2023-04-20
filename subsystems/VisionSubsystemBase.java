@@ -1,48 +1,41 @@
 package frc.team670.mustanglib.subsystems;
 
 import java.util.Optional;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
-import edu.wpi.first.math.Pair;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.utils.Logger;
 
 
 /**
- * Stores values off of NetworkTables for easy retrieval and gives them Listeners to update the
- * stored values as they are changed.
+ * Subsystem base vision. Mainly used for april tags pose estimation.
+ * 
+ * @author ethan c
  */
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
-
-    private PowerDistribution pd;
-    protected PhotonCameraWrapper[] cameras;
+    protected PhotonCameraWrapper[] mCameras;
+    private AprilTagFieldLayout mVisionFieldLayout;
+    private ThreadPoolExecutor mExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
+    private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
+    private boolean mInit = false;
 
     private PhotonCamera[] cams;
     private Transform3d[] cameraOffsets;
-    private AprilTagFieldLayout visionFieldLayout;
-    // protected double visionCapTime;
-    // private boolean hasTarget;
-    // private AprilTagFieldLayout visionFieldLayout;
-    private boolean ledsTurnedOn;
-    private boolean overridden;
-    private boolean init = false;
 
-
-
-    public VisionSubsystemBase(PowerDistribution pd, AprilTagFieldLayout visionFieldLayout,
-            PhotonCamera[] cams, Transform3d[] cameraOffsets) {
-        this.pd = pd;
+    public VisionSubsystemBase(AprilTagFieldLayout visionFieldLayout, PhotonCamera[] cams,
+            Transform3d[] cameraOffsets) {
         this.cams = cams;
-        this.visionFieldLayout = visionFieldLayout;
+        this.mVisionFieldLayout = visionFieldLayout;
         this.cameraOffsets = cameraOffsets;
     }
 
@@ -51,42 +44,43 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      * More details here: https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
      */
     public void initalize() {
-        // SmartDashboard.putString("VISION INIT: DRIVER STATION ALLIANCE:", "" +
-        // DriverStation.getAlliance());
         // does nothing if DS not initialized yet
         if (DriverStation.getAlliance() == Alliance.Invalid) {
-            init = false;
+            mInit = false;
             return;
         }
-
-        var origin = DriverStation.getAlliance() == Alliance.Blue
-                ? OriginPosition.kBlueAllianceWallRightSide
-                : OriginPosition.kRedAllianceWallRightSide;
-        visionFieldLayout.setOrigin(origin);
+        setFieldOrigin();
 
         PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
         for (int i = 0; i < cams.length; i++) {
-            c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
+            c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], mVisionFieldLayout);
         }
-        this.cameras = c;
-        init = true;
+        this.mCameras = c;
+        mInit = true;
     }
 
-    // public void setAprilTagFieldLayout(AprilTagFieldLayout field) {
-    //     this.visionFieldLayout = field;
-    //     var origin = DriverStation.getAlliance() == Alliance.Blue
-    //             ? OriginPosition.kBlueAllianceWallRightSide
-    //             : OriginPosition.kRedAllianceWallRightSide;
-    //     visionFieldLayout.setOrigin(origin);
-    //     // rest cams with new field
-    //     PhotonCameraWrapper[] c = new PhotonCameraWrapper[cams.length];
-    //     for (int i = 0; i < cams.length; i++) {
-    //         c[i] = new PhotonCameraWrapper(cams[i], cameraOffsets[i], visionFieldLayout);
-    //     }
-    // }
+    private void setFieldOrigin() {
+        var origin = DriverStation.getAlliance() == Alliance.Blue
+                ? OriginPosition.kBlueAllianceWallRightSide
+                : OriginPosition.kRedAllianceWallRightSide;
+        mVisionFieldLayout.setOrigin(origin);
+    }
+
+    @Override
+    public void mustangPeriodic() {
+        if (!mInit) {
+            initalize();
+        } else {
+            mExecutor.submit(
+                () -> {
+                    processVisionMeasurements();
+                }
+            );
+        }
+    }
 
     public boolean hasTarget() {
-        for (PhotonCameraWrapper pcw : cameras) {
+        for (PhotonCameraWrapper pcw : mCameras) {
             var targets = pcw.getCamera().getLatestResult().targets;
             if (targets.isEmpty())
                 return false;
@@ -95,7 +89,19 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     public boolean isInitialized() {
-        return init;
+        return mInit;
+    }
+
+    public record VisionMeasurement(EstimatedRobotPose kEstimatedRobotPose, double kXConfidence,
+            double kYConfidence, double kThetaConfidence) {
+    }
+
+    public VisionMeasurement getVisionMeasurement() {
+        return mVisionMeasurementsBuffer.poll();
+    }
+
+    private void processVisionMeasurements() {
+
     }
 
     /**
@@ -104,22 +110,23 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      *         create the estimate
      */
     public EstimatedRobotPose[] getEstimatedGlobalPose(Pose2d prevEstimatedRobotPose) {
-        if (!init) {
+        if (!mInit) {
             Logger.consoleLog("Vision not initalized!", this);
             return null;
         }
 
-        EstimatedRobotPose[] poses = new EstimatedRobotPose[cameras.length];
+        EstimatedRobotPose[] poses = new EstimatedRobotPose[mCameras.length];
         for (int i = 0; i < poses.length; i++) {
-            var bestTarget = cameras[i].getCamera().getLatestResult().getBestTarget();
+            var bestTarget = mCameras[i].getCamera().getLatestResult().getBestTarget();
             if (bestTarget != null) {
                 if (bestTarget.getPoseAmbiguity() > 1.5) {
                     poses[i] = null;
                 } else {
-                    poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
+                    poses[i] =
+                            mCameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
                 }
 
-                poses[i] = cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
+                poses[i] = mCameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
             } else {
                 poses[i] = null;
             }
@@ -149,34 +156,12 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     // return new Pair<>(new Pose2d(avgX, avgY, new Rotation2d(avgDeg)), avgTime);
     // }
 
-    public void switchLEDS(boolean on, boolean override) {
-        pd.setSwitchableChannel(on);
-        ledsTurnedOn = on;
-        overridden = override;
-    }
-
-    public void switchLEDS(boolean on) {
-        switchLEDS(on, false);
-    }
-
-    public boolean LEDSOverridden() {
-        return overridden;
-    }
-
-    public boolean LEDsTurnedOn() {
-        return ledsTurnedOn;
-    }
-
-    public void testLEDS() {
-        pd.setSwitchableChannel(SmartDashboard.getBoolean("LEDs on", true));
-    }
-
     @Override
     public HealthState checkHealth() {
         return HealthState.GREEN;
     }
 
-    public PhotonCamera[] getCameras() {
+    public PhotonCamera[] getmCameras() {
         return this.cams;
     }
 

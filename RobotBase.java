@@ -17,7 +17,6 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.Logger;
 
 /**
@@ -95,21 +94,6 @@ public class RobotBase extends TimedRobot {
     } else {
       Logger.consoleLog("Failed to create logging directory at " + logDirectory.getAbsolutePath());
     }
-
-    // Creates new subsystem files in the log directory
-    for (MustangSubsystemBase subsystem : RobotContainerBase.allSubsystems) {
-      subsystem.createLogFile(logDirectory);
-    }
-  }
-
-  private static boolean recursivelyDeleteDirectory(File directoryToBeDeleted) {
-    File[] allContents = directoryToBeDeleted.listFiles();
-    if (allContents != null) {
-      for (File file : allContents) {
-        recursivelyDeleteDirectory(file);
-      }
-    }
-    return directoryToBeDeleted.delete();
   }
 
   /**

@@ -66,7 +66,6 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
         mModules = new SwerveModule[4];
 
-
         // front left
         mModules[0] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
@@ -131,7 +130,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     }
 
     /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
+     * Sets the gyroscope angle to zero. This can be used to set the direction the
+     * robot is
      * currently facing to the 'forwards' direction.
      */
     public void zeroGyroscope() {
@@ -167,8 +167,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
-                Rotation2d angle =
-                        Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
+                Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
                 SmartDashboard.putNumber("gyro offset", mGyroOffset.getDegrees());
                 return angle;
             }
@@ -194,11 +193,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
         if (mVision != null) {
             if (mPoseEstimator.getVision() == null) {
-                if (!mVision.isInitialized())
-                    mVision.initalize(); // at this point, DS is initalized. Okay calling vision
-                                         // init
-                                         // here.
-                mPoseEstimator.initialize(mVision);
+                mPoseEstimator.initVision(mVision);
             }
         }
         mPoseEstimator.update();
@@ -225,8 +220,10 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         double backLeftAngle = states[2].angle.getRadians();
         double backRightAngle = states[3].angle.getRadians();
 
-        // angle check doesn't do anything. Probably contributes to error. Gets the same angle as
-        // prevAngle since the only time the angle is set is after retrieving these values.
+        // angle check doesn't do anything. Probably contributes to error. Gets the same
+        // angle as prevAngle since the only time the angle is set is after retrieving
+        // these
+        // values.
 
         // if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
         // && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
@@ -304,13 +301,13 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         return new SwerveAutoBuilder(this::getPose, this::resetOdometry, kKinematics,
                 RobotConstants.DriveBase.kAutonTranslationPID,
                 RobotConstants.DriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
-                new Subsystem[] {this});
+                new Subsystem[] { this });
     }
 
     public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerTrajectory traj) {
         return new MustangPPSwerveControllerCommand(traj, this::getPose, getSwerveKinematics(),
                 RobotConstants.DriveBase.xController, RobotConstants.DriveBase.yController,
                 RobotConstants.DriveBase.thetaController, this::setModuleStates,
-                new Subsystem[] {this});
+                new Subsystem[] { this });
     }
 }
