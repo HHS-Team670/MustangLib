@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 import frc.team670.robot.constants.FieldConstants;
 
@@ -88,44 +89,20 @@ public class SwervePoseEstimator {
     }
 
     public void update() {
-        if (vision != null && !DriverStation.isAutonomous()) {
-            // // scale vision "trust" exponentially by distance
+        // if (vision != null && !DriverStation.isAutonomous()) {
+        if (vision == null)
+            return;
 
-            // // find average distance
-            // double avgDistance = 0;
-            // int tagsSeen = 0;
-            // for (int i = 0; i < vision.getCameras().length; i++) {
-            // var cam = vision.getCameras()[i];
-            // var result = cam.getLatestResult();
-            // if (result == null) continue;
-            // if (result.hasTargets()) {
-            // for (int j = 0; j < result.targets.size(); j++) {
-            // tagsSeen++;
-            // var t = result.targets.get(j);
-            // avgDistance += t.getBestCameraToTarget().getTranslation()
-            // .getDistance(RobotConstants.CAMERA_OFFSETS[i].getTranslation());
-            // }
+        while (!vision.isMeasurementBufferEmpty()) {
+            VisionMeasurement m = vision.getVisionMeasurement();
+            EstimatedRobotPose estimation = m.estimation();
+            Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
 
-            // }
-            // }
-            // avgDistance /= tagsSeen;
-            // SmartDashboard.putNumber("Average distance", avgDistance);
+            poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
 
-            // // scale vision xy std dev by distance
-            // double visionXYStdDev = 0.01 * Math.pow(avgDistance, 2) / tagsSeen;
-
-            for (EstimatedRobotPose p : vision.getEstimatedGlobalPose(getCurrentPose())) {
-                if (p != null) {
-                    poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
-                            p.timestampSeconds);
-
-                    // poseEstimator.addVisionMeasurement(p.estimatedPose.toPose2d(),
-                    // p.timestampSeconds, VecBuilder.fill(visionXYStdDev, visionXYStdDev, 99999));
-
-                    field2d.getObject("camera pose").setPose(FieldConstants.allianceFlip(p.estimatedPose.toPose2d()));
-                }
-            }
+            field2d.getObject("camera pose").setPose(estimatedPose);
         }
+
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
         SmartDashboard.putString("Estimated Pose",

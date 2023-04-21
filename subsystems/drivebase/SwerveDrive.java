@@ -28,6 +28,11 @@ import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCom
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.constants.RobotConstants;
 
+/**
+ * Swerve Drive subsystem with pose estimation.
+ * 
+ * @author Tarini, Edward, Justin, Ethan C
+ */
 public abstract class SwerveDrive extends MustangSubsystemBase {
     private SwervePoseEstimator mPoseEstimator;
     private final NavX mNavx;
@@ -52,8 +57,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
             int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset,
             int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
-            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset) {
-    }
+            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset) {}
 
     public SwerveDrive(Config config) {
         kMaxVelocity = config.kMaxVelocity;
@@ -164,23 +168,20 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
 
     public Rotation2d getGyroscopeRotation(boolean offset) {
         if (mNavx.isMagnetometerCalibrated()) {
-
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
                 SmartDashboard.putNumber("gyro offset", mGyroOffset.getDegrees());
                 return angle;
+            } else {
+                return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
             }
-            return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
         }
 
         // We have to invert the angle of the NavX so that rotating the robot
-        // counter-clockwise
-        // makes the angle increase.
-        if (offset) {
-            return Rotation2d.fromDegrees(-mNavx.getYawFieldCentric()).minus(mGyroOffset);
-        }
-        return Rotation2d.fromDegrees(-mNavx.getYawFieldCentric());
+        // counter-clockwise makes the angle increase.
+        return offset ? Rotation2d.fromDegrees(-mNavx.getYawFieldCentric()).minus(mGyroOffset)
+                : Rotation2d.fromDegrees(-mNavx.getYawFieldCentric());
     }
 
     @Override
