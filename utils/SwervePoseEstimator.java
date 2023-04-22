@@ -3,6 +3,7 @@ package frc.team670.mustanglib.utils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import org.photonvision.EstimatedRobotPose;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -18,13 +19,14 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 import frc.team670.robot.constants.FieldConstants;
 
 /**
- * Wrapper class for SwerveDrivePoseEstimator
+ * Wrapper class for SwerveDrivePoseEstimator. Incorporates Swerve Drive and Vision 
  * 
  * @author ethan c
  */

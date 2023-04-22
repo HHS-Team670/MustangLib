@@ -8,9 +8,6 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import javax.swing.text.html.Option;
-
-import org.ejml.data.CMatrixRMaj;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -20,13 +17,9 @@ import org.photonvision.targeting.PhotonPipelineResult;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.Matrix;
-import edu.wpi.first.math.Nat;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -93,15 +86,18 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
 
     @Override
     public void mustangPeriodic() {
+        // attempt initialization until initialized
         if (!mInit) {
             initalize();
             return;
         }
 
-        mExecutor.execute(
-                () -> {
-                    processVisionFeed();
-                });
+        for (CameraPoseEstimator c : mCameraEstimators) {
+            mExecutor.execute(
+                    () -> {
+                        processVisionFeed(c);
+                    });
+        }
     }
 
     public boolean isInitialized() {
@@ -119,20 +115,18 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         return mVisionMeasurementsBuffer.isEmpty();
     }
 
-    private void processVisionFeed() {
-        for (CameraPoseEstimator c : mCameraEstimators) {
-            Optional<CameraPoseEstimator.CameraEstimatorMeasurement> optMeasurement = c.update();
-            if (optMeasurement.isEmpty())
-                continue;
-            CameraPoseEstimator.CameraEstimatorMeasurement measurement = optMeasurement.get();
-            EstimatedRobotPose estimation = measurement.estimation;
-            double avgDistance = getAverageDistance(estimation); // TODO: figure out how vision std work
-            Vector<N3> deviation = kConfig.kVisionStdFromTagsSeen.get(MathUtil.clamp(estimation.targetsUsed.size(),
-                    0,
-                    kConfig.kVisionStdFromTagsSeen.keySet().size()))
-                    .computeDeviation(avgDistance);
-            mVisionMeasurementsBuffer.add(new VisionMeasurement(estimation, deviation));
-        }
+    private void processVisionFeed(CameraPoseEstimator cameraEstimator) {
+        Optional<CameraPoseEstimator.CameraEstimatorMeasurement> optMeasurement = cameraEstimator.update();
+        if (optMeasurement.isEmpty())
+            return;
+        CameraPoseEstimator.CameraEstimatorMeasurement measurement = optMeasurement.get();
+        EstimatedRobotPose estimation = measurement.estimation;
+        double avgDistance = getAverageDistance(estimation); // TODO: figure out how vision std work
+        Vector<N3> deviation = kConfig.kVisionStdFromTagsSeen.get(MathUtil.clamp(estimation.targetsUsed.size(),
+                0,
+                kConfig.kVisionStdFromTagsSeen.keySet().size()))
+                .computeDeviation(avgDistance);
+        mVisionMeasurementsBuffer.add(new VisionMeasurement(estimation, deviation));
 
     }
 
@@ -144,64 +138,6 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
         return sumDistance / estimation.targetsUsed.size();
     }
-
-    // /**
-    // * @param estimatedRobotPose The current best guess at robot pose
-    // * @return an EstimatedRobotPose with an estimated pose, the timestamp, and
-    // * targets used to
-    // * create the estimate
-    // */
-    // public EstimatedRobotPose[] getEstimatedGlobalPose(Pose2d
-    // prevEstimatedRobotPose) {
-    // if (!mInit) {
-    // Logger.consoleLog("Vision not initalized!", this);
-    // return null;
-    // }
-
-    // EstimatedRobotPose[] poses = new
-    // EstimatedRobotPose[mCameraEstimators.length];
-    // for (int i = 0; i < poses.length; i++) {
-    // var bestTarget =
-    // mCameraEstimators[i].getCamera().getLatestResult().getBestTarget();
-    // if (bestTarget != null) {
-    // if (bestTarget.getPoseAmbiguity() > 1.5) {
-    // poses[i] = null;
-    // } else {
-    // poses[i] =
-    // mCameraEstimators[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
-    // }
-
-    // poses[i] =
-    // mCameraEstimators[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
-    // } else {
-    // poses[i] = null;
-    // }
-
-    // }
-    // return poses;
-
-    // }
-    // public Pair<Pose2d, Double> getEstimatedGlobalPose(Pose2d
-    // prevEstimatedRobotPose) {
-    // double avgX, avgY, avgDeg, avgTime;
-    // avgX = avgY = avgDeg = avgTime = 0;
-    // for (int i = 0; i < cameras.length; i++) {
-    // EstimatedRobotPose p =
-    // cameras[i].getEstimatedGlobalPose(prevEstimatedRobotPose).orElse(null);
-    // if (p == null) return null;
-
-    // avgX += p.estimatedPose.toPose2d().getX();
-    // avgY += p.estimatedPose.toPose2d().getX();
-    // avgDeg += p.estimatedPose.toPose2d().getRotation().getDegrees();
-    // avgTime += p.timestampSeconds;
-    // }
-    // avgX /= cameras.length;
-    // avgY /= cameras.length;
-    // avgDeg /= cameras.length;
-    // avgTime /= cameras.length;
-
-    // return new Pair<>(new Pose2d(avgX, avgY, new Rotation2d(avgDeg)), avgTime);
-    // }
 
     @Override
     public HealthState checkHealth() {
@@ -230,9 +166,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
 
         /**
-         * Updates the Camera estimator.
+         * Updates the Camera estimator. Should be called periodically
          * 
-         * @return An Optional of the estimated pose, time stamp, and pipline result.
+         * @return An Optional of the Photon pose estimator estimation and pipline
+         *         result.
          *         Bad frames are ignored.
          */
         public Optional<CameraEstimatorMeasurement> update() {
@@ -272,22 +209,23 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
 
         private boolean isPossible(PhotonPipelineResult frame) {
-            boolean possibleCombination = false;
+            boolean possible = false;
             List<Integer> ids = frame.targets.stream().map(t -> t.getFiducialId()).toList();
             for (Set<Integer> possibleFIDCombo : kConfig.kPossibleFIDCombinations) {
-                possibleCombination = possibleFIDCombo.containsAll(ids);
-                if (possibleCombination)
+                possible = possibleFIDCombo.containsAll(ids);
+                if (possible)
                     break;
             }
-            if (!possibleCombination)
+            if (!possible)
                 Logger.consoleLog("Impossible FIDs combination: " + ids);
-            return possibleCombination;
+            return possible;
         }
 
     }
 
     public static record UnitDeviationParams(
             double distanceMultiplier, double eulerMultiplier, double minimum) {
+
         private double computeUnitDeviation(double averageDistance) {
             return Math.max(minimum, eulerMultiplier * Math.exp(averageDistance * distanceMultiplier));
         }
