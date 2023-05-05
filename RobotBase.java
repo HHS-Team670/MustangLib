@@ -12,12 +12,19 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
 
-import edu.wpi.first.wpilibj.TimedRobot;
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-import frc.team670.mustanglib.utils.Logger;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -26,7 +33,7 @@ import frc.team670.mustanglib.utils.Logger;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class RobotBase extends TimedRobot {
+public class RobotBase extends LoggedRobot {
 
   private MustangCommand m_autonomousCommand;
 
@@ -58,42 +65,31 @@ public class RobotBase extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    initAdvantageKit();
     // Instantiate our RobotContainer. This will perform all our button bindings
     RobotContainerBase.checkSubsystemsHealth();
     timer = new Timer();
     timer.start();
     robotContainer.robotInit();
-
     MustangScheduler.getInstance();
+  }
 
-    // Log file setup. Logs can be found at /home/lvuser/logs
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-    Date currentDate = new Date();
-    String dateString = dateFormatter.format(currentDate);
-    File logDirectory = new File("/home/lvuser/logs/" + dateString);
+  private void initAdvantageKit() {
+    Logger.getInstance().recordMetadata("AdvantageKitTest", "MyProject"); // Set a metadata value
 
-    // Deletes old log files
-    // for(File directory : (new File("/home/lvuser/logs")).listFiles()) {
-    // try {
-    // Date directoryDate = dateFormatter.parse(directory.getName());
-    // long timeDifferenceMillis = currentDate.getTime() - directoryDate.getTime();
-    // if(timeDifferenceMillis > 3 * 24 * 3600 * 1000) { //If too much time has
-    // passed (in millisecond), delete directory
-    // recursivelyDeleteDirectory(directory);
-    // }
-    // } catch (ParseException e) {
-    // Logger.consoleError("Failed to parse date from log directory " +
-    // directory.getName());
-    // e.printStackTrace();
-    // }
-    // }
-
-    // Creates log directory for the current code runthrough
-    if (logDirectory.mkdirs()) {
-      Logger.consoleLog("Successfully created logging directory at " + logDirectory.getAbsolutePath());
+    if (isReal()) {
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     } else {
-      Logger.consoleLog("Failed to create logging directory at " + logDirectory.getAbsolutePath());
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
     }
+
+    // Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+    Logger.getInstance().start(); // Start logging! No more data receivers, replay sources, or metadata values may be added.
   }
 
   /**
@@ -160,7 +156,6 @@ public class RobotBase extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    Logger.consoleLog("Autonomous Init");
     robotContainer.autonomousInit();
     m_autonomousCommand = robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
@@ -188,7 +183,6 @@ public class RobotBase extends TimedRobot {
     if (m_autonomousCommand != null) {
       MustangScheduler.getInstance().cancel((MustangCommand) (m_autonomousCommand));
     }
-    Logger.consoleLog("Teleop Init");
     robotContainer.teleopInit();
   }
 
@@ -206,7 +200,6 @@ public class RobotBase extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     MustangScheduler.getInstance().cancelAll();
-    Logger.consoleLog("Test Init");
     LiveWindow.setEnabled(false);
     robotContainer.testInit();
   }
