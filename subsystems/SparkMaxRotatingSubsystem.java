@@ -195,8 +195,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      */
     public void updateArbitraryFeedForward(double voltage) {
         if (mSetpoint != kNoSetPoint) {
-            mController.setReference(mSetpoint, CANSparkMax.ControlType.kSmartMotion,
-                    kConfig.kSlot, voltage);
+            mController.setReference(mSetpoint, CANSparkMax.ControlType.kSmartMotion, kConfig.kSlot,
+                    voltage);
         }
     }
 
@@ -239,7 +239,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         mSetpoint = kNoSetPoint;
     }
 
-    public SparkMAXLite getmRotator() {
+    public SparkMAXLite getRotator() {
         return this.mRotator;
     }
 
