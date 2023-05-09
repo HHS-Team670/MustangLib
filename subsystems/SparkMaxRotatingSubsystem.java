@@ -24,11 +24,13 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
     protected final Config kConfig;
     protected static final double kNoSetPoint = 9999;
-
+    
+    private final double kAllowedDeviation;
+    
     public record Config(int kDeviceID, int kSlot, MotorConfig.Motor_Type kMotorType,
             IdleMode kIdleMode, double kRotatorGearRatio, double kP, double kI, double kD,
             double kFF, double kIz, double kMaxOutput, double kMinOutput, double kMaxRotatorRPM,
-            double kMinRotatorRPM, double kMaxAcceleration, double kAllowedError,
+            double kMinRotatorRPM, double kMaxAcceleration, double kAllowedErrorDegrees, 
             float[] kSoftLimits, int kContinuousCurrent, int kPeakCurrent) {
     }
 
@@ -39,6 +41,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         this.mEncoder = mRotator.getEncoder();
         this.mRotator.setIdleMode(kConfig.kIdleMode);
         this.mController = mRotator.getPIDController();
+        this.kAllowedDeviation = kConfig.kRotatorGearRatio * 0.2 / 360;
 
         // set PID coefficients
         mController.setP(kConfig.kP);
@@ -51,7 +54,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM, kConfig.kSlot);
         mController.setSmartMotionMinOutputVelocity(kConfig.kMinRotatorRPM, kConfig.kSlot);
         mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration, kConfig.kSlot);
-        mController.setSmartMotionAllowedClosedLoopError(kConfig.kAllowedError, kConfig.kSlot);
+        mController.setSmartMotionAllowedClosedLoopError(kAllowedDeviation, kConfig.kSlot);
 
         mRotator.setSmartCurrentLimit(kConfig.kPeakCurrent, kConfig.kContinuousCurrent);
 
@@ -213,7 +216,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @return true if the subsystem is close to its target position, within some margin of error.
      */
     public boolean hasReachedTargetPosition() {
-        return (MathUtils.doublesEqual(mEncoder.getPosition(), mSetpoint, kConfig.kAllowedError));
+        return (MathUtils.doublesEqual(mEncoder.getPosition(), mSetpoint, kAllowedDeviation));
     }
 
     protected void enableCoastMode() {
