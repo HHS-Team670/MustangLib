@@ -27,6 +27,7 @@ import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
 import frc.team670.mustanglib.utils.SwervePoseEstimator;
 import frc.team670.robot.constants.RobotConstants;
+import frc.team670.mustanglib.subsystems.drivebase.BetterSwerveKinematics;
 
 /**
  * Swerve Drive subsystem with pose estimation.
@@ -39,7 +40,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private VisionSubsystemBase mVision;
 
     private final SwerveModule[] mModules;
-    private final SwerveDriveKinematics kKinematics;
+    private final BetterSwerveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
 
@@ -102,7 +103,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
                 config.kBackRightModuleSteerOffset);
 
-        kKinematics = new SwerveDriveKinematics(
+        kKinematics = new BetterSwerveKinematics(
                 // Front left
                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
                         config.kDriveBaseWheelBase / 2.0),
@@ -146,7 +147,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         mGyroOffset = rot;
     }
 
-    public SwerveDriveKinematics getSwerveKinematics() {
+    public BetterSwerveKinematics getSwerveKinematics() {
         return kKinematics;
     }
 
@@ -283,18 +284,18 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     public SwerveModuleState[] getModuleStates() {
         SwerveModuleState states[] = new SwerveModuleState[4];
         for (int i = 0; i < mModules.length; i++) {
-            states[i] = mModules[i].getState();
+            states[i] = mModules[i].getState(); 
         }
         return states;
     }
 
     public void park() {
-        SwerveModuleState[] states = new SwerveModuleState[4];
+        BetterSwerveModuleState[] states = new BetterSwerveModuleState[4];
         // needs the 0.1 or else it won't even rotate the wheels
-        states[0] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // front right
-        states[1] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // front left
-        states[2] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // back left
-        states[3] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // back right
+        states[0] = new BetterSwerveModuleState(0.1, new Rotation2d(Math.PI / 4), 0); // front right
+        states[1] = new BetterSwerveModuleState(0.1, new Rotation2d(-Math.PI / 4), 0); // front left
+        states[2] = new BetterSwerveModuleState(0.1, new Rotation2d(-Math.PI / 4), 0); // back left
+        states[3] = new BetterSwerveModuleState(0.1, new Rotation2d(Math.PI / 4), 0); // back right
         setModuleStates(states);
     }
 
