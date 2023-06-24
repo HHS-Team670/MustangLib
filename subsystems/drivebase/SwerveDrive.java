@@ -40,7 +40,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private VisionSubsystemBase mVision;
 
     private final SwerveModule[] mModules;
-    private final BetterSwerveKinematics kKinematics;
+    private final CorrectSwerveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
 
@@ -103,7 +103,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
                 config.kBackRightModuleSteerOffset);
 
-        kKinematics = new BetterSwerveKinematics(
+        kKinematics = new CorrectSwerveKinematics(
                 // Front left
                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
                         config.kDriveBaseWheelBase / 2.0),
@@ -147,7 +147,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         mGyroOffset = rot;
     }
 
-    public BetterSwerveKinematics getSwerveKinematics() {
+    public CorrectSwerveKinematics getSwerveKinematics() {
         return kKinematics;
     }
 
