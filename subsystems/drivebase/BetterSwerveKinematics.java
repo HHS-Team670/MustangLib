@@ -3,12 +3,15 @@ package frc.team670.mustanglib.subsystems.drivebase;
 
 import edu.wpi.first.math.MathSharedStore;
 import edu.wpi.first.math.MathUsageId;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Twist2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import frc.team670.mustanglib.utils.GeometryUtils;
 
 import org.ejml.simple.SimpleMatrix;
 
@@ -91,6 +94,8 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics {
         
         SmartDashboard.putBoolean("bsms executed", true);
         
+        // chassisSpeeds = correctForDynamics(chassisSpeeds);
+
         if (chassisSpeeds.vxMetersPerSecond == 0.0
                 && chassisSpeeds.vyMetersPerSecond == 0.0
                 && chassisSpeeds.omegaRadiansPerSecond == 0.0) {
@@ -304,4 +309,24 @@ public class BetterSwerveKinematics extends SwerveDriveKinematics {
             moduleState.speedMetersPerSecond *= scale;
         }
     }
+
+    private ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
+
+        SmartDashboard.putBoolean("correct for dynamics executed", true);
+
+        final double LOOP_TIME_S = 0.02;
+        Pose2d futureRobotPose =
+            new Pose2d(
+                originalSpeeds.vxMetersPerSecond * LOOP_TIME_S,
+                originalSpeeds.vyMetersPerSecond * LOOP_TIME_S,
+                Rotation2d.fromRadians(originalSpeeds.omegaRadiansPerSecond * LOOP_TIME_S));
+        Twist2d twistForPose = GeometryUtils.log(futureRobotPose);
+        ChassisSpeeds updatedSpeeds =
+            new ChassisSpeeds(
+                twistForPose.dx / LOOP_TIME_S,
+                twistForPose.dy / LOOP_TIME_S,
+                twistForPose.dtheta / LOOP_TIME_S);
+        return updatedSpeeds;
+      }
+      
 }
