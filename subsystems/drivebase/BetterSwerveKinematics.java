@@ -26,6 +26,9 @@ import java.util.Collections;
  * Makes use of {@link BetterSwerveModuleState} to add the angular
  * velocity that is required of the module as an output.
  */
+
+ // refers to second order kinematics logic 
+ 
 public class BetterSwerveKinematics extends SwerveDriveKinematics {
     private final SimpleMatrix m_inverseKinematics;
     private final SimpleMatrix m_forwardKinematics;

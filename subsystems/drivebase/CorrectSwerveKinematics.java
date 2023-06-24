@@ -10,6 +10,8 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.utils.GeometryUtils;
 
+// refers to looking ahead one control loop and adjusting chassis speeds logic
+
 public class CorrectSwerveKinematics extends SwerveDriveKinematics {
 
     public CorrectSwerveKinematics(Translation2d... wheelsMeters) {
@@ -22,7 +24,7 @@ public class CorrectSwerveKinematics extends SwerveDriveKinematics {
 
         chassisSpeeds = correctForDynamics(chassisSpeeds);
         return super.toSwerveModuleStates(chassisSpeeds, centerOfRotationMeters);
-        
+
     }
 
     private ChassisSpeeds correctForDynamics(ChassisSpeeds originalSpeeds) {
