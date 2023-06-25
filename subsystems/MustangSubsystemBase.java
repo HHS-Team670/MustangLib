@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team670.mustanglib.commands.MustangCommand;
+import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
@@ -87,7 +88,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public abstract HealthState checkHealth();
 
     public void initDefaultCommand(MustangCommand command) {
-        CommandScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
+        MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
     }
 
     @Override
