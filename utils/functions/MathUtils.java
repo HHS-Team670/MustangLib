@@ -50,7 +50,6 @@ public class MathUtils {
         return sum/nums.length;
     }
 
-
     /**
      * Returns the average value of the input doubles.
      */

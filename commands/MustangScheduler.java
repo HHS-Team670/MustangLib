@@ -158,7 +158,7 @@ public class MustangScheduler {
         }
     }
 
-    public void setDefaultCommand(MustangSubsystemBase subsystem, MustangCommand command) {
+    public void setDefaultCommand(MustangSubsystemBase subsystem, CommandBase command) {
         CommandBase m_command = (CommandBase) command;
         try {
             Map<MustangSubsystemBase, MustangSubsystemBase.HealthState> requirements = ((MustangCommand) (m_command))
