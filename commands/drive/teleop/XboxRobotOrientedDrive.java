@@ -16,31 +16,35 @@ import frc.team670.mustanglib.utils.MustangController;
  */
 public class XboxRobotOrientedDrive extends CommandBase implements MustangCommand {
 
-    private MustangController xbox = new MustangController(0);
+    private MustangController m_controller = new MustangController(0);
     private DriveBase driveBase;
     public final double maxSpeed = 0.5;
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
-    public XboxRobotOrientedDrive(DriveBase driveBase, MustangController xbox) {
+
+    public XboxRobotOrientedDrive(DriveBase driveBase, MustangController driverController) {
         this.driveBase = driveBase;
-        this.xbox = xbox;
+        this.m_controller = driverController;
         addRequirements(driveBase);
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
     }
 
     @Override
     public void execute() {
         
         // get x and y components of joystick push
-        double ySpeed = JoystickUtils.smoothInput(xbox.getLeftStickY());
+        double ySpeed = JoystickUtils.smoothInput(m_controller.getLeftStickY());
 
         // twist from right joystick
-        double zRotation = JoystickUtils.smoothInput(xbox.getRightStickX());
+        double zRotation = JoystickUtils.smoothInput(m_controller.getRightStickX());
         driveBase.curvatureDrive(-ySpeed, zRotation, true);
     }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
-    }    
+    }
+    @Override
+    public void debugCommand(){}    
 }

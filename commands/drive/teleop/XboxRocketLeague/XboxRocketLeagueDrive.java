@@ -32,10 +32,13 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
 
   private DriveBase driveBase;
   private MustangController controller;
-
+  
+  private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
+  
   public XboxRocketLeagueDrive(DriveBase driveBase, MustangController controller) {
     isReversed = false;
     addRequirements(driveBase);
+    healthRequirements.put(driveBase, HealthState.YELLOW);
     this.driveBase = driveBase;
     this.controller = controller;
   }
@@ -64,23 +67,20 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
 
     if (driveBase.isQuickTurnPressed()) {
 
+      
       if (speed < -0.0001) {
-        if (!XboxRocketLeagueDrive.isDriveReversed()) {
-          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed());
-        } else {
-          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed());
-        }
+ 
+          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed()); // If moving backwards 
+
       } else if (speed > 0.0001) {
-        if (!XboxRocketLeagueDrive.isDriveReversed()) {
-          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed());
-        } else {
-          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed());
-        }
+      
+          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed());// Moving forward
+        
       } else {
         if (!XboxRocketLeagueDrive.isDriveReversed()) {
-          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed());
+          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed()); // If stationary and drive is reversed
         } else {
-          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed());
+          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed()); // If stationary and drive is not reversed
         }
       }
     } else {
@@ -108,9 +108,10 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
 
   @Override
   public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-    Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-    healthRequirements.put(driveBase, HealthState.YELLOW);
+    
     return healthRequirements;
   }
+  @Override
+  public void debugCommand(){}
 
 }

@@ -28,5 +28,7 @@ public class MustangPPSwerveControllerCommand extends PPSwerveControllerCommand 
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return null;
     }
+    @Override
+    public void debugCommand(){}
     
 }

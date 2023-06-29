@@ -16,25 +16,29 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
-import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.MustangController;
 
 /**
- * Add your docs here.
+ * Tank Drive command
  */
-public class XboxTankDrive extends CommandBase implements MustangCommand {
 
+public class XboxTankDrive extends CommandBase implements MustangCommand {
+    
     private DriveBase driveBase;
     private MustangController controller;
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
+
 
     /**
-     * Add your docs here.
+     * Contructing a new tank drive
      */
     public XboxTankDrive(DriveBase driveBase, MustangController controller) {
         super();
-        addRequirements(driveBase);
         this.driveBase = driveBase;
         this.controller = controller;
+        addRequirements(driveBase);
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
     }
 
     // Called once when the command executes
@@ -45,11 +49,13 @@ public class XboxTankDrive extends CommandBase implements MustangCommand {
                 -1 * controller.getRightStickY());
     }
 
+
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
     }
+
+    @Override
+    public void debugCommand(){} 
 
 }

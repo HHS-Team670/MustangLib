@@ -13,19 +13,24 @@ import frc.team670.mustanglib.utils.MustangController;
 
 /**
  *  @author Rathik, Ethan Chang, Aaditya R, Akshat Adzule, Benjamin
+ * Note: This command is built for an omni/h-drive but h-drive functionality was removed and the command has not been updated since. Use caution
  */
 public class XboxFieldOrientedDrive extends CommandBase implements MustangCommand {
 
-    private MustangController xbox = new MustangController(0);
+    private MustangController m_controller = new MustangController(0);
     private DriveBase driveBase;
     private NavX navX;
     public final double maxSpeed = 0.5;
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
-    public XboxFieldOrientedDrive(DriveBase driveBase, NavX navX, MustangController xbox) {
+
+    public XboxFieldOrientedDrive(DriveBase driveBase, NavX navX, MustangController driverController) {
         this.driveBase = driveBase;
         this.navX = navX;
-        this.xbox = xbox;
+        this.m_controller = driverController;
         addRequirements(driveBase);
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
     }
 
     @Override
@@ -37,14 +42,14 @@ public class XboxFieldOrientedDrive extends CommandBase implements MustangComman
         // driveBase.curvatureDrive(speeds[0], 0, driveBase.isQuickTurnPressed());
 
         // get x and y components of joystick push
-        double xSpeed = xbox.getLeftStickX();
-        double ySpeed = xbox.getLeftStickY();   
+        double xSpeed = m_controller.getLeftStickX();
+        double ySpeed = m_controller.getLeftStickY();   
 
         // get angle formed by field and robot heading
         double navXAngle = navX.getYawDouble(); 
 
         // twist from right joystick
-        double zRotation = xbox.getRightStickX();
+        double zRotation = m_controller.getRightStickX();
         double[] speeds = getComponentSpeeds(xSpeed, ySpeed, navXAngle);
 
         driveBase.curvatureDrive(speeds[0], zRotation, true);
@@ -65,8 +70,8 @@ public class XboxFieldOrientedDrive extends CommandBase implements MustangComman
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
-    }    
+    }
+    @Override
+    public void debugCommand(){}    
 }

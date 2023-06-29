@@ -21,6 +21,7 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     private final SwerveDrive driveBase;
     private RotationController rotPIDController;
     private MustangController controller;
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
     // private Rotation2d desiredHeading = null;
     private double MAX_VELOCITY, MAX_ANGULAR_VELOCITY;
@@ -39,6 +40,8 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         MAX_ANGULAR_VELOCITY = maxAngularVelocity;
 
         addRequirements(driveBase);
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
     }
 
     @Override
@@ -72,12 +75,10 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         driveBase.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
     }
 
+    
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements =
-                new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
-        return healthRequirements;
+                return healthRequirements;
     }
 
     private static double deadband(double value, double deadband) {
@@ -97,7 +98,8 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         value = deadband(value, 0.05);
         return value;
     }
-
+    @Override
+    public void debugCommand(){}
 
     private class RotationController {
         private Rotation2d m_rotationError = new Rotation2d();
@@ -146,10 +148,14 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         }
 
         @Override
+        public void debugCommand(){}
+    
+        @Override
         public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
             // TODO Auto-generated method stub
             return null;
         }
 
     }
+    
 }

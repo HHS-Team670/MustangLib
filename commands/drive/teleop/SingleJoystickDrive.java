@@ -21,12 +21,17 @@ public class SingleJoystickDrive extends CommandBase implements MustangCommand {
 
     private DriveBase driveBase;
     private Joystick leftJoystick;
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
+
 
     public SingleJoystickDrive(DriveBase driveBase, Joystick leftJoystick) {
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;
-        addRequirements(driveBase);
+        addRequirements(driveBase);       
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
+
     }
 
     // Called just before this Command runs the first time
@@ -37,9 +42,9 @@ public class SingleJoystickDrive extends CommandBase implements MustangCommand {
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
     }
+    @Override
+    public void debugCommand(){}  
 
 }

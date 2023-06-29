@@ -9,7 +9,7 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
  * Represents a robot action with defined health requirements for every
  * subsystem it uses.
  * 
- * @author lakshbhambhani, ethan c
+ * @author lakshbhambhani, ethan c, armaan, aditi
  */
 public interface MustangCommand extends Command {
 
@@ -20,10 +20,17 @@ public interface MustangCommand extends Command {
     public Map<MustangSubsystemBase, MustangSubsystemBase.HealthState> getHealthRequirements();
 
     /**
-     * scheuldes this command
+     * logs data revelant to debugging this command
+     * For use when execute or other parts of command have logical errors
+     */
+    public void debugCommand();
+    /**
+     * schedules this command
      */
     @Override
     default void schedule() {
         MustangScheduler.getInstance().schedule(this);
     }
+
+    
 }

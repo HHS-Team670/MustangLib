@@ -18,9 +18,13 @@ public class MustangFollowPathWithEvents extends FollowPathWithEvents implements
         super(command, eventMarkers, eventMap);
     }
 
+    
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return null;
     }
+
+    @Override
+    public void debugCommand(){}
 
 
 }

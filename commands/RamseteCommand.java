@@ -79,6 +79,7 @@ public class RamseteCommand extends CommandBase {
    * @param requirements     The subsystems to require.
    */
   @SuppressWarnings("PMD.ExcessiveParameterList")
+  
   public RamseteCommand(Trajectory trajectory,
                         Supplier<Pose2d> pose,
                         RamseteController controller,

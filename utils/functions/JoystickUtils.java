@@ -8,7 +8,7 @@ public class JoystickUtils{
 
   /**
    * 
-   * Runs a calculation to smooth out a joystick input in range [-1, 1] (currently squares it)
+   * Runs a calculation to smooth out a joystick input in range [-1, 1] (currently cubes it)
    * 
    * @param joystickVal The joystick raw input
    * @return Smoothed out joystick input

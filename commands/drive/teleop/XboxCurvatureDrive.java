@@ -27,6 +27,8 @@ public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
     private DriveBase driveBase;
     private MustangController controller;
     Joystick joystick;
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
+
 
     /**
      * Add your docs here.
@@ -36,6 +38,8 @@ public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
         this.driveBase = driveBase;
         this.controller = controller;
         addRequirements(driveBase);
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
     }
 
     // Called once when the command executes
@@ -50,9 +54,9 @@ public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
     }
+    @Override
+    public void debugCommand(){}
 
 }

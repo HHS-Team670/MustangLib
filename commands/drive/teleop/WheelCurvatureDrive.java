@@ -18,7 +18,7 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 
 /**
- * Add your docs here.
+ *  Wheel curvature drive
  */
 public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
 
@@ -26,8 +26,11 @@ public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
 
     private Joystick leftJoystick, rightJoystick;
 
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
+
+
     /**
-     * Add your docs here.
+     * Constructor for wheel curvature drive
      */
     public WheelCurvatureDrive(DriveBase driveBase, Joystick leftJoystick, Joystick rightJoystick) {
         super();
@@ -35,6 +38,8 @@ public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
         addRequirements(driveBase);
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
     }
 
     // Called once when the command executes
@@ -47,9 +52,9 @@ public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
     }
+    @Override
+    public void debugCommand(){}
 
 }

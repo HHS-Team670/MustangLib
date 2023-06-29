@@ -21,7 +21,7 @@ public class JoystickTankDrive extends CommandBase implements MustangCommand {
 
     private DriveBase driveBase;
     private Joystick leftJoystick, rightJoystick;
-
+    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
     public JoystickTankDrive(DriveBase driveBase, Joystick leftJoystick, Joystick rightJoystick) {
         // Use requires() here to declare subsystem dependencies
         // eg. requires(chassis);
@@ -30,6 +30,8 @@ public class JoystickTankDrive extends CommandBase implements MustangCommand {
         this.leftJoystick = leftJoystick;
         this.rightJoystick = rightJoystick;
         addRequirements(driveBase);
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+
     }
 
     // Called just before this Command runs the first time
@@ -40,9 +42,9 @@ public class JoystickTankDrive extends CommandBase implements MustangCommand {
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-        healthRequirements.put(driveBase, HealthState.YELLOW);
-        return healthRequirements;
+                return healthRequirements;
     }
+    @Override
+  public void debugCommand(){}
 
 }

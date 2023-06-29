@@ -46,4 +46,5 @@ public class TimedDrive extends WaitCommand implements MustangCommand {
     healthRequirements.put(driveBase, HealthState.YELLOW);
     return healthRequirements;
   }
+  public void debugCommand(){}
 }
