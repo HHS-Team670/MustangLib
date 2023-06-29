@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.utils.MustangController;
 
 /**
@@ -24,7 +24,7 @@ import frc.team670.mustanglib.utils.MustangController;
 
 public class XboxTankDrive extends CommandBase implements MustangCommand {
     
-    private DriveBase driveBase;
+    private TankDrive driveBase;
     private MustangController controller;
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
@@ -32,7 +32,7 @@ public class XboxTankDrive extends CommandBase implements MustangCommand {
     /**
      * Contructing a new tank drive
      */
-    public XboxTankDrive(DriveBase driveBase, MustangController controller) {
+    public XboxTankDrive(TankDrive driveBase, MustangController controller) {
         super();
         this.driveBase = driveBase;
         this.controller = controller;

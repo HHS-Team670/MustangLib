@@ -15,13 +15,14 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 
 public class TimedDrive extends WaitCommand implements MustangCommand {
 
-  private DriveBase driveBase;
+  private TankDrive driveBase;
   private double power;
 
-  public TimedDrive(double seconds, double power, DriveBase driveBase) {
+  public TimedDrive(double seconds, double power, TankDrive driveBase) {
     super(seconds);
     this.power = power;
     this.driveBase = driveBase;
@@ -46,5 +47,6 @@ public class TimedDrive extends WaitCommand implements MustangCommand {
     healthRequirements.put(driveBase, HealthState.YELLOW);
     return healthRequirements;
   }
+  @Override
   public void debugCommand(){}
 }

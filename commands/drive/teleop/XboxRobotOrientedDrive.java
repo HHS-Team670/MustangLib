@@ -7,22 +7,22 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.utils.JoystickUtils;
 import frc.team670.mustanglib.utils.MustangController;
 
 /**
- *  @author Rathik, Ethan Chang, Aaditya R, Akshat Adzule, Benjamin
+ *  @author Rathik, Ethan Chang, Aaditya R, Akshat Adzule, Benjamin, armaan g, aditi k
  */
 public class XboxRobotOrientedDrive extends CommandBase implements MustangCommand {
 
     private MustangController m_controller = new MustangController(0);
-    private DriveBase driveBase;
+    private TankDrive driveBase;
     public final double maxSpeed = 0.5;
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    public XboxRobotOrientedDrive(DriveBase driveBase, MustangController driverController) {
+    public XboxRobotOrientedDrive(TankDrive driveBase, MustangController driverController) {
         this.driveBase = driveBase;
         this.m_controller = driverController;
         addRequirements(driveBase);

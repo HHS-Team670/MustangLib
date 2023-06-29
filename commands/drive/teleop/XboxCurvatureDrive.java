@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.utils.JoystickUtils;
 import frc.team670.mustanglib.utils.MustangController;
 
@@ -24,7 +24,7 @@ import frc.team670.mustanglib.utils.MustangController;
  */
 public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
 
-    private DriveBase driveBase;
+    private TankDrive driveBase;
     private MustangController controller;
     Joystick joystick;
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
@@ -33,7 +33,7 @@ public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
     /**
      * Add your docs here.
      */
-    public XboxCurvatureDrive(DriveBase driveBase, MustangController controller) {
+    public XboxCurvatureDrive(TankDrive driveBase, MustangController controller) {
         super();
         this.driveBase = driveBase;
         this.controller = controller;

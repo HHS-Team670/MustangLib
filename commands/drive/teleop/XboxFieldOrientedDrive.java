@@ -8,7 +8,7 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
+import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.utils.MustangController;
 
 /**
@@ -18,13 +18,13 @@ import frc.team670.mustanglib.utils.MustangController;
 public class XboxFieldOrientedDrive extends CommandBase implements MustangCommand {
 
     private MustangController m_controller = new MustangController(0);
-    private DriveBase driveBase;
+    private TankDrive driveBase;
     private NavX navX;
     public final double maxSpeed = 0.5;
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    public XboxFieldOrientedDrive(DriveBase driveBase, NavX navX, MustangController driverController) {
+    public XboxFieldOrientedDrive(TankDrive driveBase, NavX navX, MustangController driverController) {
         this.driveBase = driveBase;
         this.navX = navX;
         this.m_controller = driverController;

@@ -3,6 +3,9 @@ package frc.team670.mustanglib.subsystems.drivebase;
 import java.util.Map;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMax.IdleMode;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -18,7 +21,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
-import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
@@ -31,9 +33,9 @@ import frc.team670.robot.constants.RobotConstants;
 /**
  * Swerve Drive subsystem with pose estimation.
  * 
- * @author Tarini, Edward, Justin, Ethan C
+ * @author Tarini, Edward, Justin, Ethan C, Armaan, Aditi
  */
-public abstract class SwerveDrive extends MustangSubsystemBase {
+public abstract class SwerveDrive extends DriveBase {
     private SwervePoseEstimator mPoseEstimator;
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
@@ -57,7 +59,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
             int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
             int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset,
             int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
-            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset) {}
+            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset) {
+    }
 
     public SwerveDrive(Config config) {
         kMaxVelocity = config.kMaxVelocity;
@@ -138,7 +141,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
      * robot is
      * currently facing to the 'forwards' direction.
      */
-    public void zeroGyroscope() {
+    public void zeroHeading() {
         mGyroOffset = getGyroscopeRotation(false);
     }
 
@@ -188,7 +191,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     public void mustangPeriodic() {
 
         if (mGyroOffset == null && !mNavx.isCalibrating()) {
-            zeroGyroscope();
+            zeroHeading();
             realignModules();
         }
 
@@ -248,6 +251,43 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     public void realignModules() {
         for (SwerveModule m : mModules)
             m.realign();
+    }
+
+    public void initBrakeMode() {
+        setMotorIdleMode(IdleMode.kBrake);
+    }
+
+    public void initCoastMode() {
+        setMotorIdleMode(IdleMode.kCoast);
+    }
+
+    public void toggleIdleMode() {
+        for (SwerveModule m : mModules) {
+            if (m.getDriveMotor() instanceof CANSparkMax) {
+                if (((CANSparkMax) m.getDriveMotor()).getIdleMode() != IdleMode.kBrake)
+                    ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kCoast);
+            } else {
+                ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kBrake);
+            }
+            if (m.getSteerMotor() instanceof CANSparkMax) {
+                if (((CANSparkMax) m.getSteerMotor()).getIdleMode() != IdleMode.kBrake)
+                    ((CANSparkMax) m.getSteerMotor()).setIdleMode(IdleMode.kCoast);
+            } else {
+                ((CANSparkMax) m.getSteerMotor()).setIdleMode(IdleMode.kBrake);
+            }
+        }
+    }
+
+    public void setMotorIdleMode(IdleMode mode) {
+        for (SwerveModule m : mModules) {
+            if (m.getDriveMotor() instanceof CANSparkMax) {
+                ((CANSparkMax) m.getDriveMotor()).setIdleMode(mode);
+            }
+            if (m.getSteerMotor() instanceof CANSparkMax) {
+                ((CANSparkMax) m.getSteerMotor()).setIdleMode(mode);
+            }
+        }
+
     }
 
     public Pose2d getPose() {

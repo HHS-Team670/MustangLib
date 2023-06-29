@@ -8,19 +8,17 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
 
 /**
  * 
- * Represents a tank drive base using the WPIlib DifferentialDrive class. Defaults to using XboxRocketLeagueDrive.
- * This can be overriden using the setDefaultCommand() method
+ * Represents a h drive base using the WPIlib DifferentialDrive class. 
  * 
- * @author lakshbhambhani
+ * @author lakshbhambhani, armaan, aditi
  */
-public abstract class HDrive extends DriveBase {
+public abstract class HDrive extends TankDrive {
 
-  private MotorControllerGroup leftMotors, rightMotors;
+  
   private MotorController centerDrive;
   
   /**
@@ -32,29 +30,29 @@ public abstract class HDrive extends DriveBase {
    * @param deadband A minimum motor input to move the drivebase
    * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
    */
-  public HDrive(MotorController[] leftMotors, MotorController[] rightMotors, MotorController centerDrive, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
-    setMotorControllers(leftMotors, rightMotors, centerDrive, inverted, rightSideInverted, deadband, safetyEnabled);
+  public HDrive(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
+    setMotorControllers(leftMotor, rightMotor, centerDrive, inverted, rightSideInverted, deadband, safetyEnabled);
     
   }
 
   /**
    * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
+   * @param leftMotor Leader of the left motors
+   * @param rightMotor Leader of the right motors
    */
-  public HDrive(MotorController[] leftMotors, MotorController[] rightMotors, MotorController centerDrive) {
-    this(leftMotors, rightMotors, centerDrive, true, true, 0.02, true);
+  public HDrive(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive) {
+    this(leftMotor, rightMotor, centerDrive, true, true, 0.02, true);
   }
 
   /**
    * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
+   * @param leftMotor Leader of the left motors
+   * @param rightMotor Leader of the right motors
    * @param inverted Invert the motors (make what would have been the fron the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
-  public HDrive(MotorController[] leftMotors, MotorController[] rightMotors, MotorController centerDrive, boolean inverted, boolean rightSideInverted) {
-    this(leftMotors, rightMotors, centerDrive, inverted, rightSideInverted, 0.02, true);
+  public HDrive(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive, boolean inverted, boolean rightSideInverted) {
+    this(leftMotor, rightMotor, centerDrive, inverted, rightSideInverted, 0.02, true);
   }
 
   /**
@@ -64,41 +62,36 @@ public abstract class HDrive extends DriveBase {
 
   /**
    * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
+   * @param leftMotor Leader of the left motors
+   * @param rightMotor Leader of the right motors
    * @param inverted Invert the motors (make what would have been the front the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    * @param deadband A minimum motor input to move the drivebase
    * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
    */
-  protected void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors, MotorController centerDrive, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled) {
-    this.leftMotors = generateControllerGroup(leftMotors);
-    this.rightMotors = generateControllerGroup(rightMotors);
+  protected void setMotorControllers(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled) {
+    super.setMotorControllers(leftMotor, rightMotor,inverted,rightSideInverted,deadband,safetyEnabled);
     this.centerDrive = centerDrive;
-    drive = new DifferentialDrive(this.leftMotors, this.rightMotors);
-    rightMotors[0].setInverted(true);
-    drive.setDeadband(deadband);
-    drive.setSafetyEnabled(safetyEnabled);
   }
 
   /**
    * This method is called by the constructor or in a subclass if motor setup needs to be performed. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
+   * @param leftMotor Leader of the left motors 
+   * @param rightMotor Array of right side drivebase motor controllers, must have length greater than 0
    */
-  protected void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors, MotorController centerDrive) {
-    setMotorControllers(leftMotors, rightMotors, centerDrive, true, true, 0.02, true);
+  protected void setMotorControllers(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive) {
+    setMotorControllers(leftMotor, rightMotor, centerDrive, true, true, 0.02, true);
   }
 
   /**
    * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
+   * @param leftMotor Leader of the left motors
+   * @param rightMotor Leader of the right motors
    * @param inverted Invert the motors (make what would have been the front the back)
    * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
    */
-  public void setMotorControllers(MotorController[] leftMotors, MotorController[] rightMotors, MotorController centerDrive, boolean inverted, boolean rightSideInverted) {
-    setMotorControllers(leftMotors, rightMotors, centerDrive, inverted, rightSideInverted, 0.02, true);
+  public void setMotorControllers(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive, boolean inverted, boolean rightSideInverted) {
+    setMotorControllers(leftMotor, rightMotor, centerDrive, inverted, rightSideInverted, 0.02, true);
   }
 
   public void strafe(double speed) {

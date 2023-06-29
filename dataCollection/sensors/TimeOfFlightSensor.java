@@ -1,7 +1,6 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.I2C;

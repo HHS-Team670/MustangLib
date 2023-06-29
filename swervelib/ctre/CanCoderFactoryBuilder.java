@@ -9,6 +9,7 @@ import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
 
 public class CanCoderFactoryBuilder {
+
     private Direction direction = Direction.COUNTER_CLOCKWISE;
     private int periodMilliseconds = 10;
 
