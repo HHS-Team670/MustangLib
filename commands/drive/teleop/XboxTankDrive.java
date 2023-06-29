@@ -20,6 +20,7 @@ import frc.team670.mustanglib.utils.MustangController;
 
 /**
  * Tank Drive command
+ * Note: this is for tank drive
  */
 
 public class XboxTankDrive extends CommandBase implements MustangCommand {

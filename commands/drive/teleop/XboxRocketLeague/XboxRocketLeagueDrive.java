@@ -23,7 +23,7 @@ import frc.team670.mustanglib.utils.functions.JoystickUtils;
 /**
  * Drives the Robot using Xbox controls like the game Rocket League. Triggers
  * control speed, stick is for steering.
- * 
+ * Note: This is for tank drive only
  * @author lakshbhambhani, armaan g, aditi k
  */
 public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand {

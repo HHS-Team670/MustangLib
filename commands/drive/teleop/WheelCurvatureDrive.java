@@ -19,6 +19,7 @@ import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 
 /**
  *  Wheel curvature drive
+ * Note: this is for tank drive
  */
 public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
 

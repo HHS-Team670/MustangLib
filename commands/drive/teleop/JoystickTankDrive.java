@@ -16,7 +16,9 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
-
+/**
+ * Note: this is for tank drive only
+ */
 public class JoystickTankDrive extends CommandBase implements MustangCommand {
 
     private TankDrive driveBase;

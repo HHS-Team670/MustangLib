@@ -18,6 +18,7 @@ import frc.team670.mustanglib.utils.Logger;
 
 /**
  * Flips the direction of the drive: forward or reversed.
+ * Note: this is for tank drive
  */
 public class FlipDriveDirection extends InstantCommand implements MustangCommand {
 
@@ -42,5 +43,7 @@ public class FlipDriveDirection extends InstantCommand implements MustangCommand
   public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
     return null;
   }
+  @Override
+  public void debugCommand(){}
 
 }

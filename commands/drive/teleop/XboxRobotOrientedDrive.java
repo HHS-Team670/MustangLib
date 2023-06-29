@@ -13,6 +13,7 @@ import frc.team670.mustanglib.utils.MustangController;
 
 /**
  *  @author Rathik, Ethan Chang, Aaditya R, Akshat Adzule, Benjamin, armaan g, aditi k
+ * Note: this is for tank drive
  */
 public class XboxRobotOrientedDrive extends CommandBase implements MustangCommand {
 

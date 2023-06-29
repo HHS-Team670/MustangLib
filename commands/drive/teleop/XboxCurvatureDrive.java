@@ -20,7 +20,7 @@ import frc.team670.mustanglib.utils.JoystickUtils;
 import frc.team670.mustanglib.utils.MustangController;
 
 /**
- * Add your docs here.
+ * Note: for tank drive
  */
 public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
 
