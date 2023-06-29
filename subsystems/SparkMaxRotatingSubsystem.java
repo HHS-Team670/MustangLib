@@ -5,6 +5,8 @@ import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+
+import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
@@ -86,12 +88,25 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         return rotRPM / kConfig.kRotatorGearRatio;
     }
 
+    public boolean inSoftLimits(double setpoint){
+        if (kConfig.kSoftLimits != null && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
+            
+            return false;
+        }
+        return true;
+    }
+
     /**
      * Sets the system's overall target position and moves to it.
      * 
      * @param setpoint The target position for this subsystem, in motor rotations
      */
     protected void setSystemMotionTarget(double setpoint) {
+        if (!inSoftLimits(setpoint)) {
+            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+                    + " and " + kConfig.kSoftLimits[0]);
+            return;
+        }
         setSystemMotionTarget(setpoint, 0);
     }
 
@@ -100,6 +115,11 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param setpoint
      */
     protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
+        if (!inSoftLimits(setpoint)) {
+            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+                    + " and " + kConfig.kSoftLimits[0]);
+            return;
+        }
         if (setpoint != kNoSetPoint) {
             mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
                     arbitraryFF);
@@ -118,6 +138,11 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param setpoint The temporary setpoint for the system, in motor rotations
      */
     protected void setTemporaryMotionTarget(double setpoint) {
+        if (!inSoftLimits(setpoint)) {
+            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+                    + " and " + kConfig.kSoftLimits[0]);
+            return;
+        }
         mTempSetpoint = setpoint;
         mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
     }
@@ -130,7 +155,12 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param angle The target angle this subsystem should turn to, in degrees
      */
     public void setSystemTargetAngleInDegrees(double angle) {
-
+        double setpoint= getMotorRotationsFromAngle(angle);
+        if (!inSoftLimits(setpoint)) {
+            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+                    + " and " + kConfig.kSoftLimits[0]);
+            return;
+        }
         setSystemMotionTarget(getMotorRotationsFromAngle(angle));
     }
 
@@ -141,6 +171,12 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param angle The angle this subsystem should turn to, in degrees
      */
     public void setTemporaryTargetAngleInDegrees(double angle) {
+        double setpoint= getMotorRotationsFromAngle(angle);
+        if (!inSoftLimits(setpoint)) {
+            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+                    + " and " + kConfig.kSoftLimits[0]);
+            return;
+        }
         setTemporaryMotionTarget(getMotorRotationsFromAngle(angle));
     }
 
@@ -238,6 +274,11 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * Clears the setpoint of this subsystem
      */
     public void clearSetpoint() {
+        if (!inSoftLimits(0)) {
+            Logger.consoleLog("Improper setpoint: " + 0 + " Setpoint should be between " +kConfig.kSoftLimits[1]
+                    + " and " + kConfig.kSoftLimits[0]);
+            return;
+        }
         mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
         mSetpoint = kNoSetPoint;
     }
