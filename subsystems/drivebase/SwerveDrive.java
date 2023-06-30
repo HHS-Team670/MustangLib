@@ -40,7 +40,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
     private VisionSubsystemBase mVision;
 
     private final SwerveModule[] mModules;
-    private final CorrectSwerveKinematics kKinematics;
+    private final BetterSwerveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
 
@@ -103,7 +103,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
                 config.kBackRightModuleSteerOffset);
 
-        kKinematics = new CorrectSwerveKinematics(
+        kKinematics = new BetterSwerveKinematics(
                 // Front left
                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
                         config.kDriveBaseWheelBase / 2.0),
@@ -147,7 +147,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         mGyroOffset = rot;
     }
 
-    public CorrectSwerveKinematics getSwerveKinematics() {
+    public BetterSwerveKinematics getSwerveKinematics() {
         return kKinematics;
     }
 
@@ -235,13 +235,12 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         // backRightAngle = backRightPrevAngle;
         // }
         double diff=SmartDashboard.getNumber("Diff cnstant", 0.125);
-        SmartDashboard.putNumber("Omegarad 1", ((BetterSwerveModuleState)states[0]).omegaRadPerSecond);
-        if(states[0] instanceof BetterSwerveModuleState){
+        if(states[0] instanceof BetterSwerveModuleState) {
             mModules[0].set(frontLeftSpeed, frontLeftAngle+ ((BetterSwerveModuleState)states[0]).omegaRadPerSecond *diff);
             mModules[1].set(frontRightSpeed, frontRightAngle+ ((BetterSwerveModuleState)states[1]).omegaRadPerSecond*diff);
             mModules[2].set(backLeftSpeed, backLeftAngle+ ((BetterSwerveModuleState)states[2]).omegaRadPerSecond*diff );
             mModules[3].set(backRightSpeed, backRightAngle+ ((BetterSwerveModuleState)states[3]).omegaRadPerSecond*diff );
-
+            SmartDashboard.putNumber("Omegarad 1", ((BetterSwerveModuleState)states[0]).omegaRadPerSecond);
         }
         else{
             mModules[0].set(frontLeftSpeed, frontLeftAngle);
