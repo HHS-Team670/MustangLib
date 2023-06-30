@@ -210,7 +210,7 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         return mPoseEstimator;
     }
 
-    public void setModuleStates(SwerveModuleState[] states) {
+   public void setModuleStates(SwerveModuleState[] states) {
 
         double frontLeftSpeed = states[0].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
         double frontRightSpeed = states[1].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
@@ -234,11 +234,23 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         // backLeftAngle = backLeftPrevAngle;
         // backRightAngle = backRightPrevAngle;
         // }
+        double diff=SmartDashboard.getNumber("Diff cnstant", 0.125);
+        SmartDashboard.putNumber("Omegarad 1", ((BetterSwerveModuleState)states[0]).omegaRadPerSecond);
+        if(states[0] instanceof BetterSwerveModuleState){
+            mModules[0].set(frontLeftSpeed, frontLeftAngle+ ((BetterSwerveModuleState)states[0]).omegaRadPerSecond *diff);
+            mModules[1].set(frontRightSpeed, frontRightAngle+ ((BetterSwerveModuleState)states[1]).omegaRadPerSecond*diff);
+            mModules[2].set(backLeftSpeed, backLeftAngle+ ((BetterSwerveModuleState)states[2]).omegaRadPerSecond*diff );
+            mModules[3].set(backRightSpeed, backRightAngle+ ((BetterSwerveModuleState)states[3]).omegaRadPerSecond*diff );
 
-        mModules[0].set(frontLeftSpeed, frontLeftAngle);
-        mModules[1].set(frontRightSpeed, frontRightAngle);
-        mModules[2].set(backLeftSpeed, backLeftAngle);
-        mModules[3].set(backRightSpeed, backRightAngle);
+        }
+        else{
+            mModules[0].set(frontLeftSpeed, frontLeftAngle);
+            mModules[1].set(frontRightSpeed, frontRightAngle);
+            mModules[2].set(backLeftSpeed, backLeftAngle);
+            mModules[3].set(backRightSpeed, backRightAngle);
+
+        }
+
 
         // frontLeftPrevAngle = frontLeftAngle;
         // frontRightPrevAngle = frontRightAngle;
