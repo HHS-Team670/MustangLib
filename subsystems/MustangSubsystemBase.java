@@ -88,7 +88,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public abstract HealthState checkHealth();
 
     public void initDefaultCommand(MustangCommand command) {
-        MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
+        MustangScheduler.getInstance().setDefaultCommand(this,  command);
     }
 
     @Override
