@@ -12,6 +12,8 @@ import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
  
 
 /**
+ * Sets Swerve forward direction.
+ * 
  * This Instant Command which implements MustandCommond so that is can be easily run by 
  * MustangScheduler as a part of MustangLib implementations in FRC code  from Team 670 is 
  * used to set the forward on a swerve drive that utilizes SDS swerve modules with two Neo 
