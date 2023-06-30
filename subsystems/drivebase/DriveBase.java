@@ -10,12 +10,11 @@ package frc.team670.mustanglib.subsystems.drivebase;
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 
-/**
+/*
  * 
- * Represents a tank drive base using the WPIlib DifferentialDrive class. Defaults to using XboxRocketLeagueDrive.
- * This can be overriden using the setDefaultCommand() method
+ * Represents a drivebase 
  * 
- * @author shaylandias, lakshbhambhani
+ * @author shaylandias, lakshbhambhani, armaan, aditi
  */
 public abstract class DriveBase extends MustangSubsystemBase {
 

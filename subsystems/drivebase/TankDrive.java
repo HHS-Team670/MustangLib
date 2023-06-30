@@ -312,7 +312,11 @@ public abstract class TankDrive extends DriveBase {
     public abstract double inchesToTicks(double inches);
 
     public abstract double ticksToInches(double ticks);
-
+    /**
+     * Checks if the Quick turn button binding is pressed. Quickturn enables a inplace tank drive rotation
+     * @return true if quickturn is pressed, false otherwise
+     */
+   
     public abstract boolean isQuickTurnPressed();
 
     public abstract PIDController getLeftPIDController();
