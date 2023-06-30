@@ -90,34 +90,6 @@ public class RobotBase extends LoggedRobot {
 
     MustangScheduler.getInstance();
 
-    // Log file setup. Logs can be found at /home/lvuser/logs
-    SimpleDateFormat dateFormatter = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-    Date currentDate = new Date();
-    String dateString = dateFormatter.format(currentDate);
-    File logDirectory = new File("/home/lvuser/logs/" + dateString);
-
-    // Deletes old log files
-    // for(File directory : (new File("/home/lvuser/logs")).listFiles()) {
-    // try {
-    // Date directoryDate = dateFormatter.parse(directory.getName());
-    // long timeDifferenceMillis = currentDate.getTime() - directoryDate.getTime();
-    // if(timeDifferenceMillis > 3 * 24 * 3600 * 1000) { //If too much time has
-    // passed (in millisecond), delete directory
-    // recursivelyDeleteDirectory(directory);
-    // }
-    // } catch (ParseException e) {
-    // Logger.consoleError("Failed to parse date from log directory " +
-    // directory.getName());
-    // e.printStackTrace();
-    // }
-    // }
-
-    // Creates log directory for the current code runthrough
-    if (logDirectory.mkdirs()) {
-      Logger.consoleLog("Successfully created logging directory at " + logDirectory.getAbsolutePath());
-    } else {
-      Logger.consoleLog("Failed to create logging directory at " + logDirectory.getAbsolutePath());
-    }
   }
 
   /**
@@ -184,7 +156,7 @@ public class RobotBase extends LoggedRobot {
    */
   @Override
   public void autonomousInit() {
-    Logger.consoleLog("Autonomous Init");
+    // Logger.consoleLog("Autonomous Init");
     robotContainer.autonomousInit();
     m_autonomousCommand = robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
@@ -212,7 +184,7 @@ public class RobotBase extends LoggedRobot {
     if (m_autonomousCommand != null) {
       MustangScheduler.getInstance().cancel((MustangCommand) (m_autonomousCommand));
     }
-    Logger.consoleLog("Teleop Init");
+    // Logger.consoleLog("Teleop Init");
     robotContainer.teleopInit();
   }
 
@@ -230,7 +202,7 @@ public class RobotBase extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     MustangScheduler.getInstance().cancelAll();
-    Logger.consoleLog("Test Init");
+    // Logger.consoleLog("Test Init");
     LiveWindow.setEnabled(false);
     robotContainer.testInit();
   }

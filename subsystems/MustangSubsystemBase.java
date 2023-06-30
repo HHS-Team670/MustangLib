@@ -20,13 +20,7 @@ import frc.team670.mustanglib.utils.MustangNotifications;
  */
 public abstract class MustangSubsystemBase extends SubsystemBase {
 
-    protected HealthState lastHealthState;
-    private boolean failedLastTime = false;
-
-    private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
-    private static NetworkTable table = instance.getTable("/SmartDashboard");
-
-    private boolean debugSubsystemFields = false;
+    private MustangSubsystemBaseIOInputsAutoLogged inputs=new MustangSubsystemBaseIOInputsAutoLogged();
 
     /**
      * Creates a new MustangSubsystemBase. By default, the subsystem's initial
@@ -34,7 +28,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      */
     public MustangSubsystemBase() {
         // RobotContainer.addSubsystem(this);
-        this.lastHealthState = HealthState.UNKNOWN;
+        // this.lastHealthState = HealthState.UNKNOWN;
     }
 
     /**
@@ -71,20 +65,12 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      * @return The latest known state of this subsystem: GREEN, YELLOW, or RED.
      */
     public HealthState getHealth(boolean check) {
-        if (lastHealthState == HealthState.UNKNOWN || check) {
-            lastHealthState = checkHealth();
-        }
-        return this.lastHealthState;
+        return inputs.lastHealthState;
     }
 
-    public void setDebugSubsystem(boolean toggle) {
-        this.debugSubsystemFields = toggle;
-    }
+   
 
-    /**
-     * Calculates the current state of the subsystem.
-     */
-    public abstract HealthState checkHealth();
+    
 
     public void initDefaultCommand(MustangCommand command) {
         MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
