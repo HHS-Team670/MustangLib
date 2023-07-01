@@ -2,16 +2,16 @@
 
 Generalized Robot Code for Team 670
 
-[Documentation for this library can be found here.](https://hhs-team670.github.io/MustangLib/)
+
 
 ## Contents
 
-- Subsystem Generalizations (Rotating Subsystem, maybe a MotionMagic Subsystem)
-- Tank Drive Generalization- TankDrive, SparkTankDrive, SRXTankDrive
-- Command Generalization (RocketLeague, PurePursuit) that uses the tank drive generalization
+- Subsystem Generalizations (Rotating Subsystem,LED, Vision, Turnable, Subsystem)
+- Drivebase Generalization- TankDrive, H-drive, Swerve Drive
+- Command Generalization (RocketLeague, Field Oriented) that uses the drivebase generalization
 - MustangController
-- Basic vision and camera 
-- Sensor Generalizations (NavX)
+- Sophisticated vision and obstacle avoidance (not fully functional)
+- Sensor Generalizations (NavX, BeamBreak, IR, Color, Time of Flight, Multiplexer, etc.)
 - Utilities: Math, Logger, Search algorithms
 - SparkMaxFactory - configuring SparkMax motor to default settings
 
