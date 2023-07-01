@@ -124,6 +124,8 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         mPoseEstimator = new SwervePoseEstimator(this);
 
         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
+
+        SmartDashboard.putNumber("Diff constant", 0);
     }
 
     public void drive(ChassisSpeeds chassisSpeeds) {
@@ -234,7 +236,12 @@ public abstract class SwerveDrive extends MustangSubsystemBase {
         // backLeftAngle = backLeftPrevAngle;
         // backRightAngle = backRightPrevAngle;
         // }
-        double diff=SmartDashboard.getNumber("Diff cnstant", 0.125);
+        double diff=SmartDashboard.getNumber("Diff constant", 0.125);
+        SwerveModuleState[] beforeModules=new SwerveModuleState[4];
+        beforeModules[0] = new SwerveModuleState(states[0].speedMetersPerSecond, states[0].angle);
+        beforeModules[1] = new SwerveModuleState(states[1].speedMetersPerSecond, states[1].angle);
+        beforeModules[2] = new SwerveModuleState(states[2].speedMetersPerSecond, states[2].angle);
+        beforeModules[3] = new SwerveModuleState(states[3].speedMetersPerSecond, states[3].angle);
         if(states[0] instanceof BetterSwerveModuleState) {
             mModules[0].set(frontLeftSpeed, frontLeftAngle+ ((BetterSwerveModuleState)states[0]).omegaRadPerSecond *diff);
             mModules[1].set(frontRightSpeed, frontRightAngle+ ((BetterSwerveModuleState)states[1]).omegaRadPerSecond*diff);
