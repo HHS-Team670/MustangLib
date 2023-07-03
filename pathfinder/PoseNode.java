@@ -47,7 +47,9 @@ public class PoseNode implements Node<PoseNode> {
 	public Rotation2d getHolRot() {
 		return pose.getRotation();
 	}
-
+	/**
+	 * Adds a neighbor to this node for graph algorithms
+	 */
 	@Override
 	public void addNeighbor(PoseNode neighbor) {
 		this.neighbors.add(neighbor);

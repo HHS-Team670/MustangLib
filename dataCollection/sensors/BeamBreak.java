@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
- * Used to get inputs from an IR Sensor
+ * Used to get inputs from an beam break sensor
  * 
  * @author ctychen
  */
@@ -24,7 +24,8 @@ public class BeamBreak {
     }
 
     /**
-     * @return boolean isTriggered True if the sensor is triggered
+     * @return boolean isTriggered True if the sensor is triggered 
+     * (the beam is broken meaning something is between the transmitter and the reciever)
      */
     public boolean isTriggered() {
         return (!dio.get());

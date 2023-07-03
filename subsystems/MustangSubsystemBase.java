@@ -21,7 +21,7 @@ import frc.team670.mustanglib.utils.MustangNotifications;
 public abstract class MustangSubsystemBase extends SubsystemBase {
 
     protected HealthState lastHealthState;
-    private boolean failedLastTime = false;
+private boolean failedLastTime = false;
 
     private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
     private static NetworkTable table = instance.getTable("/SmartDashboard");
@@ -85,18 +85,24 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      * Calculates the current state of the subsystem.
      */
     public abstract HealthState checkHealth();
-
+    /**
+     * Sets the default command of this subystem to the the passed in command
+     * @param command the new default command
+     */
     public void initDefaultCommand(MustangCommand command) {
         MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
     }
 
+    /**
+     * Checks the health of this subsystem and attempts to run this subsystem's mustangperiodic if the health is yellow unknown or green
+     */
     @Override
-    public void periodic() {
+    public final void periodic() {
+        
         HealthState lastHealth = getHealth(false);
         if (lastHealth == HealthState.GREEN || lastHealth == HealthState.UNKNOWN || lastHealth == HealthState.YELLOW) {
             if (failedLastTime) {
-                MustangNotifications
-                        .notify("Health state for " + this.getName() + " is: " + lastHealth + ". Enabling Periodic");
+                MustangNotifications.notify("Health state for " + this.getName() + " is: " + lastHealth + ". Enabling Periodic");
                 failedLastTime = false;
             }
             mustangPeriodic();
@@ -119,11 +125,16 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
             // RobotContainer.notifyDriverController(1.0, 0.3);
         }
     }
-
+    /**
+     * 
+     * @return the default command of this subsystem
+     */
     public MustangCommand getDefaultMustangCommand() {
         return (MustangCommand) (super.getDefaultCommand());
     }
-
+    /**
+     * Function that runs periodically
+     */
     public abstract void mustangPeriodic();
 
     public abstract void debugSubsystem();

@@ -10,6 +10,7 @@ public class PoseEdge implements Edge<PoseNode> {
     public PoseNode start, end;
     private double cost;
 
+   
     public PoseEdge(PoseNode start, PoseNode end, double cost) {
         this.start = start;
         this.end = end;

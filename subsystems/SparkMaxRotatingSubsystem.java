@@ -60,6 +60,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
         mRotator.setSmartCurrentLimit(kConfig.kPeakCurrent, kConfig.kContinuousCurrent);
 
+        //sets the soft limits
         if (kConfig.kSoftLimits == null || kConfig.kSoftLimits.length > 2) {
             mRotator.enableSoftLimit(SoftLimitDirection.kForward, false);
             mRotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
@@ -83,11 +84,24 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     public double getUnadjustedPosition() {
         return this.mEncoder.getPosition();
     }
-
+    /**
+     * The function calculates the maximum subsystem RPM based on the given rotator RPM and a constant
+     * gear ratio.
+     * 
+     * @param rotRPM The parameter "rotRPM" represents the rotational speed of a subsystem, rotations per minute
+     * @return The method is returning the maximum subsystem RPM.
+     */
     public double getMaxSubsystemRPM(double rotRPM) {
         return rotRPM / kConfig.kRotatorGearRatio;
     }
-
+    
+    /**
+     * The function checks if a given setpoint is within the soft limits defined in the kConfig object.
+     * 
+     * @param setpoint The "setpoint" parameter represents the value that you want to check if it is
+     * within the soft limits.
+     * @return The method is returning a boolean value.
+     */
     public boolean inSoftLimits(double setpoint){
         if (kConfig.kSoftLimits != null && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
             
@@ -97,9 +111,10 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     }
 
     /**
-     * Sets the system's overall target position and moves to it.
+     * The function sets the motion target for a system, but first checks if the setpoint is within the soft
+     * limits and logs an error message if it is not.
      * 
-     * @param setpoint The target position for this subsystem, in motor rotations
+     * @param setpoint The setpoint is the desired target value for the system's motion.
      */
     protected void setSystemMotionTarget(double setpoint) {
         if (!inSoftLimits(setpoint)) {
@@ -110,9 +125,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         setSystemMotionTarget(setpoint, 0);
     }
 
-    /**
+   /**
+     * The function sets the motion target for a system, taking into account soft limits and using a
+     * PID controller if a setpoint is provided.
      * 
-     * @param setpoint
+     * @param setpoint The setpoint parameter is the desired target value for the system's motion. It
+     * represents the position that the system needs to reach or maintain.
+     * @param arbitraryFF The arbitraryFF parameter is a feedforward term that is used to compensate
+     * for any external forces or disturbances acting on the system. It is an arbitrary value that you
+     * can adjust to achieve the desired response of the system.
      */
     protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
         if (!inSoftLimits(setpoint)) {
@@ -255,10 +276,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         return (MathUtils.doublesEqual(mEncoder.getPosition(), mSetpoint, kAllowedDeviation));
     }
 
+    /*
+     * sets idle mode to coast
+     */
     protected void enableCoastMode() {
         mRotator.setIdleMode(IdleMode.kCoast);
     }
-
+    /*
+     * sets idle mode to brake
+     */
     protected void enableBrakeMode() {
         mRotator.setIdleMode(IdleMode.kBrake);
     }
@@ -282,19 +308,36 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
         mSetpoint = kNoSetPoint;
     }
-
+  /**
+    * The function returns the SparkMAXLite object for the rotator.
+    * 
+    * @return The method is returning an object of type SparkMAXLite.
+    */
     public SparkMAXLite getRotator() {
         return this.mRotator;
     }
-
+   /**
+     * The function returns the rotator encoder.
+     * 
+     * @return The method is returning an object of type RelativeEncoder.
+     */
     public RelativeEncoder getRotatorEncoder() {
         return this.mEncoder;
     }
-
+   /**
+     * The function returns a SparkMaxPIDController object named "mController".
+     * 
+     * @return The method is returning a SparkMaxPIDController object.
+     */
     public SparkMaxPIDController getRotatorController() {
         return this.mController;
     }
-
+   /**
+     * The function sets the output of a rotator based on a given percentage.
+     * 
+     * @param output The "output" parameter is a double value representing the desired percent output
+     * for the "mRotator" object.
+     */
     public void moveByPercentOutput(double output) {
         mRotator.set(output);
     }

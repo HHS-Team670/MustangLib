@@ -89,7 +89,9 @@ public class SwervePoseEstimator {
     public void removeTrajectory() {
         field2d.getObject("Trajectory").close();
     }
-
+    /**
+     * Updates the robot pose based on vision estimates and swerve encoders
+     */
     public void update() {
         // if (vision != null && !DriverStation.isAutonomous()) {
         if (vision == null)
@@ -127,11 +129,23 @@ public class SwervePoseEstimator {
     public Pose2d getCurrentPose() {
         return poseEstimator.getEstimatedPosition();
     }
-
+    /**
+     * 
+     * @return the robot position on the field relative to the current alliance side
+     * @see #getAbsoluteFieldOrientedPoseFromAllianceOriented(Pose2d pose) 
+     */
     private Pose2d getAbsoluteFieldOrientedPoseFromAllianceOriented() {
         return getAbsoluteFieldOrientedPoseFromAllianceOriented(getCurrentPose());
     }
 
+    /**
+     * The function returns the absolute field-oriented pose if the alliance is not red, otherwise it
+     * returns the pose with the alliance flip applied.
+     * 
+     * @param pose The "pose" parameter is a Pose2d object representing the robot's position and
+     * orientation in the field.
+     * @return The method is returning a Pose2d object.
+     */
     private Pose2d getAbsoluteFieldOrientedPoseFromAllianceOriented(Pose2d pose) {
         if (DriverStation.getAlliance() == Alliance.Red) {
             return FieldConstants.allianceOrientedAllianceFlip(pose);
@@ -139,7 +153,11 @@ public class SwervePoseEstimator {
             return pose;
         }
     }
-
+    /**
+     * Transforms the given trajectory into one relative to the field (based on alliance color)
+     * @param traj the trajectory to be tranformed
+     * @return The transformed trajectory (if the Alliance is red then then a deep copy will be transformed and made else the traj object will be returned)
+     */
     private Trajectory getAbsoluteFieldOrientedTrajectory(Trajectory traj) {
         List<State> states = traj.getStates();
         List<State> adjusted = new ArrayList<>(states.size());
@@ -175,10 +193,21 @@ public class SwervePoseEstimator {
         setCurrentPose(new Pose2d());
     }
 
+    /**
+     * The function returns an instance of the VisionSubsystemBase class.
+     * 
+     * @return Return the VisionSubystemBase currently used
+     */
     public VisionSubsystemBase getVision() {
         return vision;
     }
 
+    /**
+     * The function returns a list of target (AprilTag) translations sorted based on their distance from the
+     * current robot position. (Ascending)
+     * 
+     * @return The method is returning a List of Pose2d objects sorted by distance from the robot
+     */
     public List<Pose2d> getSortedTargetTranslations() {
         List<Pose2d> targets = new ArrayList<>();
 

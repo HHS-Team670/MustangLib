@@ -202,6 +202,7 @@ public abstract class SwerveDrive extends DriveBase {
         }
         mPoseEstimator.update();
         SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
+        SmartDashboard.putNumber("pitch", getPitch());
     }
 
     public void initVision(VisionSubsystemBase vision) {
