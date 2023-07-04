@@ -48,8 +48,8 @@ public class RobotConstantsBase {
                     entry("kSwerveModuleConfig", 1.0))),
         entry(kWestCoastAddress,
         Map.ofEntries(
-                entry("kDriveBaseGearRatio", 0.0),
-                entry("kDriveBaseTrackWidth", 0.0),
+                entry("kDriveBaseGearRatio", 10.71),
+                entry("kDriveBaseTrackWidth", 24.0),
                 entry("kDriveBaseWidthInches",26.0),
                 entry("kDriveBaseLengthInches",31.5),
                 entry("kWheelDiameterInches", 8.0),
