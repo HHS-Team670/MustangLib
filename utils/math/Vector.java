@@ -1,3 +1,4 @@
+package frc.team670.mustanglib.utils.math;
 // package frc.team670.mustanglib.utils.math;
 // /**
 //  *  A class that represents a vector

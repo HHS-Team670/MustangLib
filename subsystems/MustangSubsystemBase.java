@@ -90,7 +90,7 @@ private boolean failedLastTime = false;
      * @param command the new default command
      */
     public void initDefaultCommand(MustangCommand command) {
-        MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
+        MustangScheduler.getInstance().setDefaultCommand(this, command);
     }
 
     /**

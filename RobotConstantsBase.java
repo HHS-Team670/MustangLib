@@ -1,14 +1,18 @@
 package frc.team670.mustanglib;
 
+import static java.util.Map.entry;
+
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Map;
-import static java.util.Map.entry;
+
 import com.pathplanner.lib.PathConstraints;
 import com.pathplanner.lib.auto.PIDConstants;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.SerialPort;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
@@ -25,6 +29,7 @@ public class RobotConstantsBase {
 
     public static final String kSunTzuAddress = "00:80:2F:34:0B:07";
     public static final String kSkipperAddress = "00:80:2F:33:D0:46";
+    public static final String kWestCoastAddress = "Rember to change this";
     public static final String kRobotAddress = getMACAddress();
     
     private static  Map<String, Double> robotSpecificConstants = Map.ofEntries(
@@ -34,13 +39,21 @@ public class RobotConstantsBase {
                     entry("kFrontRightModuleSteerOffsetRadians", -Math.toRadians(137.499)),
                     entry("kFrontLeftModuleSteerOffsetRadians", -Math.toRadians(318.604)),
                     entry("kSwerveModuleConfig", 2.0))),
-            entry(kSkipperAddress,
-                    Map.ofEntries(
-                            entry("kBackRightModuleSteerOffsetRadians", -Math.toRadians(82.694)),
-                            entry("kBackLeftModuleSteerOffsetRadians", -Math.toRadians(233.29)),
-                            entry("kFrontRightModuleSteerOffsetRadians", -Math.toRadians(225.77)),
-                            entry("kFrontLeftModuleSteerOffsetRadians", -Math.toRadians(112.53)),
-                            entry("kSwerveModuleConfig", 1.0))))
+        entry(kSkipperAddress,
+                Map.ofEntries(
+                    entry("kBackRightModuleSteerOffsetRadians", -Math.toRadians(82.694)),
+                    entry("kBackLeftModuleSteerOffsetRadians", -Math.toRadians(233.29)),
+                    entry("kFrontRightModuleSteerOffsetRadians", -Math.toRadians(225.77)),
+                    entry("kFrontLeftModuleSteerOffsetRadians", -Math.toRadians(112.53)),
+                    entry("kSwerveModuleConfig", 1.0))),
+        entry(kWestCoastAddress,
+        Map.ofEntries(
+                entry("kDriveBaseGearRatio", 0.0),
+                entry("kDriveBaseTrackWidth", 0.0),
+                entry("kDriveBaseWidthInches",26.0),
+                entry("kDriveBaseLengthInches",31.5),
+                entry("kWheelDiameterInches", 8.0),
+                entry("kDriveBaseDistanceToGroundInches",4.0))))
             .get(kRobotAddress);
             
     public static final class SwerveDriveBase {
@@ -50,37 +63,32 @@ public class RobotConstantsBase {
         public static final double kTrackWidthMeters = 0.6096;
         public static final double kWheelBaseMeters = 0.6096;
 
-        public static final ModuleConfiguration kModuleConfig = robotSpecificConstants.get("kSwerveModuleConfig") == 1.0
+        public static final ModuleConfiguration kModuleConfig = getValue("kSwerveModuleConfig")==-1?null: robotSpecificConstants.get("kSwerveModuleConfig")==1.0
                 ? SdsModuleConfigurations.MK4I_L1
                 : SdsModuleConfigurations.MK4I_L2;
 
-        public static final GearRatio kSwerveModuleGearRatio = robotSpecificConstants.get("kSwerveModuleConfig") == 1.0
+        public static final GearRatio kSwerveModuleGearRatio = getValue("kSwerveModuleConfig")==-1?null:robotSpecificConstants.get("kSwerveModuleConfig") == 1.0
                 ? GearRatio.L1
                 : GearRatio.L2;
 
         public static final int kFrontLeftModuleSteerMotorID = 20;
         public static final int kFrontLeftModuleDriveMotorID = 21;
         public static final int kFrontLeftModuleSteerEncoderID = 30;
-        public static final double kFrontLeftModuleSteerOffsetRadians = robotSpecificConstants
-                .get("kFrontLeftModuleSteerOffsetRadians");
-
+        public static final double kFrontLeftModuleSteerOffsetRadians = getValue("kFrontLeftModuleSteerOffsetRadians");
         public static final int kFrontRightModuleSteerMotorID = 22;
         public static final int kFrontRightModuleDriveMotorID = 23;
         public static final int kFrontRightModuleSteerEncoderID = 32;
-        public static final double kFrontRightModuleSteerOffsetRadians = robotSpecificConstants
-                .get("kFrontRightModuleSteerOffsetRadians");
+        public static final double kFrontRightModuleSteerOffsetRadians = getValue("kFrontRightModuleSteerOffsetRadians");
 
         public static final int kBackLeftModuleSteerMotorID = 26;
         public static final int kBackLeftModuleDriveMotorID = 27;
         public static final int kBackLeftModuleSteerEncoderID = 36;
-        public static final double kBackLeftModuleSteerOffsetRadians = robotSpecificConstants
-                .get("kBackLeftModuleSteerOffsetRadians");
+        public static final double kBackLeftModuleSteerOffsetRadians = getValue("kBackLeftModuleSteerOffsetRadians");
 
         public static final int kBackRightModuleSteerMotorID = 24;
         public static final int kBackRightModuleDriveMotorID = 25;
         public static final int kBackRightModuleSteerEncoderID = 34;
-        public static final double kBackRightModuleSteerOffsetRadians = robotSpecificConstants
-                .get("kBackRightModuleSteerOffsetRadians");
+        public static final double kBackRightModuleSteerOffsetRadians = getValue("kBackRightModuleSteerOffsetRadians");
 
         public final static SerialPort.Port kNAVXPort = SerialPort.Port.kMXP;
         public static final double kPitchOffset = 2;
@@ -128,6 +136,112 @@ public class RobotConstantsBase {
         public static final PathConstraints kAutoPathConstraints = new PathConstraints(
                 kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
     }
+    public static final class TankDriveBase{
+        
+        // public static final int PDP_ID = 0;
+
+        //   public static final int DRIVER_CONTROLLER_PORT = 0;
+        //   public static final int OPERATOR_CONTROLLER_PORT = 1;
+        //   public static final int BACKUP_CONTROLLER_PORT = 2;
+
+          // Drive Base
+          public static final int SPARK_LEFT_MOTOR_1 = 22; 
+          public static final int SPARK_LEFT_MOTOR_2 = 21;
+          public static final int SPARK_RIGHT_MOTOR_1 = 23;
+          public static final int SPARK_RIGHT_MOTOR_2 = 24;
+          public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kMXP;
+      /**
+       * The number of ticks per rotation of a drivebase wheel for the DIO Encoders
+       */
+      public static final int DIO_TICKS_PER_ROTATION = 1024;
+
+      /**
+       * The number of ticks per rotation of a drivebase wheel for the SPARK Encoders
+       */
+      public static final int SPARK_TICKS_PER_ROTATION = 1024;
+      
+      // Drive Base Gearing
+      public static final double DRIVEBASE_GEAR_RATIO = getValue("kDriveBaseGearRatio");
+
+      // Drive Wheel Diameter in Inches
+      public static final double DRIVE_BASE_WHEEL_DIAMETER = getValue("kWheelDiameterInches");
+
+      // Inches per rotation of the NEO motors on the drivebase
+      public static final double DRIVEBASE_INCHES_PER_ROTATION = 
+          1 / DRIVEBASE_GEAR_RATIO * DRIVE_BASE_WHEEL_DIAMETER * Math.PI;
+
+      // Number of ticks per inch of wheel travel
+      public static final int DIO_TICKS_PER_INCH = 
+          (int) (DIO_TICKS_PER_ROTATION / (Math.PI * DRIVE_BASE_WHEEL_DIAMETER));
+
+      // Number of meters per roatation of a drivebase/hdrive wheel
+      public static final double DRIVEBASE_METERS_PER_ROTATION = 
+          (1 / DRIVEBASE_GEAR_RATIO) * DRIVE_BASE_WHEEL_DIAMETER * Math.PI * 0.0254;
+
+
+      public static final double DRIVEBASE_VELOCITY_CONVERSION_FACTOR = DRIVEBASE_METERS_PER_ROTATION / 60;
+
+     
+      //
+      public static final int kTimeoutMs = 0;
+      public static final double leftKsVolts = 0.4; //0.20806; //0.4; 
+      public static final double leftKvVoltSecondsPerMeter = 2.1; //1.3667; //2.7378; 
+      public static final double leftKaVoltSecondsSquaredPerMeter = 0.15; //0.21286; //0.5584; //0.333; 
+      public static final double rightKsVolts = leftKsVolts;
+      public static final double rightKvVoltSecondsPerMeter = leftKvVoltSecondsPerMeter;
+      public static final double rightKaVoltSecondsSquaredPerMeter = leftKaVoltSecondsSquaredPerMeter;
+
+      public static final double kTrackwidthMeters = getValue("kDriveBaseTrackWidth");
+
+      // Autonomous Constants
+      public static final DifferentialDriveKinematics kDriveKinematics = 
+          new DifferentialDriveKinematics(kTrackwidthMeters);
+
+      public static final double leftKPDriveVel = 2;
+      public static final double leftKIDriveVel = 0;
+      public static final double leftKDDriveVel = 0;
+
+      public static final double rightKPDriveVel = leftKPDriveVel;
+      public static final double rightKIDriveVel = leftKIDriveVel;
+      public static final double rightKDDriveVel = leftKDDriveVel;
+
+      public static final double kMaxSpeedInchesPerSecond = 6;
+      public static final double kMaxAccelerationInchesPerSecondSquared = 6;
+
+      public static final double kMaxSpeedMetersPerSecond = 2;
+      public static final double kMaxAccelerationMetersPerSecondSquared = 2;
+      public static final double endVelocityMetersPerSecond = 0;
+
+      public static final double kMaxSpeedMetersPerSecond2 = 0.3;
+      public static final double kMaxAccelerationMetersPerSecondSquared2 = 0.3;
+      public static final double endVelocityMetersPerSecond2 = 0.2;
+
+      public static final DifferentialDriveKinematicsConstraint kAutoPathConstraints = 
+          new DifferentialDriveKinematicsConstraint(kDriveKinematics, kMaxSpeedMetersPerSecond);
+
+      public static final DifferentialDriveKinematicsConstraint kAutoPathConstraintsIntaking = 
+          new DifferentialDriveKinematicsConstraint(kDriveKinematics, kMaxSpeedMetersPerSecond);
+
+      // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+      public static final double kRamseteB = 2;
+      public static final double kRamseteZeta = .7;
+      public static final boolean kNavXReversed = true;
+      
+      // Robot Dimensions in Inches
+      public static final double ROBOT_LENGTH = getValue("kDriveBaseLengthInches"),
+                                 ROBOT_WIDTH = getValue("kDriveBaseWidthInches"),
+                                 DRIVEBASE_TO_GROUND = getValue("kDriveBaseDistanceToGroundInches"),
+                                 ROBOT_FULL_LENGTH_WITH_BUMPER = ROBOT_LENGTH + 6;
+  }
+  public static double getValue(String key){
+    Double value = robotSpecificConstants.get(key);
+    if(value == null){
+        return -1;
+    }
+    return value;
+  }
+
+  
         /**
      * This is code from Poofs 2022
      * 
