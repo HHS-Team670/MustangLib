@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
@@ -12,10 +13,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
+import frc.team670.mustanglib.swervelib.SwerveDrive;
 import frc.team670.mustanglib.utils.MustangController;
 import frc.team670.robot.constants.RobotConstants;
-
 
 public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     private final SwerveDrive driveBase;
@@ -34,7 +34,6 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
                         RobotConstants.DriveBase.kMaxAngularSpeedRadiansPerSecondSquared)));
         this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
 
-
         MAX_VELOCITY = maxVelocity;
         MAX_ANGULAR_VELOCITY = maxAngularVelocity;
 
@@ -44,38 +43,37 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     @Override
     public void execute() {
         // clear desired heading if at the heading or joystick touched
-        if (driveBase.getDesiredHeading() != null) {
-            if (rotPIDController.atReference() || modifyAxis(-controller.getRightX()) != 0)
-                driveBase.setmDesiredHeading(null);
-        }
+        // if (driveBase.getDesiredHeading() != null) {
+        // if (rotPIDController.atReference() || modifyAxis(-controller.getRightX()) !=
+        // 0)
+        // driveBase.setmDesiredHeading(null);
+        // }
 
         double xVel = MAX_VELOCITY * modifyAxis(-controller.getLeftY());
         double yVel = MAX_VELOCITY * modifyAxis(-controller.getLeftX());
         double thetaVel;
 
-        Rotation2d desiredHeading = driveBase.getDesiredHeading();
-        if (desiredHeading == null) {
-            thetaVel = MAX_ANGULAR_VELOCITY * modifyAxis(-controller.getRightX());
-        } else {
-            thetaVel = rotPIDController.calculateRotationSpeed(driveBase.getGyroscopeRotation(),
-                    desiredHeading);
-        }
+        // Rotation2d desiredHeading = driveBase.getDesiredHeading();
+        // if (desiredHeading == null) {
+        thetaVel = MAX_ANGULAR_VELOCITY * modifyAxis(-controller.getRightX());
+        // } else {
+        // thetaVel =
+        // rotPIDController.calculateRotationSpeed(driveBase.getGyroscopeRotation(),
+        // desiredHeading);
+        // }
 
-        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
-                driveBase.getGyroscopeRotation()));
+        driveBase.drive(new Translation2d(xVel, yVel), thetaVel, true, false);
 
     }
 
-
     @Override
     public void end(boolean interrupted) {
-        driveBase.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+        driveBase.drive(new Translation2d(0.0, 0.0), 0.0, true, false);
     }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        Map<MustangSubsystemBase, HealthState> healthRequirements =
-                new HashMap<MustangSubsystemBase, HealthState>();
+        Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
         healthRequirements.put(driveBase, HealthState.YELLOW);
         return healthRequirements;
     }
@@ -97,7 +95,6 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         value = deadband(value, 0.05);
         return value;
     }
-
 
     private class RotationController {
         private Rotation2d m_rotationError = new Rotation2d();
@@ -121,7 +118,6 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
             m_rotationError = tolerance;
         }
 
-
         public double calculateRotationSpeed(Rotation2d currentHeading, Rotation2d desiredHeading) {
             double thetaFF = m_thetaController.calculate(currentHeading.getRadians(),
                     desiredHeading.getRadians());
@@ -133,23 +129,24 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
 
     }
 
-    public class SetDesiredHeading extends InstantCommand implements MustangCommand {
-        Rotation2d desiredHeading;
+    // public class SetDesiredHeading extends InstantCommand implements
+    // MustangCommand {
+    // Rotation2d desiredHeading;
 
-        public SetDesiredHeading(Rotation2d desiredHeading) {
-            this.desiredHeading = desiredHeading;
-        }
+    // public SetDesiredHeading(Rotation2d desiredHeading) {
+    // this.desiredHeading = desiredHeading;
+    // }
 
-        @Override
-        public void initialize() {
-            driveBase.setmDesiredHeading(desiredHeading);
-        }
+    // @Override
+    // public void initialize() {
+    // driveBase.setmDesiredHeading(desiredHeading);
+    // }
 
-        @Override
-        public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-            // TODO Auto-generated method stub
-            return null;
-        }
+    // @Override
+    // public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    // // TODO Auto-generated method stub
+    // return null;
+    // }
 
-    }
+    // }
 }
