@@ -1,8 +1,9 @@
 package frc.team670.mustanglib.subsystems;
 
-import edu.wpi.first.networktables.NetworkTable;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
+
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team670.mustanglib.commands.MustangCommand;
@@ -20,13 +21,21 @@ import frc.team670.mustanglib.utils.MustangNotifications;
  */
 public abstract class MustangSubsystemBase extends SubsystemBase {
 
-    private MustangSubsystemBaseIOInputsAutoLogged inputs=new MustangSubsystemBaseIOInputsAutoLogged();
+    private LoggableInputs inputs;
+    private MustangSubsystemBaseIO io;
+    private boolean failedLastTime=false;
+
+
+
 
     /**
      * Creates a new MustangSubsystemBase. By default, the subsystem's initial
      * health state is UNKNOWN (ID 0).
      */
-    public MustangSubsystemBase() {
+    public MustangSubsystemBase(MustangSubsystemBaseIO io, LoggableInputs inputs) {
+        this.io=io;
+        this.inputs=inputs;
+        
         // RobotContainer.addSubsystem(this);
         // this.lastHealthState = HealthState.UNKNOWN;
     }
@@ -65,7 +74,10 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      * @return The latest known state of this subsystem: GREEN, YELLOW, or RED.
      */
     public HealthState getHealth(boolean check) {
-        return inputs.lastHealthState;
+        return io.getHealth(check);
+    }
+    protected LoggableInputs getInputs(){
+        return inputs;
     }
 
    
@@ -76,41 +88,42 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
         MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
     }
 
+    /**
+     * Checks the health of this subsystem and attempts to run this subsystem's mustangperiodic if the health is yellow unknown or green
+     */
     @Override
     public void periodic() {
-        HealthState lastHealth = getHealth(false);
-        if (lastHealth == HealthState.GREEN || lastHealth == HealthState.UNKNOWN || lastHealth == HealthState.YELLOW) {
+        io.updateInputs(inputs);
+        io.getHealth(true);
+        Logger.getInstance().processInputs(getName(), inputs);
+        if (io.getHealth(false) == HealthState.GREEN || io.getHealth(false) == HealthState.UNKNOWN || io.getHealth(false) == HealthState.YELLOW) {
             if (failedLastTime) {
                 MustangNotifications
-                        .notify("Health state for " + this.getName() + " is: " + lastHealth + ". Enabling Periodic");
-                failedLastTime = false;
+                        .notify("Health state for " + this.getName() + " is: " + io.getHealth(false) + ". Enabling Periodic");
+                
             }
             mustangPeriodic();
-            if(debugSubsystemFields){
-                debugSubsystem();
-            }
+            
         } else {
             if (!failedLastTime) {
                 MustangNotifications.reportError(
-                        "Health state for " + this.getName() + " is: " + lastHealth + ". Disabling Periodic");
-                failedLastTime = true;
+                        "Health state for " + this.getName() + " is: " + io.getHealth(false) + ". Disabling Periodic");
+                
             }
         }
-    }
-
-    public void pushHealthToDashboard() {
-        NetworkTableEntry subsystem = table.getEntry(this.getName());
-        subsystem.setString(getHealth(false).toString());
-        if (getHealth(false).toString().equals("YELLOW") || getHealth(false).toString().equals("RED")) {
-            // RobotContainer.notifyDriverController(1.0, 0.3);
+        if(io.shouldDebugOutputs()){
+            io.debugOutputs();
         }
+        
     }
 
     public MustangCommand getDefaultMustangCommand() {
         return (MustangCommand) (super.getDefaultCommand());
     }
-
+    /**
+     * Function that runs periodically
+     */
     public abstract void mustangPeriodic();
 
-    public abstract void debugSubsystem();
+    
 }
