@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
@@ -27,8 +28,7 @@ import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
-import frc.team670.mustanglib.utils.SwervePoseEstimator;
-import frc.team670.robot.constants.RobotConstants;
+import frc.team670.mustanglib.utils.SwervePoseEstimatorBase;
 
 /**
  * Swerve Drive subsystem with pose estimation.
@@ -36,7 +36,7 @@ import frc.team670.robot.constants.RobotConstants;
  * @author Tarini, Edward, Justin, Ethan C, Armaan, Aditi
  */
 public abstract class SwerveDrive extends DriveBase {
-    private SwervePoseEstimator mPoseEstimator;
+    private SwervePoseEstimatorBase mPoseEstimator;
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
 
@@ -123,10 +123,11 @@ public abstract class SwerveDrive extends DriveBase {
         // mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
         // getModulePositions());
-        mPoseEstimator = new SwervePoseEstimator(this);
-
+        // mPoseEstimator = new SwervePoseEstimatorBase(this);
+        initPoseEstimator();
         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
     }
+    protected abstract void initPoseEstimator();
 
     public void drive(ChassisSpeeds chassisSpeeds) {
         setModuleStates(kKinematics.toSwerveModuleStates(chassisSpeeds));
@@ -209,7 +210,7 @@ public abstract class SwerveDrive extends DriveBase {
         this.mVision = vision;
     }
 
-    public SwervePoseEstimator getPoseEstimator() {
+    public SwervePoseEstimatorBase getPoseEstimator() {
         return mPoseEstimator;
     }
 
@@ -296,7 +297,7 @@ public abstract class SwerveDrive extends DriveBase {
     }
 
     public double getPitch() {
-        return mNavx.getPitch() - RobotConstants.DriveBase.kPitchOffset;
+        return mNavx.getPitch() - RobotConstantsBase.SwerveDriveBase.kPitchOffset;
     }
 
     public void resetOdometry(Pose2d pose) {
@@ -341,15 +342,15 @@ public abstract class SwerveDrive extends DriveBase {
 
     public SwerveAutoBuilder getAutoBuilderFromEvents(Map<String, Command> eventMap) {
         return new SwerveAutoBuilder(this::getPose, this::resetOdometry, kKinematics,
-                RobotConstants.DriveBase.kAutonTranslationPID,
-                RobotConstants.DriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
+        RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID,
+        RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
                 new Subsystem[] { this });
     }
 
     public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerTrajectory traj) {
         return new MustangPPSwerveControllerCommand(traj, this::getPose, getSwerveKinematics(),
-                RobotConstants.DriveBase.xController, RobotConstants.DriveBase.yController,
-                RobotConstants.DriveBase.thetaController, this::setModuleStates,
+        RobotConstantsBase.SwerveDriveBase.xController, RobotConstantsBase.SwerveDriveBase.yController,
+        RobotConstantsBase.SwerveDriveBase.thetaController, this::setModuleStates,
                 new Subsystem[] { this });
     }
 }
