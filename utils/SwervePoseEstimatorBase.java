@@ -23,14 +23,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
-import frc.team670.robot.constants.FieldConstants;
+
 
 /**
  * Wrapper class for SwerveDrivePoseEstimator. Incorporates Swerve Drive and Vision 
  * 
  * @author ethan c
  */
-public class SwervePoseEstimator {
+public abstract class SwervePoseEstimatorBase {
 
     private final SwerveDrive driveBase;
     private VisionSubsystemBase vision;
@@ -59,7 +59,7 @@ public class SwervePoseEstimator {
 
     private final Field2d field2d = new Field2d();
 
-    public SwervePoseEstimator(SwerveDrive swerve) {
+    public SwervePoseEstimatorBase(SwerveDrive swerve) {
         this.driveBase = swerve;
         this.vision = null;
         poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),
@@ -75,11 +75,14 @@ public class SwervePoseEstimator {
         SmartDashboard.putNumber("vision std y: ", 0.9);
         SmartDashboard.putNumber("vision std deg: ", 0.9);
 
-        // load single sub to smartdashboard
-        Pose2d singlesub = FieldConstants.allianceFlip(FieldConstants.LoadingZone.IntakePoses[0]);
-        field2d.getObject("Single Substation").setPose(singlesub);
-        SmartDashboard.putData(field2d);
-        SmartDashboard.putString("Single Substation", getFormattedPose(singlesub));
+       // The commented code is loading a single substation pose to the SmartDashboard. It flips the
+       // pose based on the alliance color and sets it as the pose for the "Single Substation" object
+       // in the Field2d. It then puts the Field2d object and the formatted pose on the SmartDashboard.
+       //TODO move to 2023 // // load single sub to smartdashboard 
+        // Pose2d singlesub = FieldConstants.allianceFlip(FieldConstants.LoadingZone.IntakePoses[0]);
+        // field2d.getObject("Single Substation").setPose(singlesub);
+        // SmartDashboard.putData(field2d);
+        // SmartDashboard.putString("Single Substation", getFormattedPose(singlesub));
     }
 
     public void addTrajectory(Trajectory traj) {
@@ -146,13 +149,7 @@ public class SwervePoseEstimator {
      * orientation in the field.
      * @return The method is returning a Pose2d object.
      */
-    private Pose2d getAbsoluteFieldOrientedPoseFromAllianceOriented(Pose2d pose) {
-        if (DriverStation.getAlliance() == Alliance.Red) {
-            return FieldConstants.allianceOrientedAllianceFlip(pose);
-        } else {
-            return pose;
-        }
-    }
+    protected abstract Pose2d getAbsoluteFieldOrientedPoseFromAllianceOriented(Pose2d pose);
     /**
      * Transforms the given trajectory into one relative to the field (based on alliance color)
      * @param traj the trajectory to be tranformed
@@ -201,6 +198,8 @@ public class SwervePoseEstimator {
     public VisionSubsystemBase getVision() {
         return vision;
     }
+    //Returns scoring and intaking targets
+    protected abstract List<Pose2d> getTargets();
 
     /**
      * The function returns a list of target (AprilTag) translations sorted based on their distance from the
@@ -209,12 +208,12 @@ public class SwervePoseEstimator {
      * @return The method is returning a List of Pose2d objects sorted by distance from the robot
      */
     public List<Pose2d> getSortedTargetTranslations() {
-        List<Pose2d> targets = new ArrayList<>();
+        List<Pose2d> targets = getTargets();
 
-        for (Translation2d p : FieldConstants.Grids.complexLowTranslations)
-            targets.add(FieldConstants.allianceFlip(new Pose2d(p, new Rotation2d())));
-        for (Pose2d p : FieldConstants.LoadingZone.IntakePoses)
-            targets.add(FieldConstants.allianceFlip(p));
+        // for (Translation2d p : FieldConstants.Grids.complexLowTranslations)
+        //     targets.add(FieldConstants.allianceFlip(new Pose2d(p, new Rotation2d())));
+        // for (Pose2d p : FieldConstants.LoadingZone.IntakePoses)
+        //     targets.add(FieldConstants.allianceFlip(p));
 
         Translation2d robotTranslation = getCurrentPose().getTranslation();
         targets.sort(new Comparator<Pose2d>() {

@@ -1,3 +1,4 @@
+package frc.team670.mustanglib.utils.math;
 // package frc.team670.mustanglib.utils.math;
 
 // import java.text.DecimalFormat;
