@@ -40,6 +40,9 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
     private boolean mInit = false;
 
+    /**
+     * A vision configuration that stores important information about the field and vision subsystem on the robot
+     */
     public static record Config(AprilTagFieldLayout kFieldLayout, String[] kCameraIDs,
             Transform3d[] kCameraOffsets, double kPoseAmbiguityCutOff, int kMaxFrameFIDs,
             List<Set<Integer>> kPossibleFIDCombinations, Map<Integer, TagCountDeviation> kVisionStdFromTagsSeen) {
@@ -56,6 +59,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     }
 
     /**
+     * Initalizes the vision subsystem.
      * DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN. CALL IN PERIODIC
      * OR AUTONINIT.
      * More details here:
@@ -77,13 +81,18 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         mInit = true;
     }
 
+    /**
+     * Sets origin based on field side (red alliance or blue alliance)
+     */
     private void setFieldOrigin() {
         var origin = DriverStation.getAlliance() == Alliance.Blue
                 ? OriginPosition.kBlueAllianceWallRightSide
                 : OriginPosition.kRedAllianceWallRightSide;
         kFieldLayout.setOrigin(origin);
     }
-
+    /**
+     * Attempts to initalize vision and estimate robot pose after processing the vision feed
+     */
     @Override
     public void mustangPeriodic() {
         // attempt initialization until initialized
@@ -100,21 +109,40 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
     }
 
+   
+    /**
+     * 
+     * @return if initialized
+     */
     public boolean isInitialized() {
         return mInit;
     }
+    /** A representation of the visions pose estimation and its confidence */
+    public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {}
 
-    public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {
-    }
-
+    /**
+     * 
+     * @return returns the first unprocessed vision measurement
+     */
     public VisionMeasurement getVisionMeasurement() {
         return mVisionMeasurementsBuffer.poll();
     }
-
+    
+    /**
+     * @return if mVisionMeasurementsBuffer is empty
+     */
     public boolean isMeasurementBufferEmpty() {
         return mVisionMeasurementsBuffer.isEmpty();
     }
 
+    /**
+     * The function processes a vision feed from a camera estimator, calculates the average distance
+     * and deviation, and adds the measurement to a queue.
+     * 
+     * @param cameraEstimator The cameraEstimator parameter is an instance of the CameraPoseEstimator
+     * class. It is used to estimate the pose (position and orientation) of the camera based on visual
+     * measurements.
+     */
     private void processVisionFeed(CameraPoseEstimator cameraEstimator) {
         Optional<CameraPoseEstimator.CameraEstimatorMeasurement> optMeasurement = cameraEstimator.update();
         if (optMeasurement.isEmpty())
@@ -127,9 +155,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 kConfig.kVisionStdFromTagsSeen.keySet().size()))
                 .computeDeviation(avgDistance);
         mVisionMeasurementsBuffer.add(new VisionMeasurement(estimation, deviation));
-
     }
-
+    /**
+     * Uses a pose estimation to calculate the average distance from the closest camera on the robot to each apriltag target on the field that was used for pose estimation
+     * Used to factor in vision trust
+     * @param estimation the pose estimation to be used for the average
+     * @return the average distance (in meters?)
+     */
     private double getAverageDistance(EstimatedRobotPose estimation) {
         double sumDistance = 0;
         for (var target : estimation.targetsUsed) {
@@ -139,11 +171,29 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         return sumDistance / estimation.targetsUsed.size();
     }
 
+    /** @return the healthstate of the vision subsystem */
     @Override
     public HealthState checkHealth() {
-        return HealthState.GREEN;
+        HealthState state = HealthState.GREEN;
+        int counter = 0;
+        // checks through the photon cameras and checks if they are null or !connected
+        for(PhotonCamera camera: mCameras) {
+            if(camera == null || !camera.isConnected()){
+                state = HealthState.YELLOW;
+                counter++;
+            }
+        }
+        //iff all of the cameras are null or not connected healthstate = red
+        if(counter == mCameras.length && mCameras.length!=0){
+            state = HealthState.RED;
+        }
+        return state;
     }
-
+    
+   /**
+    * 
+    * @return the cameras this subsystem uses
+    */
     public PhotonCamera[] getCameras() {
         return mCameras;
     }
@@ -160,10 +210,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                     photonCamera, robotToCam);
             estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         }
-
-        public static record CameraEstimatorMeasurement(EstimatedRobotPose estimation,
-                PhotonPipelineResult result) {
-        }
+        /**
+         * A record that represents a estimated pose and a photon result from the camera pose estimator
+         */
+        public static record CameraEstimatorMeasurement(EstimatedRobotPose estimation, PhotonPipelineResult result) {}
 
         /**
          * Updates the Camera estimator. Should be called periodically
@@ -191,6 +241,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result));
         }
 
+        /**
+         * Returns whether or not to ignore a frame
+         * Cases in which a frame should be ignored include when there are no targets in view,
+         * if there more targets than physically possible, or an impossible combination of target are                       in view
+         * @param frame the frame to be checked
+         * @return whether or not to ignore a frame
+         */
         private boolean ignoreFrame(PhotonPipelineResult frame) {
             if (!frame.hasTargets() || frame.getTargets().size() > kConfig.kMaxFrameFIDs)
                 return true;
@@ -201,13 +258,22 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             else
                 return false;
         }
-
+        /**
+         * Returns if a frame is a duplicate of the last frame
+         * Accomplishes this by comparing the timestamp of the last frame with the passed in frame
+         * @param frame the frame to be checked
+         * @return if the frame is a duplicate
+         */
         private boolean isDuplicate(PhotonPipelineResult frame) {
             boolean duplicate = frame.getTimestampSeconds() == lastTimeStamp;
             lastTimeStamp = frame.getTimestampSeconds();
             return duplicate;
         }
-
+        /**
+         * Returns true is the combination of targets in view is physically possible
+         * @param frame the frame to be checked
+         * @return if the frame is possible
+         */
         private boolean isPossible(PhotonPipelineResult frame) {
             boolean possible = false;
             List<Integer> ids = frame.targets.stream().map(t -> t.getFiducialId()).toList();
@@ -222,17 +288,18 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
 
     }
-
-    public static record UnitDeviationParams(
-            double distanceMultiplier, double eulerMultiplier, double minimum) {
-
+    /**
+     * A record that stores and computes deviation of a target( a tag)
+     */
+    public static record UnitDeviationParams(double distanceMultiplier, double eulerMultiplier, double minimum) {
         private double computeUnitDeviation(double averageDistance) {
             return Math.max(minimum, eulerMultiplier * Math.exp(averageDistance * distanceMultiplier));
         }
     }
-
-    public static record TagCountDeviation(UnitDeviationParams xParams, UnitDeviationParams yParams,
-            UnitDeviationParams thetaParams) {
+    /**
+     * A record that stores a tag's data with their deviation
+     */
+    public static record TagCountDeviation(UnitDeviationParams xParams, UnitDeviationParams yParams, UnitDeviationParams thetaParams) {
         private Vector<N3> computeDeviation(double averageDistance) {
             return VecBuilder.fill(
                     xParams.computeUnitDeviation(averageDistance),

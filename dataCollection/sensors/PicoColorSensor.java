@@ -12,7 +12,9 @@ import edu.wpi.first.wpilibj.Timer;
 
 /**
  * This class represents a Pico color sensor and provides methods to read the raw color values and proximity values from the sensor.
- * The sensor is read on a separate thread to avoid blocking the main thread.
+ * The sensor is // The above code is incomplete and does not have a specific purpose. It only contains
+ // the letter "r" and three hash symbols "
+ read on a separate thread to avoid blocking the main thread.
  * The class uses JNI to read the sensor data without allocating memory.
  * The sensor data is stored in private fields and accessed through thread-safe methods.
  * The class also provides a method to close the sensor and stop the reading thread.
@@ -123,6 +125,16 @@ public class PicoColorSensor implements AutoCloseable {
     }
   }
 
+/**
+ * The function finds the index of the next comma in a byte array, given the length of the array, the
+ * index of the previous comma found, and the current read length.
+ * 
+ * @param data The `data` parameter is a byte array that represents the data you are searching through.
+ * @param readLen The length of the data that has been read so far.
+ * @param lastComma The parameter "lastComma" represents the index of the last comma found in the byte
+ * array "data".
+ * @return The method is returning the index of the next comma in the byte array 'data'.
+ */
   private int findNextComma(byte[] data, int readLen, int lastComma) {
     while (true) {
       if (readLen <= lastComma + 1 ) {
@@ -150,10 +162,9 @@ public class PicoColorSensor implements AutoCloseable {
   private final AtomicBoolean threadRunning = new AtomicBoolean(true);
 
   /**
-   * The above function reads data from a serial port and updates the values of color and proximity
+   * Reads data from a serial port and updates the values of color and proximity
    * sensors.
    */
-
   private void threadMain() {
     // Using JNI for a non allocating read
     int port = SerialPortJNI.serialInitializePort((byte)1);

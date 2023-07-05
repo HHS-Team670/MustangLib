@@ -39,7 +39,11 @@ public class DIOUltrasonic {
     public double getUnadjustedDistance() {
         return ultrasonic.getRangeInches();
     }
-
+    /**
+     * Enables or disables automatic mode
+     * Automatic mode calls all sensors automatically in a round robin fashion
+     * @param automaticMode
+     */
     public void setUltrasonicAutomaticMode(boolean automaticMode) {
         ultrasonic.setAutomaticMode(automaticMode);
     }
