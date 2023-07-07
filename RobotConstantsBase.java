@@ -149,7 +149,7 @@ public class RobotConstantsBase {
           public static final int SPARK_LEFT_MOTOR_2 = 21;
           public static final int SPARK_RIGHT_MOTOR_1 = 23;
           public static final int SPARK_RIGHT_MOTOR_2 = 24;
-          public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kMXP;
+          public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kUSB;
       /**
        * The number of ticks per rotation of a drivebase wheel for the DIO Encoders
        */
@@ -234,7 +234,13 @@ public class RobotConstantsBase {
                                  ROBOT_FULL_LENGTH_WITH_BUMPER = ROBOT_LENGTH + 6;
   }
   public static double getValue(String key){
-    Double value = robotSpecificConstants.get(key);
+     Double value =null;
+    try{
+        value=robotSpecificConstants.get(key);
+    }catch(Exception e){
+
+    }
+   
     if(value == null){
         return -1;
     }
