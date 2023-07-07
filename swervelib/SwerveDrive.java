@@ -281,7 +281,6 @@ public class SwerveDrive extends MustangSubsystemBase {
     }
 
     // Heading Angular Velocity Deadband, might make a configuration option later.
-    // Originally made by Team 1466 Webb Robotics.
     if (headingCorrection) {
       if (Math.abs(rotation) < 0.01) {
         velocity.omegaRadiansPerSecond = swerveController.headingCalculate(lastHeadingRadians, getYaw().getRadians());
