@@ -25,8 +25,7 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     // private Rotation2d desiredHeading = null;
     private double MAX_VELOCITY, MAX_ANGULAR_VELOCITY;
 
-    public XboxSwerveDrive(SwerveDrive swerveDriveBase, MustangController controller,
-            double maxVelocity, double maxAngularVelocity) {
+    public XboxSwerveDrive(SwerveDrive swerveDriveBase, MustangController controller) {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
         this.rotPIDController = new RotationController(new ProfiledPIDController(3.5, 0, 0,
@@ -35,8 +34,8 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
 
 
-        MAX_VELOCITY = maxVelocity;
-        MAX_ANGULAR_VELOCITY = maxAngularVelocity;
+        MAX_VELOCITY =  RobotConstants.DriveBase.kMaxVelocityMetersPerSecond;
+        MAX_ANGULAR_VELOCITY =  RobotConstants.DriveBase.kMaxAngularVelocityRadiansPerSecond;
 
         addRequirements(driveBase);
     }
