@@ -90,7 +90,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     
 
     public void initDefaultCommand(MustangCommand command) {
-        MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
+        MustangScheduler.getInstance().setDefaultCommand(this, command);
     }
 
     /**
@@ -121,7 +121,10 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
         }
         
     }
-
+    /**
+     * 
+     * @return the default command of this subsystem
+     */
     public MustangCommand getDefaultMustangCommand() {
         return (MustangCommand) (super.getDefaultCommand());
     }

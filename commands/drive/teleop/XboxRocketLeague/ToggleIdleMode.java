@@ -9,6 +9,10 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 
+
+/**
+ * The ToggleIdleMode class is a Java class that toggles the idle mode (the mode that the motors are set, to brake or coast) of a DriveBase object.
+ */
 public class ToggleIdleMode extends InstantCommand implements MustangCommand{
 
     private DriveBase driveBase;
@@ -19,15 +23,20 @@ public class ToggleIdleMode extends InstantCommand implements MustangCommand{
         this.driveBase = driveBase;
     }
 
+    
+    /**
+     * The initialize function toggles the idle mode of the drive base.
+     */
     public void initialize() {
         driveBase.toggleIdleMode();
-      }
+    }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return null;
     }
-    @Override
-  public void debugCommand(){}
+
+   @Override
+   public void debugCommand(){}
     
 }

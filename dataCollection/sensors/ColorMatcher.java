@@ -7,7 +7,9 @@ import edu.wpi.first.wpilibj.util.Color;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorMatch;
-
+/**
+ * A sensor object that gets and matches colors from a Rev Color Sensor V3.
+ */
 public class ColorMatcher {
   /**
    * Change the I2C port below to match the connection of your color sensor
@@ -96,7 +98,7 @@ public class ColorMatcher {
     SmartDashboard.putNumber("Confidence", match.confidence);
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {
-        //   coaalorString = "Blue";
+        //   colorString = "Blue";
             colorNumber = colors.BLUE.getColorNumber();
         } else if (match.color == colors.RED.getTargetColor()) {
             // colorString = "Red";

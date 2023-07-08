@@ -4,7 +4,7 @@ import edu.wpi.first.wpilibj.AddressableLED;
 import edu.wpi.first.wpilibj.AddressableLEDBuffer;
 
 /**
- * Represents an addresable LED strip
+ * Represents an addresable LED strip. Do not change to RGB or it will break
  * 
  * @author AkshatAdsule, edwar-d, LakshBhambhani
  */
@@ -28,7 +28,6 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     protected boolean isBlinking = false;
     private LEDColor blinkColor;
     private boolean changed = false;
-    private boolean isMoving = false;
     private int animationCount = 0;
 
     /**
@@ -53,31 +52,39 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     }
 
     public void mustangPeriodic() {
-        // Handle turning off blink
+        // Handle turning off blink 
+        // ONLY for BLINK method
         if (isBlinking) {
-            if (isBlinking) {
-                blinkCounter++;
-                if (blinkCounter <= blinkEndCount) {
-                    for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                        m_ledBuffer.setHSV(i, (int) blinkColor.h, (int) blinkColor.s, (int) blinkColor.v);
-                    }
-                }
-
-                if (blinkCounter > blinkEndCount) {
-                    for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
-                        m_ledBuffer.setHSV(i, 0, 0, 0);
-
-                    }
-                    if (blinkCounter > blinkEndCount * 2) {
-                        blinkCounter = 0;
-                        isBlinking = false;
-                    }
+            blinkCounter++;
+            // sets the LED color to the inputted color when the `blinkCounter` is less than or equal to the `blinkEndCount`.
+            // It sets the LED color to the specified color for the duration of the blink.
+            if (blinkCounter <= blinkEndCount) {
+                //sets led color to inputted color
+                for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                    m_ledBuffer.setHSV(i, (int) blinkColor.h, (int) blinkColor.s, (int) blinkColor.v);
                 }
             }
+            
+            // This code block is responsible for turning off the blinking effect after the specified duration (`blinkEndCount`).
+            if (blinkCounter > blinkEndCount) {
+                for (int i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                    m_ledBuffer.setHSV(i, 0, 0, 0);
+                }
+                //blinkEndCounter = one blink (cycle of on and off)
+                if (blinkCounter > blinkEndCount * 2) {
+                    blinkCounter = 0;
+                    isBlinking = false;
+                }
+            }
+
             m_led.setData(m_ledBuffer);
         }
 
-        if (isMoving || changed) {
+        // responsible for updating the LED strip with any changes made to the LED buffer.
+        // this DOES NOT apply to blink, but works for all other 
+        // led methods that change the LED strip periodically
+        
+        if (changed) {
             changed = false;
             m_led.setData(m_ledBuffer);
         }
@@ -93,8 +100,17 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         return HealthState.GREEN;
     }
 
+
     /**
-     * Creates a solid rainbow on the robot
+     * The function `solidRainbow` sets the color of each pixel in a LED strip to create a solid
+     * rainbow effect.
+     * 
+     * @param isMaxBrightness A boolean value indicating whether the maximum brightness should be used
+     * for the rainbow colors. If true, the brightness value will be set to 255. If false, the
+     * brightness value will be set to 60.
+     *
+     * @param rainbowPixelHue The `rainbowPixelHue` parameter represents the starting hue value for the
+     * rainbow effect. It determines the color of the first pixel in the rainbow sequence.
      */
     public void solidRainbow(boolean isMaxBrightness, int rainbowPixelHue) {
         m_rainbowFirstPixelHue = rainbowPixelHue;
@@ -109,13 +125,24 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
             m_ledBuffer.setHSV(i, hue, 255, brightness);
         }
-        isMoving = true;
         changed = true;
     }
 
     /**
      * Creates an animated rainbow effect on the LED Strip
      */
+   /**
+    * The function `animatedRainbow` updates the rainbow animation by incrementing the hue of the first
+    * pixel and calling the `solidRainbow` function.
+    * 
+    * @param isMaxBrightness A boolean value indicating whether the rainbow animation should be
+    * displayed at maximum brightness or not.
+    * @param updateSpeed The updateSpeed parameter determines how often the rainbow animation should be
+    * updated. It represents the number of iterations before the animation is updated.
+    * @param rainbowSpeed The `rainbowSpeed` parameter determines how quickly the colors of the rainbow
+    * change. A higher value will result in a faster movement of the rainbow animation while a lower value
+    * will result in a slower movement of the rainbow animation.
+    */
     public void animatedRainbow(boolean isMaxBrightness, int updateSpeed, int rainbowSpeed) {
         if (animationCount > updateSpeed) {
             animationCount = 0;
@@ -123,6 +150,15 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         }
         animationCount++;
     }
+
+    /**
+     * The function sets the HSV values of each pixel in a LED buffer to create a solid mustang
+     * rainbow (white and green) effect with a variable saturation.
+     * 
+     * @param mustangRainbowFirstSaturation The parameter mustangRainbowFirstSaturation represents the
+     * initial saturation value for the Mustang Rainbow effect. It determines the starting saturation
+     * level for the colors in the rainbow effect.
+     */
 
     public void solidMustangRainbow(int mustangRainbowFirstSaturation) {
         m_mustangRainbowFirstSaturation = mustangRainbowFirstSaturation;
@@ -136,6 +172,14 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         changed = true;
     }
 
+    /**
+     * The function `animatedMustangRainbow` updates the saturation of a rainbow effect on a Mustang
+     * car at a specified speed.
+     * 
+     * @param updateSpeed The updateSpeed parameter determines how often the animation should be
+     * updated. It represents the number of iterations that need to pass before the animation is updated.
+     * @param rainbowSpeed The rainbowSpeed parameter determines how quickly the saturation of the rainbow will change
+     */
     public void animatedMustangRainbow(int updateSpeed, int rainbowSpeed) {
         if (animationCount > updateSpeed) {
             animationCount = 0;
@@ -144,12 +188,21 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         animationCount++;
     }
 
+    /**
+     * The function checks if the color of an LED at a given index has changed.
+     * 
+     * @param index The index parameter represents the position of the LED in the LED buffer. It is
+     * used to access the LED at the specified index in the buffer.
+     * @param newColor The new color that you want to compare with the color of the LED at the
+     * specified index.
+     * @return The method is returning a boolean value.
+     */
     private boolean colorChanged(int index, LEDColor newColor) {
         return !(m_ledBuffer.getLED(index).equals(newColor));
     }
 
     /**
-     * Changes the LED strip so that all the LEDs are one color
+     * Changes the LED strip so that all the LEDs are one solif color
      * Colors is in HSV FORMAT
      * 
      * @param Color The color
@@ -255,11 +308,11 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     /**
      * Represents colors that our LED subsystem supports
-     * Extends WPILib Color
-     * Stores Colors in hsv format
+     *Stores Colors in hsv format
      * 
      */
     public static class LEDColor {
+
         public static final LEDColor RED = new LEDColor(0);
 
         public static final LEDColor SPOOKY_ORANGE = new LEDColor(3);

@@ -34,7 +34,11 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
   private MustangController controller;
   
   private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-  
+  /**
+   * 
+   * @param driveBase
+   * @param controller
+   */
   public XboxRocketLeagueDrive(TankDrive driveBase, MustangController controller) {
     isReversed = false;
     addRequirements(driveBase);
@@ -42,7 +46,7 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
     this.driveBase = driveBase;
     this.controller = controller;
   }
-
+  
   // Called once when the command executes
   @Override
   public void execute() {
@@ -91,21 +95,27 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
       }
     }
   }
-
+  /**
+   * 
+   * @return if the drive is reversed 
+   */
   public static boolean isDriveReversed() {
     return isReversed;
   }
-
+  
   @Override
   public boolean isFinished(){
     return false;
   }
-
+  /**
+   *  Sets if the drivebase is reversed
+   * @param reversed whether or not to reverse the drivebase 
+   */
   public static void setDriveReversed(boolean reversed) {
     XboxRocketLeagueDrive.isReversed = reversed;
     SmartDashboard.putBoolean("drive-reversed", reversed);
   }
-
+ 
   @Override
   public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
     
