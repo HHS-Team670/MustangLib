@@ -9,37 +9,83 @@ import edu.wpi.first.hal.SerialPortJNI;
 import edu.wpi.first.hal.FRCNetComm.tResourceType;
 import edu.wpi.first.wpilibj.Timer;
 
+
+/**
+ * This class represents a Pico color sensor and provides methods to read the raw color values and proximity values from the sensor.
+ * The sensor is // The above code is incomplete and does not have a specific purpose. It only contains
+ // the letter "r" and three hash symbols "
+ read on a separate thread to avoid blocking the main thread.
+ * The class uses JNI to read the sensor data without allocating memory.
+ * The sensor data is stored in private fields and accessed through thread-safe methods.
+ * The class also provides a method to close the sensor and stop the reading thread.
+ */
 public class PicoColorSensor implements AutoCloseable {
+
+  /**
+   * The RawColor class represents a color with red, green, blue, and infrared components.
+   */
   public static class RawColor {
+    
+    /**
+     * Constructs a RawColor object with the specified red, green, blue, and infrared components.
+     * @param r the red component of the color
+     * @param g the green component of the color
+     * @param b the blue component of the color
+     * @param _ir the infrared component of the color
+     */
     public RawColor(int r, int g, int b, int _ir) {
       red = r;
       green = g;
       blue = b;
       ir = _ir;
     }
-
+    /**
+     * Constructs a RawColor object with default values of 0 for all components.
+     */
     public RawColor() {
     }
-
     public int red;
     public int green;
     public int blue;
     public int ir;
   }
 
+
+  /**
+   * This class represents a single character sequence and provides methods to access its data.
+   */
   private static class SingleCharSequence implements CharSequence {
+
+    /**
+     * The byte array that holds the character sequence.
+     */
     public byte[] data;
 
+    /**
+     * Returns the length of the character sequence.
+     * @return the length of the character sequence
+     */
     @Override
     public int length() {
       return data.length;
     }
 
+    /**
+     * Returns the character at the specified index in the sequence.
+     * @param index the index of the character to return
+     * @return the character at the specified index
+     */
     @Override
     public char charAt(int index) {
       return (char)data[index];
     }
 
+    /**
+     * Returns a new character sequence that is a subsequence of this sequence.
+     * @param start the start index of the subsequence
+     * @param end the end index of the subsequence
+     * @return a new character sequence that is a subsequence of this sequence
+     */
     @Override
     public CharSequence subSequence(int start, int end) {
       return new String(data, start, end, StandardCharsets.UTF_8);
@@ -47,10 +93,26 @@ public class PicoColorSensor implements AutoCloseable {
 
   }
 
+
+ /**
+  * The IntRef class is a helper class that holds an integer value.
+  */
   private static class IntRef {
     int value;
   }
 
+  /**
+   * The function `parseIntFromIndex` parses an integer value from a character sequence starting from a
+   * given index, using a comma as a delimiter, and updates the index of the last comma encountered.
+   * 
+   * @param charSeq A SingleCharSequence object that represents a sequence of characters.
+   * @param readLen The parameter "readLen" represents the length of the character sequence that needs
+   * to be parsed.
+   * @param lastComma lastComma is an IntRef object that holds the index of the last comma found in the
+   * charSeq data. It is passed as a reference so that its value can be updated within the method.
+   * @return The method is returning an integer value.
+   */
+   
   int parseIntFromIndex(SingleCharSequence charSeq, int readLen, IntRef lastComma) {
     int nextComma = 0;
     try {
@@ -63,6 +125,16 @@ public class PicoColorSensor implements AutoCloseable {
     }
   }
 
+/**
+ * The function finds the index of the next comma in a byte array, given the length of the array, the
+ * index of the previous comma found, and the current read length.
+ * 
+ * @param data The `data` parameter is a byte array that represents the data you are searching through.
+ * @param readLen The length of the data that has been read so far.
+ * @param lastComma The parameter "lastComma" represents the index of the last comma found in the byte
+ * array "data".
+ * @return The method is returning the index of the next comma in the byte array 'data'.
+ */
   private int findNextComma(byte[] data, int readLen, int lastComma) {
     while (true) {
       if (readLen <= lastComma + 1 ) {
@@ -77,6 +149,7 @@ public class PicoColorSensor implements AutoCloseable {
   }
 
   private final AtomicBoolean debugPrints = new AtomicBoolean();
+
   private boolean hasColor0;
   private boolean hasColor1;
   private int prox0;
@@ -88,6 +161,10 @@ public class PicoColorSensor implements AutoCloseable {
   private final Thread readThread;
   private final AtomicBoolean threadRunning = new AtomicBoolean(true);
 
+  /**
+   * Reads data from a serial port and updates the values of color and proximity
+   * sensors.
+   */
   private void threadMain() {
     // Using JNI for a non allocating read
     int port = SerialPortJNI.serialInitializePort((byte)1);
@@ -151,6 +228,11 @@ public class PicoColorSensor implements AutoCloseable {
       color1.green = parseIntFromIndex(charSeq, read, lastComma);
       color1.blue = parseIntFromIndex(charSeq, read, lastComma);
       color1.ir = parseIntFromIndex(charSeq, read, lastComma);
+   /**
+    * The function checks if the distance is within the threshold.
+    * 
+    * @return The method is returning a boolean value.
+    */
       int prox1 = parseIntFromIndex(charSeq, read, lastComma);
 
       double ts = Timer.getFPGATimestamp();
@@ -181,13 +263,18 @@ public class PicoColorSensor implements AutoCloseable {
 
     SerialPortJNI.serialClose(port);
   }
-
+/**
+ * Constructor for PicoColorSensor class. Initializes a new thread to read sensor data.
+ */
   public PicoColorSensor() {
     readThread = new Thread(this::threadMain);
     readThread.setName("PicoColorSensorThread");
     readThread.start();
   }
-
+/**
+ * Returns whether the sensor 0 is connected or not.
+ * @return boolean value indicating whether sensor 0 is connected or not.
+ */
   public boolean isSensor0Connected() {
     try {
       threadLock.lock();
@@ -196,7 +283,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Returns whether the sensor 1 is connected or not.
+ * @return boolean value indicating whether sensor 1 is connected or not.
+ */
   public boolean isSensor1Connected() {
     try {
       threadLock.lock();
@@ -205,7 +295,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Returns the raw color data for sensor 0.
+ * @return RawColor object containing the raw color data for sensor 0.
+ */
   public RawColor getRawColor0() {
     try {
       threadLock.lock();
@@ -214,7 +307,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Populates the provided RawColor object with the raw color data for sensor 0.
+ * @param rawColor RawColor object to be populated with the raw color data for sensor 0.
+ */
   public void getRawColor0(RawColor rawColor) {
     try {
       threadLock.lock();
@@ -226,7 +322,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Returns the proximity value for sensor 0.
+ * @return integer value representing the proximity value for sensor 0.
+ */
   public int getProximity0() {
     try {
       threadLock.lock();
@@ -235,7 +334,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Returns the raw color data for sensor 1.
+ * @return RawColor object containing the raw color data for sensor 1.
+ */
   public RawColor getRawColor1() {
     try {
       threadLock.lock();
@@ -244,7 +346,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Populates the provided RawColor object with the raw color data for sensor 1.
+ * @param rawColor RawColor object to be populated with the raw color data for sensor 1.
+ */
   public void getRawColor1(RawColor rawColor) {
     try {
       threadLock.lock();
@@ -256,7 +361,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Returns the proximity value for sensor 1.
+ * @return integer value representing the proximity value for sensor 1.
+ */
   public int getProximity1() {
     try {
       threadLock.lock();
@@ -265,7 +373,10 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Returns the timestamp of the last sensor read in seconds.
+ * @return double value representing the timestamp of the last sensor read in seconds.
+ */
   public double getLastReadTimestampSeconds() {
     try {
       threadLock.lock();
@@ -274,11 +385,17 @@ public class PicoColorSensor implements AutoCloseable {
       threadLock.unlock();
     }
   }
-
+/**
+ * Sets whether debug prints should be enabled or not.
+ * @param debug boolean value indicating whether debug prints should be enabled or not.
+ */
   void setDebugPrints(boolean debug) {
     debugPrints.set(debug);
   }
-
+  /**
+ * Closes the PicoColorSensor object and joins the read thread.
+ * @throws Exception if an error occurs while closing the PicoColorSensor object.
+ */
   @Override
   public void close() throws Exception {
     threadRunning.set(false);

@@ -4,6 +4,11 @@ import org.littletonrobotics.junction.Logger;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team670.mustanglib.commands.MustangCommand;
@@ -85,7 +90,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     
 
     public void initDefaultCommand(MustangCommand command) {
-        MustangScheduler.getInstance().setDefaultCommand(this, (CommandBase) command);
+        MustangScheduler.getInstance().setDefaultCommand(this, command);
     }
 
     /**
@@ -116,7 +121,10 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
         }
         
     }
-
+    /**
+     * 
+     * @return the default command of this subsystem
+     */
     public MustangCommand getDefaultMustangCommand() {
         return (MustangCommand) (super.getDefaultCommand());
     }

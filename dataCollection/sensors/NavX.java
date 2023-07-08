@@ -80,6 +80,11 @@ public class NavX {
         resetState();
     }
 
+    /**
+     * Resets the values of mLastSensorTimestampMs, mYawDegrees, and
+     * mYawRateDegreesPerSecond to their initial values.
+     */
+
     private void resetState() {
         mLastSensorTimestampMs = K_INVALID_TIMESTAMP;
         mYawDegrees = 0.0;
@@ -91,14 +96,14 @@ public class NavX {
     // }
 
     /**
-     * The Field Centric Yaw
+     * @return Field Centric Yaw
      */
     private synchronized double getRawYawDegrees() {
         return mYawDegrees;
     }
 
     /**
-     * Gets the yaw with offset taken into account. Offset sets the zero of the gyro
+     * @return the yaw with offset taken into account. Offset sets the zero of the gyro
      * to the point where zeroYaw() was last called.
      */
     public synchronized double getYawDouble() {
@@ -112,6 +117,9 @@ public class NavX {
         return rtrnAngle;
     }
 
+    /**
+     * @return The method is returning the angle value obtained from the mAHRS object.
+     */
     public synchronized double getAngle() {
         return mAHRS.getAngle();
     }
@@ -130,16 +138,23 @@ public class NavX {
         return 180.0 / Math.PI * getYawRateDegreesPerSec();
     }
 
+    /**
+     * 
+     * @return the raw acceleration in the x direction
+     */
     public synchronized double getRawAccelX() {
         return mAHRS.getRawAccelX();
     }
 
+    /**
+     * Sets the offSet to the current yaw angle in degrees.
+     */
     private synchronized void setOffSetAngle() {
         offSet = getRawYawDegrees();
     }
 
     /**
-     * Gets the NavX object itself so be careful with it and don't reset it. This
+     * @return the NavX object itself so be careful with it and don't reset it. This
      * will be field centric.
      */
     public synchronized AHRS getFieldCentricNavXPIDSource() {
@@ -157,27 +172,45 @@ public class NavX {
     }
 
     /**
-     * Gets the pitch of the NavX
+     * @return the pitch of the NavX
      */
     public double getPitch() {
         return mAHRS.getPitch();
     }
 
     /**
-     * Gets the roll of the NavX
+     * @return the roll of the NavX
+     * 
      */
     public double getRoll() {
         return mAHRS.getRoll();
     }
+    /**
+    * The function isMagnetometerCalibrated() returns a boolean value indicating whether the magnetometer
+    * is calibrated or not.
+    * 
+    * @return The method is returning a boolean value
+    */
 
     public boolean isMagnetometerCalibrated() {
         return mAHRS.isMagnetometerCalibrated();
     }
 
+    /**
+     * The function returns the fused heading value from the mAHRS object.
+     * 
+     * @return The method is returning the fused heading value, which is a double.
+     */
     public double getFusedHeading() {
         return mAHRS.getFusedHeading();
     }
 
+    /**
+     * The function returns whether the AHRS (Attitude and Heading Reference System) is currently
+     * calibrating.
+     * 
+     * @return The method is returning a boolean value representing whether or not this navx is calibrating
+     */
     public boolean isCalibrating() {
         return mAHRS.isCalibrating();
     }

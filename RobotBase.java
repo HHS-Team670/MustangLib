@@ -7,9 +7,6 @@
 
 package frc.team670.mustanglib;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Objects;
 
 import org.littletonrobotics.junction.LogFileUtil;
@@ -22,6 +19,7 @@ import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import edu.wpi.first.wpilibj.PowerDistribution;
 import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 // import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
@@ -145,14 +143,16 @@ public class RobotBase extends LoggedRobot {
   public void disabledInit() {
     robotContainer.disabled();
   }
-
+  /**
+   * This function runs called periodically while the robot is disabled.
+   */
   @Override
   public void disabledPeriodic() {
     robotContainer.disabledPeriodic();
   }
 
   /**
-   * This autonomous runs the autonomous command selected by your
+   * This autonomous runs the autonomous command selected by Sebby
    */
   @Override
   public void autonomousInit() {
