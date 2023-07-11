@@ -158,7 +158,7 @@ public class RobotConstantsBase {
           public static final int kLeftFollowerSparkMotorID = 21;
           public static final int kRightLeaderSparkMotorID = 23;
           public static final int kRightFollowerSparkMotorID = 24;
-          public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kMXP;
+          public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kUSB;
 
 
       /**
