@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.I2C;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
- * 
+ * A class that routes multiple TOF sensors to a single I2C port to convserve bus space
  * @author lakshbhambhani
  */
 public class Multiplexer {
@@ -32,20 +32,33 @@ public class Multiplexer {
         start();
     }
 
+    /**
+     * The function attaches a TimeOfFlightSensor to a HashMap of sensors, selects the attached sensor,
+     * and initializes it.
+     * 
+     * @param newSensor The new sensor object that you want to attach to the system.
+     * @param key The "key" parameter is a string that serves as a unique identifier for the sensor
+     * being attached. It is used as the key in a HashMap to store the sensor object.
+     */
     public synchronized void attachSensor(TimeOfFlightSensor newSensor, String key){
         sensors.put(key, newSensor);
         selectTOF(newSensor.getAddress());
         newSensor.initSensor();
     }
-
+    /**
+     * 
+     * @return the sensors this multiplexer is connected to
+     */
     public Map<String, TimeOfFlightSensor> getSensors(){
         return sensors;
     }
 
+    /**Starts the multiplexer's thread */
     private void start() {
         start(100);
     }
 
+    /**Starts the multiplexer's thread with the specified periodic */
     private void start(int period) {
         TimerTask task = new TimerTask() {
             @Override
@@ -56,13 +69,18 @@ public class Multiplexer {
         updater.scheduleAtFixedRate(task, 0, period);
     }
 
+    /**
+     * Updates all the sensors in the multiplexer
+     */
     private synchronized void update(){
         for (TimeOfFlightSensor sensor : sensors.values()) {
             selectTOF(sensor.getAddress());
             sensor.update();
         }
     }
-
+    /**
+     * Stops the multiplexer from being updated
+     */
     public void stop() {
         updater.cancel();
         updater = new java.util.Timer();

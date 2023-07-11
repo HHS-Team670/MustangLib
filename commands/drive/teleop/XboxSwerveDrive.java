@@ -9,39 +9,35 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 import frc.team670.mustanglib.utils.MustangController;
+import frc.team670.robot.constants.RobotConstants;
 
 
 public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     private final SwerveDrive driveBase;
     private RotationController rotPIDController;
     private MustangController controller;
-    private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
     // private Rotation2d desiredHeading = null;
     private double MAX_VELOCITY, MAX_ANGULAR_VELOCITY;
 
-    public XboxSwerveDrive(SwerveDrive swerveDriveBase, MustangController controller,
-            double maxVelocity, double maxAngularVelocity) {
+    public XboxSwerveDrive(SwerveDrive swerveDriveBase, MustangController controller) {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
         this.rotPIDController = new RotationController(new ProfiledPIDController(3.5, 0, 0,
-                new Constraints(RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecond,
-                RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecondSquared)));
+                new Constraints(RobotConstants.DriveBase.kMaxAngularSpeedRadiansPerSecond,
+                        RobotConstants.DriveBase.kMaxAngularSpeedRadiansPerSecondSquared)));
         this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
 
 
-        MAX_VELOCITY = maxVelocity;
-        MAX_ANGULAR_VELOCITY = maxAngularVelocity;
+        MAX_VELOCITY =  RobotConstants.DriveBase.kMaxVelocityMetersPerSecond;
+        MAX_ANGULAR_VELOCITY =  RobotConstants.DriveBase.kMaxAngularVelocityRadiansPerSecond;
 
         addRequirements(driveBase);
-        healthRequirements.put(driveBase, HealthState.YELLOW);
-
     }
 
     @Override
@@ -75,10 +71,12 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         driveBase.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
     }
 
-    
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-                return healthRequirements;
+        Map<MustangSubsystemBase, HealthState> healthRequirements =
+                new HashMap<MustangSubsystemBase, HealthState>();
+        healthRequirements.put(driveBase, HealthState.YELLOW);
+        return healthRequirements;
     }
 
     private static double deadband(double value, double deadband) {
@@ -98,8 +96,7 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         value = deadband(value, 0.05);
         return value;
     }
-    @Override
-    public void debugCommand(){}
+
 
     private class RotationController {
         private Rotation2d m_rotationError = new Rotation2d();
@@ -148,14 +145,10 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         }
 
         @Override
-        public void debugCommand(){}
-    
-        @Override
         public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
             // TODO Auto-generated method stub
             return null;
         }
 
     }
-    
 }
