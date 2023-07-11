@@ -8,6 +8,9 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
+import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
+import frc.team670.mustanglib.utils.motorcontroller.MotorConfig.Motor_Type;
 
 
 /**
@@ -20,45 +23,16 @@ public abstract class HDrive extends TankDrive {
 
   
   private MotorController centerDrive;
+  public static record Config (double kDriveBaseTrackWidth, double kDriveBaseGearRatio, double kDriveBaseWheelDiameter, 
+  double kTrackWidthMeters, int kLeftLeaderMotorID, int kLeftFollowerMotorID, int kRightLeaderMotorID,
+  int kRightFollowerMotorID,int kCenterMotorID, double deadband , boolean inverted) {
+  }
+
+    public HDrive(Config kConfig){
+      super(new TankDrive.Config(kConfig.kDriveBaseTrackWidth,kConfig.kDriveBaseGearRatio,kConfig.kDriveBaseWheelDiameter,kConfig.kTrackWidthMeters,kConfig.kLeftLeaderMotorID, kConfig.kLeftFollowerMotorID, kConfig.kRightLeaderMotorID, kConfig.kRightFollowerMotorID, kConfig.deadband,kConfig.inverted ));
+      centerDrive=SparkMAXFactory.buildFactorySparkMAX(kConfig.kCenterMotorID, Motor_Type.NEO);
+    }
   
-  /**
-   * 
-   * @param leftMotors Array of left side drivebase motor controllers, must have length greater than 0
-   * @param rightMotors Array of right side drivebase motor controllers, must have length greater than 0
-   * @param inverted Invert the motors (make what would have been the front the back)
-   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
-   * @param deadband A minimum motor input to move the drivebase
-   * @param safetyEnabled Safety Mode, enforces motor safety which turns off the motors if communication lost, other failures, etc.
-   */
-  public HDrive(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive, boolean inverted, boolean rightSideInverted, double deadband, boolean safetyEnabled){
-    setMotorControllers(leftMotor, rightMotor, centerDrive, inverted, rightSideInverted, deadband, safetyEnabled);
-    
-  }
-
-  /**
-   * 
-   * @param leftMotor Leader of the left motors
-   * @param rightMotor Leader of the right motors
-   */
-  public HDrive(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive) {
-    this(leftMotor, rightMotor, centerDrive, true, true, 0.02, true);
-  }
-
-  /**
-   * 
-   * @param leftMotor Leader of the left motors
-   * @param rightMotor Leader of the right motors
-   * @param inverted Invert the motors (make what would have been the fron the back)
-   * @param rightSideInverted Invert the right motor outputs to counteract them being flipped comparatively with the left ones
-   */
-  public HDrive(MotorController leftMotor, MotorController rightMotor, MotorController centerDrive, boolean inverted, boolean rightSideInverted) {
-    this(leftMotor, rightMotor, centerDrive, inverted, rightSideInverted, 0.02, true);
-  }
-
-  /**
-   * Usethis constructor as the super() in a sublcass, then call setMotorControllers if you need to run setup on Motor Controllers
-   */
-  public HDrive() {}
 
   /**
    * This method is called by the constructor. Much of the time setup needs to be performed on motors, so perform the setup in a subclass, then call this method.
