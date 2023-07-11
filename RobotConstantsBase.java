@@ -26,67 +26,7 @@ import frc.team670.mustanglib.swervelib.SdsModuleConfigurations;
  * Update every year
  */
 public class RobotConstantsBase {
-
-    // public static final String kSunTzuAddress = "00:80:2F:34:0B:07";
-    // public static final String kSkipperAddress = "00:80:2F:33:D0:46";
-    // public static final String kWestCoastAddress = "Rember to change this";
-    // public static final String kRobotAddress = getMACAddress();
-    
-    // private static  Map<String, Double> robotSpecificConstants = Map.ofEntries(
-    //     entry(kSunTzuAddress, 
-    //         Map.ofEntries(
-    //                 entry("kBackRightModuleSteerOffsetRadians", -Math.toRadians(90.895)),
-    //                 entry("kBackLeftModuleSteerOffsetRadians", -Math.toRadians(299.807)),
-    //                 entry("kFrontRightModuleSteerOffsetRadians", -Math.toRadians(137.499)),
-    //                 entry("kFrontLeftModuleSteerOffsetRadians", -Math.toRadians(318.604)),
-    //                 entry("kSwerveModuleConfig", 2.0))),
-    //     entry(kSkipperAddress,
-    //         Map.ofEntries(
-    //             entry("kBackRightModuleSteerOffsetRadians", -Math.toRadians(82.694)),
-    //             entry("kBackLeftModuleSteerOffsetRadians", -Math.toRadians(233.29)),
-    //             entry("kFrontRightModuleSteerOffsetRadians", -Math.toRadians(225.77)),
-    //             entry("kFrontLeftModuleSteerOffsetRadians", -Math.toRadians(112.53)),
-    //             entry("kSwerveModuleConfig", 1.0))),
-    //     entry(kWestCoastAddress,
-    //         Map.ofEntries(
-    //                 entry("kDriveBaseGearRatio", 10.71),
-    //                 entry("kDriveBaseTrackWidth", 24.0),
-    //                 entry("kDriveBaseWidthInches",26.0),
-    //                 entry("kDriveBaseLengthInches",31.5),
-    //                 entry("kWheelDiameterInches", 8.0),
-    //                 entry("kDriveBaseDistanceToGroundInches",4.0))))
-    //     .get(kRobotAddress);
-
-    
-    // public static class SwerveDrivel extends SwerveDriveBase{
-    //     public static final ModuleConfiguration kModuleConfig = getValue("kSwerveModuleConfig")==-1?null: robotSpecificConstants.get("kSwerveModuleConfig")==1.0
-    //     ? SdsModuleConfigurations.MK4I_L1
-    //     : SdsModuleConfigurations.MK4I_L2;
-    //     public static final GearRatio kSwerveModuleGearRatio = getValue("kSwerveModuleConfig")==-1?null:robotSpecificConstants.get("kSwerveModuleConfig") == 1.0
-    //     ? GearRatio.L1
-    //     : GearRatio.L2;
-    //     public static final double kFrontLeftModuleSteerOffsetRadians = getValue("kFrontLeftModuleSteerOffsetRadians");
-    //     public static final double kFrontRightModuleSteerOffsetRadians = getValue("kFrontRightModuleSteerOffsetRadians");
-    //     public static final double kBackLeftModuleSteerOffsetRadians = getValue("kBackLeftModuleSteerOffsetRadians");
-    //     public static final double kBackRightModuleSteerOffsetRadians = getValue("kBackRightModuleSteerOffsetRadians");
-    //     public static final double kMaxVelocityMetersPerSecond = 5676.0 / 60.0
-    //     * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
-    //     public static final double kMaxAngularVelocityRadiansPerSecond = kMaxVelocityMetersPerSecond
-    //             / Math.hypot(kTrackWidthMeters / 2.0, kWheelBaseMeters / 2.0);
-        
-    //     public static final SwerveDrive.Config kConfig = new SwerveDrive.Config(kTrackWidthMeters,
-    //             kWheelBaseMeters, kMaxVelocityMetersPerSecond, kMaxVoltage, kMaxDriveCurrent,
-    //             kMaxSteerCurrent, kNAVXPort, kSwerveModuleGearRatio, kFrontLeftModuleDriveMotorID,
-    //             kFrontLeftModuleSteerMotorID, kFrontLeftModuleSteerEncoderID,
-    //             kFrontLeftModuleSteerOffsetRadians, kFrontRightModuleDriveMotorID,
-    //             kFrontRightModuleSteerMotorID, kFrontRightModuleSteerEncoderID,
-    //             kFrontRightModuleSteerOffsetRadians, kBackLeftModuleDriveMotorID,
-    //             kBackLeftModuleSteerMotorID, kBackLeftModuleSteerEncoderID,
-    //             kBackLeftModuleSteerOffsetRadians, kBackRightModuleDriveMotorID,
-    //             kBackRightModuleSteerMotorID, kBackRightModuleSteerEncoderID,
-    //             kBackRightModuleSteerOffsetRadians);
-
-    // }        
+     
     public  static class SwerveDriveBase {
 
         
@@ -95,22 +35,6 @@ public class RobotConstantsBase {
         public static final double kTrackWidthMeters = 0.6096;
         public static final double kWheelBaseMeters = 0.6096;
         
-        public static final int kFrontLeftModuleSteerMotorID = 20;
-        public static final int kFrontLeftModuleDriveMotorID = 21;
-        public static final int kFrontLeftModuleSteerEncoderID = 30;
-       
-        public static final int kFrontRightModuleSteerMotorID = 22;
-        public static final int kFrontRightModuleDriveMotorID = 23;
-        public static final int kFrontRightModuleSteerEncoderID = 32;
-
-        public static final int kBackLeftModuleSteerMotorID = 26;
-        public static final int kBackLeftModuleDriveMotorID = 27;
-        public static final int kBackLeftModuleSteerEncoderID = 36;
-
-        public static final int kBackRightModuleSteerMotorID = 24;
-        public static final int kBackRightModuleDriveMotorID = 25;
-        public static final int kBackRightModuleSteerEncoderID = 34;
-      
         public final static SerialPort.Port kNAVXPort = SerialPort.Port.kMXP;
         public static final double kPitchOffset = 2;
 
@@ -171,9 +95,7 @@ public class RobotConstantsBase {
     //       1 / kDriveBaseGearRatio * kDriveBaseWheelDiameter * Math.PI;    
 
     //   // Number of meters per rotation of a drivebase/hdrive wheel
-      
-
-     
+         
       //
       public static final int kTimeoutMs = 0;
       public static final double leftKsVolts = 0.4; //0.20806; //0.4; 
@@ -185,8 +107,6 @@ public class RobotConstantsBase {
 
 
       // Autonomous Constants
-  
-
       public static final double leftKPDriveVel = 2;
       public static final double leftKIDriveVel = 0;
       public static final double leftKDDriveVel = 0;
@@ -215,21 +135,11 @@ public class RobotConstantsBase {
       // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
       public static final double kRamseteB = 2;
       public static final double kRamseteZeta = .7;
-      public static final boolean kNavXReversed = true;
-      
-      
+      public static final boolean kNavXReversed = true;    
 
   }
-//   public static double getValue(String key){
-//     Double value = robotSpecificConstants.get(key);
-//     if(value == null){
-//         return -1;
-//     }
-//     return value;
-//   }
 
-  
-        /**
+    /**
      * This is code from Poofs 2022
      * 
      * @return the MAC address of the robot
