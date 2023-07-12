@@ -28,8 +28,6 @@ import frc.team670.mustanglib.swervelib.SdsModuleConfigurations;
 public class RobotConstantsBase {
      
     public  static class SwerveDriveBase {
-
-        
         public static final double kWidth = Units.inchesToMeters(36);
         public static double kClearance = Math.hypot(kWidth, kWidth) / 2 + 0.05;
         public static final double kTrackWidthMeters = 0.6096;
@@ -54,11 +52,6 @@ public class RobotConstantsBase {
         // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
         // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
         
-
-        
-
-      
-
         public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
         public static final PIDConstants kAutonThetaPID = new PIDConstants(0.5, 0, 0);
 
