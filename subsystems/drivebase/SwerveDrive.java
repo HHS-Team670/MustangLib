@@ -46,7 +46,7 @@ public abstract class SwerveDrive extends DriveBase {
     private Rotation2d mDesiredHeading = null; // for rotation snapping
 
     private final double kMaxVelocity, kMaxVoltage;
-
+    private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
 
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
@@ -63,6 +63,7 @@ public abstract class SwerveDrive extends DriveBase {
     }
 
     public SwerveDrive(Config config) {
+        this.kConfig=config;
         kMaxVelocity = config.kMaxVelocity;
         kMaxVoltage = config.kMaxVoltage;
 
@@ -169,6 +170,10 @@ public abstract class SwerveDrive extends DriveBase {
     public Rotation2d getDesiredHeading() {
         return this.mDesiredHeading;
     }
+    // public double getMaxVelocityMetersPerSecond(){
+    //     return  5676.0 / 60.0
+    //     * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
+    // }
 
     public Rotation2d getGyroscopeRotation(boolean offset) {
         if (mNavx.isMagnetometerCalibrated()) {

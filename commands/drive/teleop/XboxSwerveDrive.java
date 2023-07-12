@@ -9,6 +9,7 @@ import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
@@ -29,13 +30,13 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
         this.rotPIDController = new RotationController(new ProfiledPIDController(3.5, 0, 0,
-                new Constraints(RobotConstants.DriveBase.kMaxAngularSpeedRadiansPerSecond,
-                        RobotConstants.DriveBase.kMaxAngularSpeedRadiansPerSecondSquared)));
+                new Constraints(RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecond,
+                        RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecondSquared)));
         this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
 
 
-        MAX_VELOCITY =  RobotConstants.DriveBase.kMaxVelocityMetersPerSecond;
-        MAX_ANGULAR_VELOCITY =  RobotConstants.DriveBase.kMaxAngularVelocityRadiansPerSecond;
+        MAX_VELOCITY =  RobotConstantsBase.SwerveDriveBase.kMaxVelocityMetersPerSecond;
+        MAX_ANGULAR_VELOCITY =  RobotConstantsBase.SwerveDriveBase.kMaxAngularVelocityRadiansPerSecond;
 
         addRequirements(driveBase);
     }
