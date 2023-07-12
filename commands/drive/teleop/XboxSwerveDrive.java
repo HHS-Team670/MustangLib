@@ -35,8 +35,8 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
         this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
 
 
-        MAX_VELOCITY =  RobotConstantsBase.SwerveDriveBase.kMaxVelocityMetersPerSecond;
-        MAX_ANGULAR_VELOCITY =  RobotConstantsBase.SwerveDriveBase.kMaxAngularVelocityRadiansPerSecond;
+        MAX_VELOCITY = swerveDriveBase.getMaxVelocityMetersPerSecond();
+        MAX_ANGULAR_VELOCITY = swerveDriveBase.getMaxAngularVelocityMetersPerSecond();
 
         addRequirements(driveBase);
     }

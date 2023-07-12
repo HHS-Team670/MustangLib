@@ -50,7 +50,7 @@ public abstract class SwerveDrive extends DriveBase {
     private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
 
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
-            double kMaxVelocity, double kMaxVoltage, double kMaxDriveCurrent,
+            double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
             int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset,
@@ -145,6 +145,16 @@ public abstract class SwerveDrive extends DriveBase {
      */
     public void zeroHeading() {
         mGyroOffset = getGyroscopeRotation(false);
+    }
+    public GearRatio getGearRatio(){
+        return kConfig.kSwerveModuleGearRatio();
+    }
+    public double getMaxVelocityMetersPerSecond(){
+        return kMaxVelocity;
+    }
+    
+    public double getMaxAngularVelocityMetersPerSecond(){
+        return kConfig.kMaxAngularVelocity;
     }
 
     public void setGyroscopeRotation(Rotation2d rot) {

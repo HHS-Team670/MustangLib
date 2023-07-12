@@ -491,7 +491,7 @@ public final class Mk4iSwerveModuleHelper {
         L2(SdsModuleConfigurations.MK4I_L2),
         L3(SdsModuleConfigurations.MK4I_L3);
 
-        private final ModuleConfiguration configuration;
+        public final ModuleConfiguration configuration;
 
         GearRatio(ModuleConfiguration configuration) {
             this.configuration = configuration;
