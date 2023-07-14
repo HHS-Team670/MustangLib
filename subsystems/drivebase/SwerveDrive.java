@@ -36,7 +36,7 @@ import frc.team670.mustanglib.utils.SwervePoseEstimatorBase;
  * @author Tarini, Edward, Justin, Ethan C, Armaan, Aditi
  */
 public abstract class SwerveDrive extends DriveBase {
-    private SwervePoseEstimatorBase mPoseEstimator;
+    protected SwervePoseEstimatorBase mPoseEstimator;
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
 

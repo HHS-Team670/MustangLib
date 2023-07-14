@@ -59,8 +59,27 @@ public class MustangScheduler {
         // We can't directly cast an array of MustangCommands to an array of Commands, you
         // can only do that for subtype to supertype array.
         // So each MustangCommand will be cast to a Command and added to an array of Commands.
-        Command[] commandsToCancel = Arrays.copyOf(commands, commands.length, Command[].class);
+        
+        int nl=0;
+        int count=0;
+        for(int i=0;i<commands.length;i++){
+            if(commands[i]==null){
+                count++;
+            }else{
+                commands[i-count]=commands[i];
+                nl++;
+            }
+
+        }
+        commands=Arrays.copyOf(commands, nl);
+
+        try{
+            Command[] commandsToCancel = Arrays.copyOf(commands, commands.length, Command[].class);
         scheduler.cancel((Command[]) commandsToCancel);
+        }catch(Exception e){
+            
+        }//Possibly check for nulls and then cut down the array
+        
     }
 
     public Command getCurrentlyScheduled() {
