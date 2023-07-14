@@ -46,6 +46,9 @@ public class PicoColorMatcher {
       return colorNumber;
     }
 
+    /**
+     * @return The method is returning the target color.
+     */
     private Color getTargetColor() {
       return color;
     }
@@ -58,7 +61,9 @@ public class PicoColorMatcher {
   public PicoColorMatcher() {
     init();
   }
-
+  /**
+  * Initializes the Color Matcher
+  */
   public void init() {
     m_colorMatcher.addColorMatch(colors.BLUE.getTargetColor());;
     m_colorMatcher.addColorMatch(colors.RED.getTargetColor());
@@ -108,11 +113,18 @@ public class PicoColorMatcher {
     return -1;  
   }
 
+  /**
+   * The function converts a raw color representation to a normalized color representation.
+   * 
+   * @param rawColor The rawColor parameter is an object of type RawColor, which represents the raw
+   * values of the red, green, and blue components of a color.
+   * @return a normalized Color object.
+   */
   public Color convertRawToColor(RawColor rawColor) {
     var red = rawColor.red;
     var green = rawColor.green;
     var blue = rawColor.blue;
     double sum = red + green + blue;
-    return new Color(red/sum,green/sum,blue/sum);
+    return new Color(red/sum , green/sum , blue/sum);
   }
 }

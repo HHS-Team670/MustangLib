@@ -77,6 +77,9 @@ public class TimeOfFlightSensor {
         start();
     }
 
+    /**
+     * The function initializes a sensor by writing specific values to its registers.
+     */
     public void initSensor() {
         write(0x0207, 0x01);
         write(0x0208, 0x01);
@@ -139,15 +142,24 @@ public class TimeOfFlightSensor {
     public int getDistance() {
         return range;
     }
-
+    /**
+     * 
+     * @return if this sensor is healthy
+     */
     public boolean isHealthy() {
         return isHealthy;
     }
-
+    /**
+     * Starts this sensor with a period of 100ms
+     */
     private void start() {
         start(100);
     }
 
+    /**
+     * Starts this sensor with the given period
+     * @param period the period in milliseconds
+     */
     private void start(int period) {
         TimerTask task = new TimerTask() {
             @Override
@@ -158,11 +170,25 @@ public class TimeOfFlightSensor {
         updater.scheduleAtFixedRate(task, 0, period);
     }
 
+    /**
+     * Stops this sensor from being updated
+     */
     public void stop() {
         updater.cancel();
         updater = new java.util.Timer();
     }
 
+    /**
+     * The function writes data to a register address in a sensor and returns a boolean indicating if
+     * the write operation was successful.
+     * 
+     * @param registerAddress The register address is an integer value that represents the address of
+     * the register in the sensor's memory where the data will be written to. It is used to specify
+     * which register the data should be written to.
+     * @param data The "data" parameter is an integer value that represents the data to be written to a
+     * specific register address.
+     * @return The method is returning a boolean value.
+     */
     private boolean write(int registerAddress, int data) {
         try{
             byte[] rawData = new byte[3];
@@ -186,6 +212,14 @@ public class TimeOfFlightSensor {
         return true;
     }
 
+    /**
+     * The function reads a short integer value from a sensor at a specified register address using I2C
+     * communication.
+     * 
+     * @param registerAddress The registerAddress parameter is an integer value representing the
+     * address of the register from which the data needs to be read.
+     * @return The method is returning an integer value.
+     */
     private int readShortInt(int registerAddress) {
         try{
             byte[] data = new byte[1];
@@ -211,6 +245,9 @@ public class TimeOfFlightSensor {
         return ERROR;
     }
 
+    /**
+     * @return The method is returning the address
+     */
     public int getAddress(){
         return address;
     }
@@ -236,10 +273,19 @@ public class TimeOfFlightSensor {
         write(VL6180X_REG_SYSTEM_INTERRUPT_CLEAR, 0x07);
     }
 
+    /**
+     * @return The method is returning a boolean value if the distance is within the threshold
+     */
     public boolean isObjectWithinThreshold() {
         return getDistance() <= threshold;
     }
 
+    /**
+     * The function sets the threshold value for a variable.
+     * 
+     * @param threshold The threshold parameter is an integer value that represents a certain limit or
+     * level. It is used to set a threshold value for a specific condition or action in a program.
+     */
     public void setThreshold(int threshold){
         this.threshold = threshold;
     }

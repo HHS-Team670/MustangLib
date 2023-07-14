@@ -7,8 +7,11 @@
 
 package frc.team670.mustanglib.subsystems.drivebase;
 
+import org.littletonrobotics.junction.inputs.LoggableInputs;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
+import frc.team670.mustanglib.subsystems.MustangSubsystemBaseIO;
 
 /*
  * 
@@ -17,6 +20,10 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
  * @author shaylandias, lakshbhambhani, armaan, aditi
  */
 public abstract class DriveBase extends MustangSubsystemBase {
+
+  public DriveBase(MustangSubsystemBaseIO io, LoggableInputs inputs) {
+    super(io, inputs);
+  }
 
   public abstract void initBrakeMode();
 

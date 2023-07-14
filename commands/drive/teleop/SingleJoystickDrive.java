@@ -18,6 +18,8 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 /*
 * Note: This is for tank drive
+* uses a singles joystick to control the left and right sides of the tank drive
+* Forward back for froward reverse and twist to turn
 */
 public class SingleJoystickDrive extends CommandBase implements MustangCommand {
 
@@ -38,7 +40,7 @@ public class SingleJoystickDrive extends CommandBase implements MustangCommand {
 
     // Called just before this Command runs the first time
     @Override
-    public void execute() {
+    public void execute() { 
         driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist(), true);
     }
 
