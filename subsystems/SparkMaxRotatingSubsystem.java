@@ -100,11 +100,13 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * 
      * @param setpoint The "setpoint" parameter represents the value that you want to check if it is
      * within the soft limits.
-     * @return The method is returning a boolean value.
+     * @return if a given setpoint is within the soft limits defined in the kConfig object.
      */
-    public boolean inSoftLimits(double setpoint){
+    private boolean checkSoftLimits(double setpoint){
+        
         if (kConfig.kSoftLimits != null && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
-            
+            Logger.consoleLog("In " +getName()+" Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+            + " and " + kConfig.kSoftLimits[0]);
             return false;
         }
         return true;
@@ -115,14 +117,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * limits and logs an error message if it is not.
      * 
      * @param setpoint The setpoint is the desired target value for the system's motion.
+     * @return if this action was sucessful
      */
-    protected void setSystemMotionTarget(double setpoint) {
-        if (!inSoftLimits(setpoint)) {
-            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
-                    + " and " + kConfig.kSoftLimits[0]);
-            return;
+    protected boolean setSystemMotionTarget(double setpoint) {
+        if (checkSoftLimits(setpoint)) {
+            setSystemMotionTarget(setpoint, 0);
+            return true;
         }
-        setSystemMotionTarget(setpoint, 0);
+        return false;
+        
     }
 
    /**
@@ -134,21 +137,22 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @param arbitraryFF The arbitraryFF parameter is a feedforward term that is used to compensate
      * for any external forces or disturbances acting on the system. It is an arbitrary value that you
      * can adjust to achieve the desired response of the system.
+     * @return if this action was sucessful
      */
-    protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
-        if (!inSoftLimits(setpoint)) {
-            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
-                    + " and " + kConfig.kSoftLimits[0]);
-            return;
+    protected boolean setSystemMotionTarget(double setpoint, double arbitraryFF) {
+        if (checkSoftLimits(setpoint)) {
+            if (setpoint != kNoSetPoint) {
+                mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
+                        arbitraryFF);
+    
+            } else {
+                mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+            }
+            this.mSetpoint = setpoint;
+            return true;
         }
-        if (setpoint != kNoSetPoint) {
-            mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
-                    arbitraryFF);
-
-        } else {
-            mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
-        }
-        this.mSetpoint = setpoint;
+        return false;
+       
     }
 
     /**
@@ -157,15 +161,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * something.
      * 
      * @param setpoint The temporary setpoint for the system, in motor rotations
+     * @return if this action was sucessful
      */
-    protected void setTemporaryMotionTarget(double setpoint) {
-        if (!inSoftLimits(setpoint)) {
-            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
-                    + " and " + kConfig.kSoftLimits[0]);
-            return;
+    protected boolean setTemporaryMotionTarget(double setpoint) {
+        if (checkSoftLimits(setpoint)) {
+            mTempSetpoint = setpoint;
+            mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
+            return true;
         }
-        mTempSetpoint = setpoint;
-        mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
+        return false;
     }
 
     /**
@@ -174,15 +178,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * setpoint.
      * 
      * @param angle The target angle this subsystem should turn to, in degrees
+     * @return if this action was sucessful
      */
-    public void setSystemTargetAngleInDegrees(double angle) {
+    public boolean setSystemTargetAngleInDegrees(double angle) {
         double setpoint= getMotorRotationsFromAngle(angle);
-        if (!inSoftLimits(setpoint)) {
-            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
-                    + " and " + kConfig.kSoftLimits[0]);
-            return;
+        if (checkSoftLimits(setpoint)) {
+            setSystemMotionTarget(getMotorRotationsFromAngle(angle));
+            return true;
         }
-        setSystemMotionTarget(getMotorRotationsFromAngle(angle));
+        return false;
     }
 
     /**
@@ -190,15 +194,15 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * step in some process -- this setpoint won't be saved.
      * 
      * @param angle The angle this subsystem should turn to, in degrees
+     * @return if this action was sucessful
      */
-    public void setTemporaryTargetAngleInDegrees(double angle) {
+    public boolean setTemporaryTargetAngleInDegrees(double angle) {
         double setpoint= getMotorRotationsFromAngle(angle);
-        if (!inSoftLimits(setpoint)) {
-            Logger.consoleLog("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
-                    + " and " + kConfig.kSoftLimits[0]);
-            return;
+        if (checkSoftLimits(setpoint)) {
+            setTemporaryMotionTarget(getMotorRotationsFromAngle(angle));
+            return true;
         }
-        setTemporaryMotionTarget(getMotorRotationsFromAngle(angle));
+        return false;
     }
 
     /**
@@ -298,15 +302,16 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
     /**
      * Clears the setpoint of this subsystem
+     * @return if this action was sucessful
      */
-    public void clearSetpoint() {
-        if (!inSoftLimits(0)) {
-            Logger.consoleLog("Improper setpoint: " + 0 + " Setpoint should be between " +kConfig.kSoftLimits[1]
-                    + " and " + kConfig.kSoftLimits[0]);
-            return;
+    public boolean clearSetpoint() {
+        if (checkSoftLimits(0)) {
+            mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+            mSetpoint = kNoSetPoint;
+            return true;
         }
-        mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
-        mSetpoint = kNoSetPoint;
+        return false;
+
     }
   /**
     * The function returns the SparkMAXLite object for the rotator.

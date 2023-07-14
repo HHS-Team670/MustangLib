@@ -177,14 +177,14 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         HealthState state = HealthState.GREEN;
         int counter = 0;
         // checks through the photon cameras and checks if they are null or !connected
-        for(PhotonCamera camera: mCameras) {
+        for (PhotonCamera camera: mCameras) {
             if(camera == null || !camera.isConnected()){
                 state = HealthState.YELLOW;
                 counter++;
             }
         }
         //iff all of the cameras are null or not connected healthstate = red
-        if(counter == mCameras.length && mCameras.length!=0){
+        if (counter == mCameras.length && mCameras.length!=0){
             state = HealthState.RED;
         }
         return state;

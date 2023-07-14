@@ -1,11 +1,11 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2020 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,24 +16,17 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
-
 /**
- *  Wheel curvature drive
- * Note: this is for tank drive
+ * Note: this is for tank drive only
  */
-public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
+public class JoystickTankDrive extends CommandBase implements MustangCommand {
 
     private TankDrive driveBase;
-
     private Joystick leftJoystick, rightJoystick;
-
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-
-
-    /**
-     * Constructor for wheel curvature drive
-     */
-    public WheelCurvatureDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
+    public JoystickTankDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
+        // Use requires() here to declare subsystem dependencies
+        // eg. requires(chassis);
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;
@@ -43,17 +36,15 @@ public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
 
     }
 
-    // Called once when the command executes
+    // Called just before this Command runs the first time
     @Override
     public void execute() {
-        // Robot.driveBase.curvatureDrive(xSpeed, zRotation, isQuickTurn);
-        driveBase.curvatureDrive(-1 * rightJoystick.getY(), leftJoystick.getX(),
-                false);
+        driveBase.tankDrive(-1 * leftJoystick.getY(), -1 * rightJoystick.getY());
     }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return healthRequirements;
+                return healthRequirements;
     }
 
 }

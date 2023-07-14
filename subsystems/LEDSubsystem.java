@@ -195,7 +195,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * used to access the LED at the specified index in the buffer.
      * @param newColor The new color that you want to compare with the color of the LED at the
      * specified index.
-     * @return The method is returning a boolean value.
+     * @return whether the color of an LED at a given index had been changed.
      */
     private boolean colorChanged(int index, LEDColor newColor) {
         return !(m_ledBuffer.getLED(index).equals(newColor));

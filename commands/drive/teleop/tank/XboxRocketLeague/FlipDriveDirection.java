@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.Map;
 

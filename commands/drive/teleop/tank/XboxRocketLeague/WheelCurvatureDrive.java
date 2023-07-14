@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,32 +16,39 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
-/*
-* Note: This is for tank drive
-* uses a singles joystick to control the left and right sides of the tank drive
-* Forward back for froward reverse and twist to turn
-*/
-public class SingleJoystickDrive extends CommandBase implements MustangCommand {
+
+/**
+ *  Wheel curvature drive
+ * Note: this is for tank drive
+ */
+public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
 
     private TankDrive driveBase;
-    private Joystick leftJoystick;
+
+    private Joystick leftJoystick, rightJoystick;
+
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    public SingleJoystickDrive(TankDrive driveBase, Joystick leftJoystick) {
+    /**
+     * Constructor for wheel curvature drive
+     */
+    public WheelCurvatureDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;
-        addRequirements(driveBase);       
+        this.rightJoystick = rightJoystick;
+        addRequirements(driveBase);
         healthRequirements.put(driveBase, HealthState.YELLOW);
-
 
     }
 
-    // Called just before this Command runs the first time
+    // Called once when the command executes
     @Override
-    public void execute() { 
-        driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist(), true);
+    public void execute() {
+        // Robot.driveBase.curvatureDrive(xSpeed, zRotation, isQuickTurn);
+        driveBase.curvatureDrive(-1 * rightJoystick.getY(), leftJoystick.getX(),
+                false);
     }
 
     @Override

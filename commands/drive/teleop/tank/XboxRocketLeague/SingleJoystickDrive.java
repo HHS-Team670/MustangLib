@@ -1,11 +1,11 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2020 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,35 +16,37 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
-/**
- * Note: this is for tank drive only
- */
-public class JoystickTankDrive extends CommandBase implements MustangCommand {
+/*
+* Note: This is for tank drive
+* uses a singles joystick to control the left and right sides of the tank drive
+* Forward back for froward reverse and twist to turn
+*/
+public class SingleJoystickDrive extends CommandBase implements MustangCommand {
 
     private TankDrive driveBase;
-    private Joystick leftJoystick, rightJoystick;
+    private Joystick leftJoystick;
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-    public JoystickTankDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
-        // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
+
+
+    public SingleJoystickDrive(TankDrive driveBase, Joystick leftJoystick) {
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;
-        this.rightJoystick = rightJoystick;
-        addRequirements(driveBase);
+        addRequirements(driveBase);       
         healthRequirements.put(driveBase, HealthState.YELLOW);
+
 
     }
 
     // Called just before this Command runs the first time
     @Override
-    public void execute() {
-        driveBase.tankDrive(-1 * leftJoystick.getY(), -1 * rightJoystick.getY());
+    public void execute() { 
+        driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist(), true);
     }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-                return healthRequirements;
+        return healthRequirements;
     }
 
 }

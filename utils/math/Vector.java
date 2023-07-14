@@ -565,7 +565,8 @@ package frc.team670.mustanglib.utils.math;
 // 	 * 
 // 	 * @param object The "object" parameter is the object that we are comparing the current Vector object
 // 	 * to. It is of type Object, which means it can be any type of object.
-// 	 * @return The method is returning a boolean value.
+// 	 * @return if two Vector objects are equal by comparing their x, y, z, curvature,
+// 	 * velocity, and distance values
 // 	 */
 // 	@Override
 // 	public boolean equals(Object object) {

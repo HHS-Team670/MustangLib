@@ -6,7 +6,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -20,7 +20,9 @@ import frc.team670.mustanglib.utils.MustangController;
 
 /**
  * Tank Drive command
- * Note: this is for tank drive
+ * Note: this is for tank drive,
+ * Right stick up and down to move the right side of the robot
+ * Left stick up and down to move the left side of the robot
  */
 
 public class XboxTankDrive extends CommandBase implements MustangCommand {

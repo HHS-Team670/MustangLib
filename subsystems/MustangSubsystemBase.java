@@ -21,7 +21,7 @@ import frc.team670.mustanglib.utils.MustangNotifications;
 public abstract class MustangSubsystemBase extends SubsystemBase {
 
     protected HealthState lastHealthState;
-private boolean failedLastTime = false;
+    private boolean failedLastTime = false;
 
     private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
     private static NetworkTable table = instance.getTable("/SmartDashboard");
