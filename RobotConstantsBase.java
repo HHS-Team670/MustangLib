@@ -28,22 +28,15 @@ import frc.team670.mustanglib.swervelib.SdsModuleConfigurations;
 public class RobotConstantsBase {
      
     public  static class SwerveDriveBase {
-        public static final double kWidth = Units.inchesToMeters(36);
-        public static double kClearance = Math.hypot(kWidth, kWidth) / 2 + 0.05;
-        public static final double kTrackWidthMeters = 0.6096;
-        public static final double kWheelBaseMeters = 0.6096;
         
-        public final static SerialPort.Port kNAVXPort = SerialPort.Port.kMXP;
-        public static final double kPitchOffset = 2;
 
-        public static final double kMaxSpeedMetersPerSecond = 2;
-        public static final double kMaxAccelerationMetersPerSecondSquared = 1;
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 4;
-        public static final double kMaxAngularSpeedRadiansPerSecondSquared = Math.PI * 8;
 
-        public static final double kMaxVoltage = 12.0;
-        public static final double kMaxDriveCurrent = 45.0;
-        public static final double kMaxSteerCurrent = 20.0;
+        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 4;//What if we turn this up?  //Not robot specific
+        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI * 8;// Not robot specific
+
+        public static final double kMaxVoltage = 12.0;// Good defaults
+        public static final double kMaxDriveCurrent = 60.0;//Defaults
+        public static final double kMaxSteerCurrent = 20.0;//Defaults
 
         // The formula for calculating the theoretical maximum velocity is:
         // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
@@ -52,6 +45,7 @@ public class RobotConstantsBase {
         // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
         // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
         
+        // Treated as not robot specific for now, consulting with former leads to check
         public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
         public static final PIDConstants kAutonThetaPID = new PIDConstants(0.5, 0, 0);
 
@@ -59,34 +53,22 @@ public class RobotConstantsBase {
         public static final PIDController xController = new PIDController(3, 0, 0);
         public static final PIDController yController = new PIDController(3, 0, 0);
         public static final PIDController thetaController = new PIDController(0.2, 0, 0);
-        public static final PathConstraints kAutoPathConstraints = new PathConstraints(
-                kMaxSpeedMetersPerSecond, kMaxAccelerationMetersPerSecondSquared);
+      
     }
     public static  class TankDriveBase{
-        
-        // public static final int PDP_ID = 0;
-
-        //   public static final int DRIVER_CONTROLLER_PORT = 0;
-        //   public static final int OPERATOR_CONTROLLER_PORT = 1;
-        //   public static final int BACKUP_CONTROLLER_PORT = 2;
-
-          // Drive Base
-
-          public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kUSB;
+      
+      public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kUSB;//RS
 
 
       /**
        * The number of ticks per rotation of a drivebase wheel for the SPARK Encoders
        */
-      public static final int kSparkTicksPerRotation = 1024;
+      public static final int kSparkTicksPerRotation = 1024;//Not RS
 
-      // Inches per rotation of the NEO motors on the drivebase
-    //   public static final double kDrivebaseInchesPerRotation = 
-    //       1 / kDriveBaseGearRatio * kDriveBaseWheelDiameter * Math.PI;    
-
-    //   // Number of meters per rotation of a drivebase/hdrive wheel
-         
-      //
+    
+      
+      
+      //RS- Need to be computed for every new tank drive using System Identification (sysId)
       public static final int kTimeoutMs = 0;
       public static final double leftKsVolts = 0.4; //0.20806; //0.4; 
       public static final double leftKvVoltSecondsPerMeter = 2.1; //1.3667; //2.7378; 
@@ -97,6 +79,7 @@ public class RobotConstantsBase {
 
 
       // Autonomous Constants
+      //RS
       public static final double leftKPDriveVel = 2;
       public static final double leftKIDriveVel = 0;
       public static final double leftKDDriveVel = 0;
@@ -105,16 +88,9 @@ public class RobotConstantsBase {
       public static final double rightKIDriveVel = leftKIDriveVel;
       public static final double rightKDDriveVel = leftKDDriveVel;
 
-      public static final double kMaxSpeedInchesPerSecond = 6;
-      public static final double kMaxAccelerationInchesPerSecondSquared = 6;
-
-      public static final double kMaxSpeedMetersPerSecond = 2;
-      public static final double kMaxAccelerationMetersPerSecondSquared = 2;
-      public static final double endVelocityMetersPerSecond = 0;
-
-      public static final double kMaxSpeedMetersPerSecond2 = 0.3;
-      public static final double kMaxAccelerationMetersPerSecondSquared2 = 0.3;
-      public static final double endVelocityMetersPerSecond2 = 0.2;
+      public static final double kMaxSpeedMetersPerSecond = 2;// RS
+      public static final double kMaxAccelerationMetersPerSecondSquared = 2;//RS
+   
 
     //   public static final DifferentialDriveKinematicsConstraint kAutoPathConstraints = 
     //       new DifferentialDriveKinematicsConstraint(kDriveKinematics, kMaxSpeedMetersPerSecond);
@@ -125,13 +101,14 @@ public class RobotConstantsBase {
       // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
       public static final double kRamseteB = 2;
       public static final double kRamseteZeta = .7;
-      public static final boolean kNavXReversed = true;    
+
+      public static final boolean kNavXReversed = true;    //RS
 
   }
 
     /**
      * This is code from Poofs 2022
-     * 
+     * https://github.com/Team254/FRC-2022-Public/blob/6a24236b37f0fcb75ceb9d5dec767be58ea903c0/src/main/java/com/team254/frc2022/Constants.java#L429 
      * @return the MAC address of the robot
      */
     public static String getMACAddress() {

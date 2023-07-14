@@ -48,7 +48,8 @@ public abstract class SwerveDrive extends DriveBase {
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
-
+    private final double kPitchOffset;
+   
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
@@ -64,10 +65,11 @@ public abstract class SwerveDrive extends DriveBase {
 
     public SwerveDrive(Config config) {
         this.kConfig=config;
+        
         kMaxVelocity = config.kMaxVelocity;
         kMaxVoltage = config.kMaxVoltage;
 
-        kModuleConfig.setDriveCurrentLimit(kMaxVoltage);
+        kModuleConfig.setNominalVoltage(kMaxVoltage);
         kModuleConfig.setDriveCurrentLimit(config.kMaxDriveCurrent);
         kModuleConfig.setSteerCurrentLimit(config.kMaxSteerCurrent);
 
@@ -126,6 +128,7 @@ public abstract class SwerveDrive extends DriveBase {
         // getModulePositions());
         // mPoseEstimator = new SwervePoseEstimatorBase(this);
         initPoseEstimator();
+        kPitchOffset = mNavx.getPitch();
         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
     }
     protected abstract void initPoseEstimator();
@@ -312,7 +315,7 @@ public abstract class SwerveDrive extends DriveBase {
     }
 
     public double getPitch() {
-        return mNavx.getPitch() - RobotConstantsBase.SwerveDriveBase.kPitchOffset;
+        return mNavx.getPitch() - kPitchOffset;
     }
 
     public void resetOdometry(Pose2d pose) {
