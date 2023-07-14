@@ -56,53 +56,15 @@ public class RobotConstantsBase {
       
     }
     public static  class TankDriveBase{
-      
-      public final static SerialPort.Port NAVX_PORT = SerialPort.Port.kUSB;//RS
-
-
-      /**
+        /**
        * The number of ticks per rotation of a drivebase wheel for the SPARK Encoders
        */
-      public static final int kSparkTicksPerRotation = 1024;//Not RS
-
+        public static final int kSparkTicksPerRotation = 1024;//Not RS
+    // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
+        public static final double kRamseteB = 2;
+        public static final double kRamseteZeta = .7;
     
       
-      
-      //RS- Need to be computed for every new tank drive using System Identification (sysId)
-      public static final int kTimeoutMs = 0;
-      public static final double leftKsVolts = 0.4; //0.20806; //0.4; 
-      public static final double leftKvVoltSecondsPerMeter = 2.1; //1.3667; //2.7378; 
-      public static final double leftKaVoltSecondsSquaredPerMeter = 0.15; //0.21286; //0.5584; //0.333; 
-      public static final double rightKsVolts = leftKsVolts;
-      public static final double rightKvVoltSecondsPerMeter = leftKvVoltSecondsPerMeter;
-      public static final double rightKaVoltSecondsSquaredPerMeter = leftKaVoltSecondsSquaredPerMeter;
-
-
-      // Autonomous Constants
-      //RS
-      public static final double leftKPDriveVel = 2;
-      public static final double leftKIDriveVel = 0;
-      public static final double leftKDDriveVel = 0;
-
-      public static final double rightKPDriveVel = leftKPDriveVel;
-      public static final double rightKIDriveVel = leftKIDriveVel;
-      public static final double rightKDDriveVel = leftKDDriveVel;
-
-      public static final double kMaxSpeedMetersPerSecond = 2;// RS
-      public static final double kMaxAccelerationMetersPerSecondSquared = 2;//RS
-   
-
-    //   public static final DifferentialDriveKinematicsConstraint kAutoPathConstraints = 
-    //       new DifferentialDriveKinematicsConstraint(kDriveKinematics, kMaxSpeedMetersPerSecond);
-
-    //   public static final DifferentialDriveKinematicsConstraint kAutoPathConstraintsIntaking = 
-    //       new DifferentialDriveKinematicsConstraint(kDriveKinematics, kMaxSpeedMetersPerSecond);
-
-      // Reasonable baseline values for a RAMSETE follower in units of meters and seconds
-      public static final double kRamseteB = 2;
-      public static final double kRamseteZeta = .7;
-
-      public static final boolean kNavXReversed = true;    //RS
 
   }
 

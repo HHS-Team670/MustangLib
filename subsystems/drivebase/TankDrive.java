@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
+import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -69,9 +70,12 @@ public abstract class TankDrive extends DriveBase {
     private final Config kConfig;
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseGearRatio, double kDriveBaseWheelDiameter, 
     double kTrackWidthMeters, int kLeftLeaderMotorID, int kLeftFollowerMotorID, int kRightLeaderMotorID,
-    int kRightFollowerMotorID, double deadband , boolean inverted) {
+    int kRightFollowerMotorID, double deadband , boolean inverted, SerialPort.Port kNavPort, boolean kNavXReversed, AutonConfig autonConfig ) {
     }
-
+    //Added an autonconfig to break up the config into easy to read chuncks. additionally, all of these values need to be updated whenever changes are amde to the tankdrive
+    public static record AutonConfig(int kTimeoutMs, double leftKsVolts, double leftKvVoltSecondsPerMeter, 
+    double leftKaVoltSecondsSquaredPerMeter,double rightKsVolts, double rightKvVoltSecondsPerMeter, 
+    double rightKaVoltSecondsSquaredPerMeter, PIDController kLeftController, PIDController kRightController, double kMaxSpeedMetersPerSecond, double kMaxAccelerationMetersPerSecondSquared ){}
     public TankDrive(Config kConfig){
         this.kConfig = kConfig;
         kDriveKinematics = new DifferentialDriveKinematics(kConfig.kDriveBaseTrackWidth);
@@ -112,21 +116,21 @@ public abstract class TankDrive extends DriveBase {
         setMotorsInvert(rightControllers, true); // Invert right controllers here so they will work properly with the CANPIDController
         setMotorControllers(left1, right1 ,false, false, .1, true);
         
-        navXMicro = new NavX(RobotConstantsBase.TankDriveBase.NAVX_PORT);
+        navXMicro = new NavX(kConfig.kNavPort);
         odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()),0,0, new Pose2d(0, 0, new Rotation2d()));
         prevHeading = getHeading();
         initBrakeMode();
     
         leftPIDController = left1.getPIDController();
         rightPIDController = right1.getPIDController();
+        
+        leftPIDController.setP(kConfig.autonConfig.kLeftController.getP());
+        leftPIDController.setI(kConfig.autonConfig.kLeftController.getI());
+        leftPIDController.setD(kConfig.autonConfig.kLeftController.getD());
     
-        leftPIDController.setP(RobotConstantsBase.TankDriveBase.rightKPDriveVel);
-        leftPIDController.setI(RobotConstantsBase.TankDriveBase.rightKIDriveVel);
-        leftPIDController.setD(RobotConstantsBase.TankDriveBase.rightKDDriveVel);
-    
-        rightPIDController.setP(RobotConstantsBase.TankDriveBase.rightKPDriveVel);
-        rightPIDController.setI(RobotConstantsBase.TankDriveBase.rightKIDriveVel);
-        rightPIDController.setD(RobotConstantsBase.TankDriveBase.rightKDDriveVel);
+        rightPIDController.setP(kConfig.autonConfig.kRightController.getP());
+        rightPIDController.setI(kConfig.autonConfig.kRightController.getI());
+        rightPIDController.setD(kConfig.autonConfig.kRightController.getD());
     
         leftPIDController.setOutputRange(-1, 1);
         rightPIDController.setOutputRange(-1, 1);
@@ -509,7 +513,7 @@ public abstract class TankDrive extends DriveBase {
    */
   public void resetOdometry(Pose2d pose2d) {
     // zeroHeading();
-    navXMicro.reset(pose2d.getRotation().getDegrees() * (RobotConstantsBase.TankDriveBase.kNavXReversed ? -1. : 1.));
+    navXMicro.reset(pose2d.getRotation().getDegrees() * (kConfig.kNavXReversed ? -1. : 1.));
     odometry.resetPosition(pose2d.getRotation(),0.0,0.0, pose2d);
 
     //If encoders aren't being properly zeroed, check if lE and rE are REVLibError.kOk
@@ -531,7 +535,7 @@ public abstract class TankDrive extends DriveBase {
    * @return the robot's heading in degrees, in range [-180, 180]
    */
   public double getHeading() {
-    return Math.IEEEremainder(navXMicro.getAngle(), 360) * (RobotConstantsBase.TankDriveBase.kNavXReversed ? -1. : 1.);
+    return Math.IEEEremainder(navXMicro.getAngle(), 360) * (kConfig.kNavXReversed ? -1. : 1.);
   }
 
 
@@ -641,8 +645,7 @@ public abstract class TankDrive extends DriveBase {
 
    
   public PIDController getLeftPIDController() {
-    return new PIDController(RobotConstantsBase.TankDriveBase.leftKPDriveVel, RobotConstantsBase.TankDriveBase.leftKIDriveVel,
-        RobotConstantsBase.TankDriveBase.leftKDDriveVel);
+    return kConfig.autonConfig.kLeftController;
   }
 
   public SparkMaxPIDController getLeftSparkMaxPIDController(){
@@ -651,14 +654,13 @@ public abstract class TankDrive extends DriveBase {
 
    
   public SimpleMotorFeedforward getLeftSimpleMotorFeedforward() {
-    return new SimpleMotorFeedforward(RobotConstantsBase.TankDriveBase.leftKsVolts, RobotConstantsBase.TankDriveBase.leftKvVoltSecondsPerMeter,
-        RobotConstantsBase.TankDriveBase.leftKaVoltSecondsSquaredPerMeter);
+    return new SimpleMotorFeedforward(kConfig.autonConfig.leftKsVolts, kConfig.autonConfig.leftKvVoltSecondsPerMeter,
+    kConfig.autonConfig.leftKaVoltSecondsSquaredPerMeter);
   }
 
    
   public PIDController getRightPIDController() {
-    return new PIDController(RobotConstantsBase.TankDriveBase.rightKPDriveVel, RobotConstantsBase.TankDriveBase.rightKIDriveVel,
-        RobotConstantsBase.TankDriveBase.rightKDDriveVel);
+    return kConfig.autonConfig.kRightController;
   }
 
   public SparkMaxPIDController getRightSparkMaxPIDController(){
@@ -667,8 +669,8 @@ public abstract class TankDrive extends DriveBase {
 
    
   public SimpleMotorFeedforward getRightSimpleMotorFeedforward() {
-    return new SimpleMotorFeedforward(RobotConstantsBase.TankDriveBase.rightKsVolts, RobotConstantsBase.TankDriveBase.rightKvVoltSecondsPerMeter,
-        RobotConstantsBase.TankDriveBase.rightKaVoltSecondsSquaredPerMeter);
+    return new SimpleMotorFeedforward(kConfig.autonConfig.rightKsVolts, kConfig.autonConfig.rightKvVoltSecondsPerMeter,
+    kConfig.autonConfig.rightKaVoltSecondsSquaredPerMeter);
   }
 
   /**
