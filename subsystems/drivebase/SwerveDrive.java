@@ -293,12 +293,8 @@ public abstract class SwerveDrive extends DriveBase {
 
     public void setMotorIdleMode(IdleMode mode) {
         for (SwerveModule m : mModules) {
-         
             ((CANSparkMax) m.getDriveMotor()).setIdleMode(mode);
-            
-           
         }
-
     }
 
     public Pose2d getPose() {
