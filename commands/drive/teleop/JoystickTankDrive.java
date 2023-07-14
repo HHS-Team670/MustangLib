@@ -46,7 +46,5 @@ public class JoystickTankDrive extends CommandBase implements MustangCommand {
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
                 return healthRequirements;
     }
-    @Override
-  public void debugCommand(){}
 
 }

@@ -56,7 +56,6 @@ public class XboxTankDrive extends CommandBase implements MustangCommand {
         return healthRequirements;
     }
 
-    @Override
-    public void debugCommand(){} 
+
 
 }

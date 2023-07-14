@@ -45,7 +45,5 @@ public class XboxRobotOrientedDrive extends CommandBase implements MustangComman
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
-    }
-    @Override
-    public void debugCommand(){}    
+    }  
 }

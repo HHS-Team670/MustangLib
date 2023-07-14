@@ -72,6 +72,5 @@ public class XboxFieldOrientedDrive extends CommandBase implements MustangComman
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
     }
-    @Override
-    public void debugCommand(){}    
+
 }

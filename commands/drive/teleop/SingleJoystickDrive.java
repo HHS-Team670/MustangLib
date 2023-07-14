@@ -48,7 +48,5 @@ public class SingleJoystickDrive extends CommandBase implements MustangCommand {
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
     }
-    @Override
-    public void debugCommand(){}  
 
 }

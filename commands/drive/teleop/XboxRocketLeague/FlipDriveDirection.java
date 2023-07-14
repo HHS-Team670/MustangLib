@@ -43,7 +43,5 @@ public class FlipDriveDirection extends InstantCommand implements MustangCommand
   public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
     return null;
   }
-  @Override
-  public void debugCommand(){}
 
 }

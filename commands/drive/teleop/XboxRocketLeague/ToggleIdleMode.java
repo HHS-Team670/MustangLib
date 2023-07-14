@@ -36,7 +36,6 @@ public class ToggleIdleMode extends InstantCommand implements MustangCommand{
         return null;
     }
 
-   @Override
-   public void debugCommand(){}
+
     
 }

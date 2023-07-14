@@ -40,6 +40,4 @@ public class SetSwerveForwardDirection extends InstantCommand implements Mustang
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
     }
-    @Override
-    public void debugCommand(){}
 }
