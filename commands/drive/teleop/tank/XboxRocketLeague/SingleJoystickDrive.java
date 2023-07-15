@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,46 +16,37 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
-
-/**
- *  Wheel curvature drive
- * Note: this is for tank drive
- */
-public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
+/*
+* Note: This is for tank drive
+* uses a singles joystick to control the left and right sides of the tank drive
+* Forward back for froward reverse and twist to turn
+*/
+public class SingleJoystickDrive extends CommandBase implements MustangCommand {
 
     private TankDrive driveBase;
-
-    private Joystick leftJoystick, rightJoystick;
-
+    private Joystick leftJoystick;
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    /**
-     * Constructor for wheel curvature drive
-     */
-    public WheelCurvatureDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
+    public SingleJoystickDrive(TankDrive driveBase, Joystick leftJoystick) {
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;
-        this.rightJoystick = rightJoystick;
-        addRequirements(driveBase);
+        addRequirements(driveBase);       
         healthRequirements.put(driveBase, HealthState.YELLOW);
+
 
     }
 
-    // Called once when the command executes
+    // Called just before this Command runs the first time
     @Override
-    public void execute() {
-        // Robot.driveBase.curvatureDrive(xSpeed, zRotation, isQuickTurn);
-        driveBase.curvatureDrive(-1 * rightJoystick.getY(), leftJoystick.getX(),
-                false);
+    public void execute() { 
+        driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist(), true);
     }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
     }
-    @Override
-    public void debugCommand(){}
 
 }

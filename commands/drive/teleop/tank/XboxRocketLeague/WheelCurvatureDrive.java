@@ -1,11 +1,11 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2020 FIRST. All Rights Reserved.                             */
+/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
 /* Open Source Software - may be modified and shared by FRC teams. The code   */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,17 +16,24 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
+
 /**
- * Note: this is for tank drive only
+ *  Wheel curvature drive
+ * Note: this is for tank drive
  */
-public class JoystickTankDrive extends CommandBase implements MustangCommand {
+public class WheelCurvatureDrive extends CommandBase implements MustangCommand {
 
     private TankDrive driveBase;
+
     private Joystick leftJoystick, rightJoystick;
+
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
-    public JoystickTankDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
-        // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
+
+
+    /**
+     * Constructor for wheel curvature drive
+     */
+    public WheelCurvatureDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;
@@ -36,17 +43,17 @@ public class JoystickTankDrive extends CommandBase implements MustangCommand {
 
     }
 
-    // Called just before this Command runs the first time
+    // Called once when the command executes
     @Override
     public void execute() {
-        driveBase.tankDrive(-1 * leftJoystick.getY(), -1 * rightJoystick.getY());
+        // Robot.driveBase.curvatureDrive(xSpeed, zRotation, isQuickTurn);
+        driveBase.curvatureDrive(-1 * rightJoystick.getY(), leftJoystick.getX(),
+                false);
     }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-                return healthRequirements;
+        return healthRequirements;
     }
-    @Override
-  public void debugCommand(){}
 
 }

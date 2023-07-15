@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -121,7 +121,6 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
     
     return healthRequirements;
   }
-  @Override
-  public void debugCommand(){}
+
 
 }

@@ -187,7 +187,7 @@ public class TimeOfFlightSensor {
      * which register the data should be written to.
      * @param data The "data" parameter is an integer value that represents the data to be written to a
      * specific register address.
-     * @return The method is returning a boolean value.
+     * @return  if the write operation was successful or not
      */
     private boolean write(int registerAddress, int data) {
         try{
@@ -274,7 +274,7 @@ public class TimeOfFlightSensor {
     }
 
     /**
-     * @return The method is returning a boolean value if the distance is within the threshold
+     * @return  if the distance is within the threshold or not
      */
     public boolean isObjectWithinThreshold() {
         return getDistance() <= threshold;

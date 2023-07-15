@@ -36,10 +36,6 @@ public class MustangFollowPathWithEvents extends FollowPathWithEvents implements
         return null;
     }
 
-    /**
-     * Debugs this command.
-     */
-    @Override
-    public void debugCommand(){}
+
 
 }

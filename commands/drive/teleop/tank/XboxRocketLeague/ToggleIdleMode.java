@@ -1,4 +1,4 @@
-package frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.Map;
 
@@ -36,7 +36,6 @@ public class ToggleIdleMode extends InstantCommand implements MustangCommand{
         return null;
     }
 
-   @Override
-   public void debugCommand(){}
+
     
 }

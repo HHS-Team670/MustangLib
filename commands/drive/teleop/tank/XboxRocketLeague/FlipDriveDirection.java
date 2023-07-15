@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop.XboxRocketLeague;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.Map;
 
@@ -43,7 +43,5 @@ public class FlipDriveDirection extends InstantCommand implements MustangCommand
   public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
     return null;
   }
-  @Override
-  public void debugCommand(){}
 
 }

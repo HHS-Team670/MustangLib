@@ -33,11 +33,4 @@ public class ResetNavX extends InstantCommand implements MustangCommand{
         
         return null;
     }
-
-
-    @Override
-    public void debugCommand() {
-  
-   
-    }
 }
