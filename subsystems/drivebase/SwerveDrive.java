@@ -1,34 +1,35 @@
-// // package frc.team670.mustanglib.subsystems.drivebase;
+// package frc.team670.mustanglib.subsystems.drivebase;
+// package frc.team670.mustanglib.subsystems.drivebase;
 
-// // import java.util.Map;
-// // import com.pathplanner.lib.PathPlannerTrajectory;
-// // import com.pathplanner.lib.auto.SwerveAutoBuilder;
-// // import com.revrobotics.CANSparkMax;
-// // import com.revrobotics.CANSparkMax.IdleMode;
+// import java.util.Map;
+// import com.pathplanner.lib.PathPlannerTrajectory;
+// import com.pathplanner.lib.auto.SwerveAutoBuilder;
+// import com.revrobotics.CANSparkMax;
+// import com.revrobotics.CANSparkMax.IdleMode;
 
-// // import edu.wpi.first.math.geometry.Pose2d;
-// // import edu.wpi.first.math.geometry.Rotation2d;
-// // import edu.wpi.first.math.geometry.Translation2d;
-// // import edu.wpi.first.math.kinematics.ChassisSpeeds;
-// // import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-// // import edu.wpi.first.math.kinematics.SwerveModulePosition;
-// // import edu.wpi.first.math.kinematics.SwerveModuleState;
-// // import edu.wpi.first.wpilibj.SerialPort;
-// // import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
-// // import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
-// // import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-// // import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-// // import edu.wpi.first.wpilibj2.command.Command;
-// // import edu.wpi.first.wpilibj2.command.Subsystem;
-// // import frc.team670.mustanglib.dataCollection.sensors.NavX;
-// // import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
-// // import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
-// // import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
-// // import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
-// // import frc.team670.mustanglib.swervelib.SwerveModule;
-// // import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
-// // import frc.team670.mustanglib.utils.SwervePoseEstimator;
-// // import frc.team670.robot.constants.RobotConstants;
+// import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.math.geometry.Rotation2d;
+// import edu.wpi.first.math.geometry.Translation2d;
+// import edu.wpi.first.math.kinematics.ChassisSpeeds;
+// import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+// import edu.wpi.first.math.kinematics.SwerveModulePosition;
+// import edu.wpi.first.math.kinematics.SwerveModuleState;
+// import edu.wpi.first.wpilibj.SerialPort;
+// import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
+// import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+// import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+// import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+// import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.Subsystem;
+// import frc.team670.mustanglib.dataCollection.sensors.NavX;
+// import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+// import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
+// import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
+// import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
+// import frc.team670.mustanglib.swervelib.SwerveModule;
+// import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
+// import frc.team670.mustanglib.utils.SwervePoseEstimator;
+// import frc.team670.robot.constants.RobotConstants;
 
 // /**
 //  * Swerve Drive subsystem with pose estimation.
@@ -40,10 +41,10 @@
 //     private final NavX mNavx;
 //     private VisionSubsystemBase mVision;
 
-// //     private final SwerveModule[] mModules;
-// //     private final SwerveDriveKinematics kKinematics;
-// //     private Rotation2d mGyroOffset = new Rotation2d();
-// //     private Rotation2d mDesiredHeading = null; // for rotation snapping
+//     private final SwerveModule[] mModules;
+//     private final SwerveDriveKinematics kKinematics;
+//     private Rotation2d mGyroOffset = new Rotation2d();
+//     private Rotation2d mDesiredHeading = null; // for rotation snapping
 
 //     private final double kMaxVelocity, kMaxVoltage;
 //     private Config kConfig;
@@ -73,72 +74,72 @@
 //         kModuleConfig.setDriveCurrentLimit(config.kMaxDriveCurrent);
 //         kModuleConfig.setSteerCurrentLimit(config.kMaxSteerCurrent);
 
-// //         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
-// //         mModules = new SwerveModule[4];
+//         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
+//         mModules = new SwerveModule[4];
 
-// //         // front left
-// //         mModules[0] = Mk4iSwerveModuleHelper.createNeo(
-// //                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
-// //                         .withPosition(0, 0),
-// //                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
-// //                 config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
-// //                 config.kFrontLeftModuleSteerOffset);
+//         // front left
+//         mModules[0] = Mk4iSwerveModuleHelper.createNeo(
+//                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
+//                         .withPosition(0, 0),
+//                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
+//                 config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
+//                 config.kFrontLeftModuleSteerOffset);
 
-// //         // front right
-// //         mModules[1] = Mk4iSwerveModuleHelper.createNeo(
-// //                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
-// //                         .withPosition(2, 0),
-// //                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
-// //                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
-// //                 config.kFrontRightModuleSteerOffset);
+//         // front right
+//         mModules[1] = Mk4iSwerveModuleHelper.createNeo(
+//                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
+//                         .withPosition(2, 0),
+//                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
+//                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
+//                 config.kFrontRightModuleSteerOffset);
 
-// //         // back left
-// //         mModules[2] = Mk4iSwerveModuleHelper.createNeo(
-// //                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
-// //                         .withPosition(4, 0),
-// //                 kModuleConfig, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
-// //                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
-// //                 config.kBackLeftModuleSteerOffset);
+//         // back left
+//         mModules[2] = Mk4iSwerveModuleHelper.createNeo(
+//                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
+//                         .withPosition(4, 0),
+//                 kModuleConfig, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
+//                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
+//                 config.kBackLeftModuleSteerOffset);
 
-// //         // back right
-// //         mModules[3] = Mk4iSwerveModuleHelper.createNeo(
-// //                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
-// //                         .withPosition(6, 0),
-// //                 kModuleConfig, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
-// //                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
-// //                 config.kBackRightModuleSteerOffset);
+//         // back right
+//         mModules[3] = Mk4iSwerveModuleHelper.createNeo(
+//                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
+//                         .withPosition(6, 0),
+//                 kModuleConfig, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
+//                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
+//                 config.kBackRightModuleSteerOffset);
 
-// //         kKinematics = new SwerveDriveKinematics(
-// //                 // Front left
-// //                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
-// //                         config.kDriveBaseWheelBase / 2.0),
-// //                 // Front right
-// //                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
-// //                         -config.kDriveBaseWheelBase / 2.0),
-// //                 // Back left
-// //                 new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
-// //                         config.kDriveBaseWheelBase / 2.0),
-// //                 // Back right
-// //                 new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
-// //                         -config.kDriveBaseWheelBase / 2.0));
+//         kKinematics = new SwerveDriveKinematics(
+//                 // Front left
+//                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
+//                         config.kDriveBaseWheelBase / 2.0),
+//                 // Front right
+//                 new Translation2d(config.kDriveBaseTrackWidth / 2.0,
+//                         -config.kDriveBaseWheelBase / 2.0),
+//                 // Back left
+//                 new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
+//                         config.kDriveBaseWheelBase / 2.0),
+//                 // Back right
+//                 new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
+//                         -config.kDriveBaseWheelBase / 2.0));
 
 //         mNavx = new NavX(config.kNavXPort);
-//         // mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
-//         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
-//         // getModulePositions());
-//         // mPoseEstimator = new SwervePoseEstimatorBase(this);
+//         mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
+//         odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
+//         getModulePositions());
+//         mPoseEstimator = new SwervePoseEstimatorBase(this);
 //         initPoseEstimator();
 //         kPitchOffset = mNavx.getPitch();
 //         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
 //     }
 //     protected abstract void initPoseEstimator();
 
-// //         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
-// //     }
+//         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
+//     }
 
-// //     public void drive(ChassisSpeeds chassisSpeeds) {
-// //         setModuleStates(kKinematics.toSwerveModuleStates(chassisSpeeds));
-// //     }
+//     public void drive(ChassisSpeeds chassisSpeeds) {
+//         setModuleStates(kKinematics.toSwerveModuleStates(chassisSpeeds));
+//     }
 
 //     /**
 //      * Sets the gyroscope angle to zero. This can be used to set the direction the

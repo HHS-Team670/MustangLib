@@ -50,7 +50,7 @@ public abstract class RobotContainerBase {
         MustangScheduler.getInstance().cancel(s.getDefaultMustangCommand());
         MustangScheduler.getInstance().unregisterSubsystem(s);
       }
-      s.pushHealthToDashboard();
+      // s.pushHealthToDashboard();
     }
   }
 
