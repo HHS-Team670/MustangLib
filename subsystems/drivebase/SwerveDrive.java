@@ -283,17 +283,17 @@ public abstract class SwerveDrive extends DriveBase {
 
     public void toggleIdleMode() {
         for (SwerveModule m : mModules) {
-            if (((CANSparkMax) m.getDriveMotor()).getIdleMode() != IdleMode.kBrake)
-                    ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kCoast);
+            if (m.getDriveMotor().getIdleMode() == IdleMode.kBrake)
+                    m.getDriveMotor().setIdleMode(IdleMode.kCoast);
             else {
-                ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kBrake);}
+                m.getDriveMotor().setIdleMode(IdleMode.kBrake);}
             //We do not want to toggle steer motor idle mode 
         }
     }
 
     public void setMotorIdleMode(IdleMode mode) {
         for (SwerveModule m : mModules) {
-            ((CANSparkMax) m.getDriveMotor()).setIdleMode(mode);
+            (m.getDriveMotor()).setIdleMode(mode);
         }
     }
 

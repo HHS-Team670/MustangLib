@@ -111,7 +111,7 @@ public class MustangScheduler {
                         if (s != null && healthReq != null) {
                             HealthState currentHealth = s.getHealth(false);
                             if (currentHealth.getId() > healthReq.getId()) {
-                                MustangNotifications.reportWarning(
+                                MustangNotifications.reportMajorWarning(
                                         "%s not run because of health issue! Required health: %s, Actual health: %s",
                                         m_command.getName(), healthReq, currentHealth);
                                 RobotBase.getInstance().getRobotContainer().getDriverController().rumble(0.75, 1);
@@ -145,7 +145,7 @@ public class MustangScheduler {
 
         HealthState currentHealth = subsystem.getHealth(false);
         if (currentHealth.getId() > HealthState.GREEN.getId()) {
-            MustangNotifications.reportWarning(
+            MustangNotifications.reportMajorWarning(
                     "%s not run because of health issue! Required health: %s, Actual health: %s",
                     group.getName(), HealthState.GREEN, currentHealth);
             return;

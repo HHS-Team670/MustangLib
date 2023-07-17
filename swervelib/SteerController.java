@@ -1,7 +1,9 @@
 package frc.team670.mustanglib.swervelib;
 
+import com.revrobotics.CANSparkMax;
+
 public interface SteerController {
-    Object getSteerMotor();
+    CANSparkMax getSteerMotor();
 
     AbsoluteEncoder getSteerEncoder();
 

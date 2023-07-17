@@ -1,5 +1,7 @@
 package frc.team670.mustanglib.swervelib;
 
+import com.revrobotics.CANSparkMax;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
@@ -68,12 +70,12 @@ public class SwerveModuleFactory<DC, SC> {
         }
 
         @Override
-        public Object getDriveMotor() {
+        public CANSparkMax getDriveMotor() {
             return driveController.getDriveMotor();
         }
 
         @Override
-        public Object getSteerMotor() {
+        public CANSparkMax getSteerMotor() {
             return steerController.getSteerMotor();
         }
 
