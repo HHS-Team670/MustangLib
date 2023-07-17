@@ -71,6 +71,10 @@ public class RobotConstantsBase {
       
     }
     public static  class TankDriveBase{
+        public static final int kLeftLeaderSparkMotorID = 21; 
+        public static final int kLeftFollowerSparkMotorID = 22;
+        public static final int kRightLeaderSparkMotorID = 23;
+        public static final int kRightFollowerSparkMotorID = 24;
         /**
        * The number of ticks per rotation of a drivebase wheel for the SPARK Encoders
        */
