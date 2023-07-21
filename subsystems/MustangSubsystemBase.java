@@ -26,8 +26,8 @@ import frc.team670.mustanglib.utils.MustangNotifications;
  */
 public abstract class MustangSubsystemBase extends SubsystemBase {
 
-    private LoggableInputs inputs;
-    private MustangSubsystemBaseIO io;
+    protected LoggableInputs inputs;
+    protected MustangSubsystemBaseIO io;
     private boolean failedLastTime=false;
 
 

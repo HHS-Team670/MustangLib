@@ -68,7 +68,7 @@ public class RobotBase extends LoggedRobot {
     Logger.getInstance().recordMetadata("ProjectName", "2023-Robot"); // Set a metadata value
 
     if (isReal()) {
-        Logger.getInstance().addDataReceiver(new WPILOGWriter("/media/sda1/")); // Log to a USB stick
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser")); // Log to a USB stick
         Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
         // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     } else {
