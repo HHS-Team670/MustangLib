@@ -15,6 +15,9 @@ public abstract class DriveBaseIO extends MustangSubsystemBaseIO {
     }
 
 
+    public abstract void resetHeading();
+
+
 
 
 
