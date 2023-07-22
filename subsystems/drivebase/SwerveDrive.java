@@ -28,7 +28,7 @@
 // import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 // import frc.team670.mustanglib.swervelib.SwerveModule;
 // import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
-// import frc.team670.mustanglib.utils.SwervePoseEstimator;
+// // import frc.team670.mustanglib.utils.SwervePoseEstimator;
 // import frc.team670.robot.constants.RobotConstants;
 
 // /**
@@ -37,9 +37,9 @@
 //  * @author Tarini, Edward, Justin, Ethan C, Armaan, Aditi
 //  */
 // public abstract class SwerveDrive extends DriveBase {
-//     protected SwervePoseEstimatorBase mPoseEstimator;
+//     // protected SwervePoseEstimatorBase mPoseEstimator;
 //     private final NavX mNavx;
-//     private VisionSubsystemBase mVision;
+//     // private VisionSubsystemBase mVision;
 
 //     private final SwerveModule[] mModules;
 //     private final SwerveDriveKinematics kKinematics;
@@ -160,130 +160,130 @@
 //         return kConfig.kMaxAngularVelocity;
 //     }
 
-// //     /**
-// //      * Sets the gyroscope angle to zero. This can be used to set the direction the
-// //      * robot is
-// //      * currently facing to the 'forwards' direction.
-// //      */
-// //     public void zeroHeading() {
-// //         mGyroOffset = getGyroscopeRotation(false);
-// //     }
+//     /**
+//      * Sets the gyroscope angle to zero. This can be used to set the direction the
+//      * robot is
+//      * currently facing to the 'forwards' direction.
+//      */
+//     public void zeroHeading() {
+//         mGyroOffset = getGyroscopeRotation(false);
+//     }
 
-// //     public void setGyroscopeRotation(Rotation2d rot) {
-// //         mGyroOffset = rot;
-// //     }
+//     public void setGyroscopeRotation(Rotation2d rot) {
+//         mGyroOffset = rot;
+//     }
 
-// //     public SwerveDriveKinematics getSwerveKinematics() {
-// //         return kKinematics;
-// //     }
+//     public SwerveDriveKinematics getSwerveKinematics() {
+//         return kKinematics;
+//     }
 
-// //     public ChassisSpeeds getChassisSpeeds() {
-// //         return kKinematics.toChassisSpeeds(getModuleStates());
-// //     }
+//     public ChassisSpeeds getChassisSpeeds() {
+//         return kKinematics.toChassisSpeeds(getModuleStates());
+//     }
 
-// //     public Rotation2d getGyroscopeRotation() {
-// //         return getGyroscopeRotation(true);
-// //     }
+//     public Rotation2d getGyroscopeRotation() {
+//         return getGyroscopeRotation(true);
+//     }
 
 //     public Rotation2d getDesiredHeading() {
 //         return this.mDesiredHeading;
 //     }
-//     // public double getMaxVelocityMetersPerSecond(){
-//     //     return  5676.0 / 60.0
-//     //     * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
-//     // }
+//     public double getMaxVelocityMetersPerSecond(){
+//         return  5676.0 / 60.0
+//         * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
+//     }
 
-// //     public Rotation2d getDesiredHeading() {
-// //         return this.mDesiredHeading;
-// //     }
+//     public Rotation2d getDesiredHeading() {
+//         return this.mDesiredHeading;
+//     }
 
-// //     public Rotation2d getGyroscopeRotation(boolean offset) {
-// //         if (mNavx.isMagnetometerCalibrated()) {
-// //             // We will only get valid fused headings if the magnetometer is calibrated
-// //             if (offset) {
-// //                 Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
-// //                 SmartDashboard.putNumber("gyro offset", mGyroOffset.getDegrees());
-// //                 return angle;
-// //             } else {
-// //                 return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
-// //             }
-// //         }
+//     public Rotation2d getGyroscopeRotation(boolean offset) {
+//         if (mNavx.isMagnetometerCalibrated()) {
+//             // We will only get valid fused headings if the magnetometer is calibrated
+//             if (offset) {
+//                 Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
+//                 SmartDashboard.putNumber("gyro offset", mGyroOffset.getDegrees());
+//                 return angle;
+//             } else {
+//                 return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
+//             }
+//         }
 
-// //         // We have to invert the angle of the NavX so that rotating the robot
-// //         // counter-clockwise makes the angle increase.
-// //         return offset ? Rotation2d.fromDegrees(-mNavx.getYawFieldCentric()).minus(mGyroOffset)
-// //                 : Rotation2d.fromDegrees(-mNavx.getYawFieldCentric());
-// //     }
+//         // We have to invert the angle of the NavX so that rotating the robot
+//         // counter-clockwise makes the angle increase.
+//         return offset ? Rotation2d.fromDegrees(-mNavx.getYawFieldCentric()).minus(mGyroOffset)
+//                 : Rotation2d.fromDegrees(-mNavx.getYawFieldCentric());
+//     }
 
-// //     @Override
-// //     public void mustangPeriodic() {
+//     @Override
+//     public void mustangPeriodic() {
 
-// //         if (mGyroOffset == null && !mNavx.isCalibrating()) {
-// //             zeroHeading();
-// //             realignModules();
-// //         }
+//         if (mGyroOffset == null && !mNavx.isCalibrating()) {
+//             zeroHeading();
+//             realignModules();
+//         }
 
-// //         if (mVision != null) {
-// //             if (mPoseEstimator.getVision() == null) {
-// //                 mPoseEstimator.initVision(mVision);
-// //             }
-// //         }
-// //         mPoseEstimator.update();
-// //         SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
-// //     }
+//         if (mVision != null) {
+//             if (mPoseEstimator.getVision() == null) {
+//                 mPoseEstimator.initVision(mVision);
+//             }
+//         }
+//         mPoseEstimator.update();
+//         SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
+//     }
 
-// //     public void initVision(VisionSubsystemBase vision) {
-// //         this.mVision = vision;
-// //     }
+//     public void initVision(VisionSubsystemBase vision) {
+//         this.mVision = vision;
+//     }
 
-// //     public SwervePoseEstimator getPoseEstimator() {
-// //         return mPoseEstimator;
-// //     }
+//     public SwervePoseEstimator getPoseEstimator() {
+//         return mPoseEstimator;
+//     }
 
-// //     public void setModuleStates(SwerveModuleState[] states) {
+//     public void setModuleStates(SwerveModuleState[] states) {
 
-// //         double frontLeftSpeed = states[0].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
-// //         double frontRightSpeed = states[1].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
-// //         double backLeftSpeed = states[2].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
-// //         double backRightSpeed = states[3].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
+//         double frontLeftSpeed = states[0].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
+//         double frontRightSpeed = states[1].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
+//         double backLeftSpeed = states[2].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
+//         double backRightSpeed = states[3].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
 
-// //         double frontLeftAngle = states[0].angle.getRadians();
-// //         double frontRightAngle = states[1].angle.getRadians();
-// //         double backLeftAngle = states[2].angle.getRadians();
-// //         double backRightAngle = states[3].angle.getRadians();
+//         double frontLeftAngle = states[0].angle.getRadians();
+//         double frontRightAngle = states[1].angle.getRadians();
+//         double backLeftAngle = states[2].angle.getRadians();
+//         double backRightAngle = states[3].angle.getRadians();
 
-// //         // angle check doesn't do anything. Probably contributes to error. Gets the same
-// //         // angle as prevAngle since the only time the angle is set is after retrieving
-// //         // these
-// //         // values.
+//         // angle check doesn't do anything. Probably contributes to error. Gets the same
+//         // angle as prevAngle since the only time the angle is set is after retrieving
+//         // these
+//         // values.
 
-// //         // if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
-// //         // && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
-// //         // frontLeftAngle = frontLeftPrevAngle;
-// //         // frontRightAngle = frontRightPrevAngle;
-// //         // backLeftAngle = backLeftPrevAngle;
-// //         // backRightAngle = backRightPrevAngle;
-// //         // }
+//         // if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
+//         // && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
+//         // frontLeftAngle = frontLeftPrevAngle;
+//         // frontRightAngle = frontRightPrevAngle;
+//         // backLeftAngle = backLeftPrevAngle;
+//         // backRightAngle = backRightPrevAngle;
+//         // }
 
-// //         mModules[0].set(frontLeftSpeed, frontLeftAngle);
-// //         mModules[1].set(frontRightSpeed, frontRightAngle);
-// //         mModules[2].set(backLeftSpeed, backLeftAngle);
-// //         mModules[3].set(backRightSpeed, backRightAngle);
+//         mModules[0].set(frontLeftSpeed, frontLeftAngle);
+//         mModules[1].set(frontRightSpeed, frontRightAngle);
+//         mModules[2].set(backLeftSpeed, backLeftAngle);
+//         mModules[3].set(backRightSpeed, backRightAngle);
 
-// //         // frontLeftPrevAngle = frontLeftAngle;
-// //         // frontRightPrevAngle = frontRightAngle;
-// //         // backLeftPrevAngle = backLeftAngle;
-// //         // backRightPrevAngle = backRightAngle;
-// //     }
+//         // frontLeftPrevAngle = frontLeftAngle;
+//         // frontRightPrevAngle = frontRightAngle;
+//         // backLeftPrevAngle = backLeftAngle;
+//         // backRightPrevAngle = backRightAngle;
+//     }
 
-// //     public void realignModules() {
-// //         for (SwerveModule m : mModules)
-// //             m.realign();
-// //     }
+//     public void realignModules() {
+//         for (SwerveModule m : mModules)
+//             m.realign();
+//     }
 
-// //     public void initBrakeMode() {
-// //         setMotorIdleMode(IdleMode.kBrake);
-// //     }
+//     public void initBrakeMode() {
+//         setMotorIdleMode(IdleMode.kBrake);
+//     }
 
 //     public void toggleIdleMode() {
 //         for (SwerveModule m : mModules) {
@@ -307,61 +307,61 @@
 //         return mNavx.getPitch() - kPitchOffset;
 //     }
 
-// //     public double getPitch() {
-// //         return mNavx.getPitch() - RobotConstants.DriveBase.kPitchOffset;
-// //     }
+//     public double getPitch() {
+//         return mNavx.getPitch() - RobotConstants.DriveBase.kPitchOffset;
+//     }
 
-// //     public void resetOdometry(Pose2d pose) {
-// //         SwerveModulePosition[] zeroedPos = new SwerveModulePosition[4];
-// //         for (int i = 0; i < zeroedPos.length; i++) {
-// //             zeroedPos[i] = new SwerveModulePosition();
-// //         }
-// //         setGyroscopeRotation(Rotation2d.fromDegrees(
-// //                 getGyroscopeRotation(false).getDegrees() + pose.getRotation().getDegrees()));
-// //         mPoseEstimator.setCurrentPose(pose);
-// //     }
+//     public void resetOdometry(Pose2d pose) {
+//         SwerveModulePosition[] zeroedPos = new SwerveModulePosition[4];
+//         for (int i = 0; i < zeroedPos.length; i++) {
+//             zeroedPos[i] = new SwerveModulePosition();
+//         }
+//         setGyroscopeRotation(Rotation2d.fromDegrees(
+//                 getGyroscopeRotation(false).getDegrees() + pose.getRotation().getDegrees()));
+//         mPoseEstimator.setCurrentPose(pose);
+//     }
 
-// //     public SwerveModule[] getModules() {
-// //         return mModules;
-// //     }
+//     public SwerveModule[] getModules() {
+//         return mModules;
+//     }
 
-// //     public SwerveModulePosition[] getModulePositions() {
-// //         SwerveModulePosition positions[] = new SwerveModulePosition[4];
-// //         for (int i = 0; i < mModules.length; i++) {
-// //             positions[i] = mModules[i].getPosition();
-// //         }
-// //         return positions;
-// //     }
+//     public SwerveModulePosition[] getModulePositions() {
+//         SwerveModulePosition positions[] = new SwerveModulePosition[4];
+//         for (int i = 0; i < mModules.length; i++) {
+//             positions[i] = mModules[i].getPosition();
+//         }
+//         return positions;
+//     }
 
-// //     public SwerveModuleState[] getModuleStates() {
-// //         SwerveModuleState states[] = new SwerveModuleState[4];
-// //         for (int i = 0; i < mModules.length; i++) {
-// //             states[i] = mModules[i].getState();
-// //         }
-// //         return states;
-// //     }
+//     public SwerveModuleState[] getModuleStates() {
+//         SwerveModuleState states[] = new SwerveModuleState[4];
+//         for (int i = 0; i < mModules.length; i++) {
+//             states[i] = mModules[i].getState();
+//         }
+//         return states;
+//     }
 
-// //     public void park() {
-// //         SwerveModuleState[] states = new SwerveModuleState[4];
-// //         // needs the 0.1 or else it won't even rotate the wheels
-// //         states[0] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // front right
-// //         states[1] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // front left
-// //         states[2] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // back left
-// //         states[3] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // back right
-// //         setModuleStates(states);
-// //     }
+//     public void park() {
+//         SwerveModuleState[] states = new SwerveModuleState[4];
+//         // needs the 0.1 or else it won't even rotate the wheels
+//         states[0] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // front right
+//         states[1] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // front left
+//         states[2] = new SwerveModuleState(0.1, new Rotation2d(-Math.PI / 4)); // back left
+//         states[3] = new SwerveModuleState(0.1, new Rotation2d(Math.PI / 4)); // back right
+//         setModuleStates(states);
+//     }
 
-// //     public SwerveAutoBuilder getAutoBuilderFromEvents(Map<String, Command> eventMap) {
-// //         return new SwerveAutoBuilder(this::getPose, this::resetOdometry, kKinematics,
-// //                 RobotConstants.DriveBase.kAutonTranslationPID,
-// //                 RobotConstants.DriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
-// //                 new Subsystem[] { this });
-// //     }
+//     public SwerveAutoBuilder getAutoBuilderFromEvents(Map<String, Command> eventMap) {
+//         return new SwerveAutoBuilder(this::getPose, this::resetOdometry, kKinematics,
+//                 RobotConstants.DriveBase.kAutonTranslationPID,
+//                 RobotConstants.DriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
+//                 new Subsystem[] { this });
+//     }
 
-// //     public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerTrajectory traj) {
-// //         return new MustangPPSwerveControllerCommand(traj, this::getPose, getSwerveKinematics(),
-// //                 RobotConstants.DriveBase.xController, RobotConstants.DriveBase.yController,
-// //                 RobotConstants.DriveBase.thetaController, this::setModuleStates,
-// //                 new Subsystem[] { this });
-// //     }
-// // }
+//     public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerTrajectory traj) {
+//         return new MustangPPSwerveControllerCommand(traj, this::getPose, getSwerveKinematics(),
+//                 RobotConstants.DriveBase.xController, RobotConstants.DriveBase.yController,
+//                 RobotConstants.DriveBase.thetaController, this::setModuleStates,
+//                 new Subsystem[] { this });
+//     }
+// }

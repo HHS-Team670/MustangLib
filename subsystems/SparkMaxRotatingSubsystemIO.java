@@ -1,12 +1,16 @@
 package frc.team670.mustanglib.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
-import org.littletonrobotics.junction.Logger;
+
+import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.MustangNotifications;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
@@ -14,14 +18,14 @@ import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
 public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO {
-    protected SparkMAXLite mRotator;
+    protected SparkMAXLite mRotator;//Make these back to protected
     protected RelativeEncoder mEncoder;
     protected SparkMaxPIDController mController;
     public final Config kConfig;
     protected static final double kNoSetPoint = 9999;
     protected double mSetpoint;
     protected double mTempSetpoint;
-    
+    private int errorCounter=0;
     public record Config(int kDeviceID, int kSlot, MotorConfig.Motor_Type kMotorType,
             IdleMode kIdleMode, double kRotatorGearRatio, double kP, double kI, double kD,
             double kFF, double kIz, double kMaxOutput, double kMinOutput, double kMaxRotatorRPM,
@@ -33,9 +37,9 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
 
 
     @AutoLog
-    public static class SparkMaxRotatingSubsystemIOInputs {
-        double mEncoderPositionUnadjusted=0;
-        double mRotatorPower=0;
+    public static class SparkMaxRotatingSubsystemIOInputs  {
+        public double mEncoderPositionUnadjusted=0;
+        public double mRotatorPower=0;
 
     }
 
@@ -79,12 +83,13 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
         clearSetpoint();  
     }
     
-    public void updateInputs(SparkMaxRotatingSubsystemIOInputsAutoLogged inputs){
+    public void updateInputs(LoggableInputs inputs){
         /**
          * The count, in motor rotations, from the subsystem's rotator's integrated encoder.
          */
-        inputs.mEncoderPositionUnadjusted=this.mEncoder.getPosition();
-        inputs.mRotatorPower=mRotator.get();
+        SparkMaxRotatingSubsystemIOInputs input=(SparkMaxRotatingSubsystemIOInputs)inputs;
+        input.mEncoderPositionUnadjusted=this.mEncoder.getPosition();
+        input.mRotatorPower=mRotator.get();
         
 
 
@@ -96,7 +101,7 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
     }
 
     public double getMaxSubsystemRPM(double rotRPM) {
-        return rotRPM / kConfig.kRotatorGearRatio;
+    return rotRPM / kConfig.kRotatorGearRatio;
     }
 
     public boolean inSoftLimits(double setpoint){
