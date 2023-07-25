@@ -6,6 +6,9 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
@@ -123,6 +126,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         double rotations = (angle / 360) * io.kConfig.kRotatorGearRatio()
                 + ((int) (getUnadjustedPosition() / io.kConfig.kRotatorGearRatio()))
                         * io.kConfig.kRotatorGearRatio();
+        
         // Logger.consoleLog("Indexer motor rotations from angle is %s", rotations);
         return rotations;
     }

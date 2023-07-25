@@ -116,9 +116,9 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
                 
             }
         }
-        if(io.shouldDebugOutputs()){
+        // if(io.shouldDebugOutputs()){
             io.debugOutputs();
-        }
+        // }
         
     }
     /**

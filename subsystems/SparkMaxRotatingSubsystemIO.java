@@ -36,7 +36,7 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
     }
 
 
-    @AutoLog
+    
     public static class SparkMaxRotatingSubsystemIOInputs  {
         public double mEncoderPositionUnadjusted=0;
         public double mRotatorPower=0;
@@ -244,7 +244,8 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
     @Override
     public void debugOutputs(){
         Logger.getInstance().recordOutput("SparkMaxRotatingSubsystem/Device ID:"+kConfig.kDeviceID()+"/temporarySetpoint",this.mTempSetpoint);
-        Logger.getInstance().recordOutput("SparkMaxRotatingSubsystem/Device ID:"+kConfig.kDeviceID()+"/temporarySetpoint",this.mSetpoint);
+        Logger.getInstance().recordOutput("SparkMaxRotatingSubsystem/Device ID:"+kConfig.kDeviceID()+"/setpoint",this.mSetpoint);
+    
     }
 
     public SparkMAXLite getRotator() {
