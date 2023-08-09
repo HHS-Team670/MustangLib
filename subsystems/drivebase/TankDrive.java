@@ -35,8 +35,6 @@ import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
-import frc.team670.robot.constants.OI;
-import frc.team670.robot.constants.RobotConstants;
 
 /**
  * 
@@ -594,10 +592,8 @@ public abstract class TankDrive extends DriveBase {
     return (right1Encoder.getVelocity() / RobotConstantsBase.TankDriveBase.kSparkTicksPerRotation / 60);
   }
 
-   
-  public boolean isQuickTurnPressed() {
-    return OI.getDriverController().getRightBumper();
-  }
+   //The driver never uses quickturn
+  public abstract boolean isQuickTurnPressed();
 
    
   public void setEncodersPositionControl(double leftPos, double rightPos) {
