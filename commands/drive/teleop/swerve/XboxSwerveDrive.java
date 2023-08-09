@@ -15,8 +15,6 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 import frc.team670.mustanglib.utils.MustangController;
-import frc.team670.robot.constants.RobotConstants;
-
 
 public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     private final SwerveDrive driveBase;
