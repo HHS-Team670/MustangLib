@@ -31,7 +31,7 @@ public abstract class DriveBase extends MustangSubsystemBase {
 
   public abstract void toggleIdleMode();
 
-  public abstract void zeroHeading();
+  public abstract void resetHeading();
     
   //following for Mustang Command to get ramsete command
   public abstract Pose2d getPose();

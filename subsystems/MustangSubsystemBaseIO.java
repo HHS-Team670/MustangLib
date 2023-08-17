@@ -11,7 +11,7 @@ public abstract class MustangSubsystemBaseIO {
     private static NetworkTableInstance instance = NetworkTableInstance.getDefault(); // Do static variables work                                                                                     // with Advantage kit?
     private static NetworkTable table = instance.getTable("/SmartDashboard");
     private  HealthState lastHealthState=HealthState.UNKNOWN;
-    protected boolean debugOutputs=true;
+    protected boolean debugOutputs = true;
     
 
     /** Updates the set of loggable inputs. */

@@ -366,6 +366,13 @@ public class TankDriveIO extends DriveBaseIO {
         public double leftVelocityRadPerSec = 0.0;
         public double rightPositionRad = 0.0;
         public double rightVelocityRadPerSec = 0.0;
+        public double gyroYawRad;
+        public double gyroPitchRad;
+        public void  updateFromSuper(){
+          gyroYawRad = super.gyroYawRad;
+          gyroPitchRad= super.gyroPitchRad;
+      }
+
     }
     
     public void resetHeading() {

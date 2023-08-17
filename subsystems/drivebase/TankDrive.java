@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
+import frc.team670.mustanglib.subsystems.drivebase.TankDriveIO.TankDriveIOInputs;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
@@ -69,8 +70,6 @@ public abstract class TankDrive extends DriveBase {
         odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(io.getHeading()),0,0, new Pose2d(0, 0, new Rotation2d()));
         prevHeading = io.getHeading();
         io.initBrakeMode();
-    
-    
     }
     public double getDrivebaseMetersPerRotation(){
         return  ( (1 / kConfig.kDriveBaseGearRatio) * kConfig.kDriveBaseWheelDiameter * Math.PI * 0.0254);
@@ -378,7 +377,7 @@ public abstract class TankDrive extends DriveBase {
   }
 
    
-  public void zeroHeading() {
+  public void resetHeading() {
     io.resetHeading();
   }
 

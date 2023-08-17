@@ -52,7 +52,7 @@ public class RobotConstantsBase {
         public static final double kMaxVoltage = 12.0;// Good defaults
         public static final double kMaxDriveCurrent = 70.0;//Defaults
         public static final double kMaxSteerCurrent = 30.0;//Defaults
-
+        public static final int kNoPitchCode=-9999;
         // The formula for calculating the theoretical maximum velocity is:
         // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
         // pi

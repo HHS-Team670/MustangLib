@@ -6,11 +6,9 @@ import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
-import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
-import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.MustangNotifications;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
@@ -25,7 +23,6 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
     protected static final double kNoSetPoint = 9999;
     protected double mSetpoint;
     protected double mTempSetpoint;
-    private int errorCounter=0;
     public record Config(int kDeviceID, int kSlot, MotorConfig.Motor_Type kMotorType,
             IdleMode kIdleMode, double kRotatorGearRatio, double kP, double kI, double kD,
             double kFF, double kIz, double kMaxOutput, double kMinOutput, double kMaxRotatorRPM,
@@ -121,7 +118,7 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
     protected void setSystemMotionTarget(double setpoint, double arbitraryFF) {
         if (!inSoftLimits(setpoint)) {
             
-            MustangNotifications.reportWarning("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1] + " and " + kConfig.kSoftLimits[0]);
+            MustangNotifications.reportMinorWarning("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1] + " and " + kConfig.kSoftLimits[0]);
             return;
         }
         if (setpoint != kNoSetPoint) {
@@ -145,7 +142,7 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
      */
     protected void setTemporaryMotionTarget(double setpoint) {
         if (!inSoftLimits(setpoint)) {
-        MustangNotifications.reportWarning(("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]+ " and " + kConfig.kSoftLimits[0]));
+        MustangNotifications.reportMinorWarning(("Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]+ " and " + kConfig.kSoftLimits[0]));
             return;
         }
         mTempSetpoint = setpoint;
@@ -234,7 +231,7 @@ public abstract class SparkMaxRotatingSubsystemIO extends MustangSubsystemBaseIO
      */
     public void clearSetpoint() {
         if (!inSoftLimits(0)) {
-            MustangNotifications.reportWarning("Improper setpoint: " + 0 + " Setpoint should be between " +kConfig.kSoftLimits[1]
+            MustangNotifications.reportMinorWarning("Improper setpoint: " + 0 + " Setpoint should be between " +kConfig.kSoftLimits[1]
                     + " and " + kConfig.kSoftLimits[0]);
             return;
         }
