@@ -7,13 +7,12 @@
 
 package frc.team670.mustanglib.subsystems.drivebase;
 
-import java.util.ArrayList;
 import java.util.List;
+
+import org.littletonrobotics.junction.Logger;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.REVLibError;
-import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -24,16 +23,12 @@ import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.utils.functions.MathUtils;
-import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
-import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
 /**
@@ -43,95 +38,39 @@ import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
  * @author shaylandias, lakshbhambhani, armaan, aditi
  */
 public abstract class TankDrive extends DriveBase {
-    private SparkMAXLite left1, left2, right1, right2;
-    private RelativeEncoder left1Encoder, left2Encoder, right1Encoder, right2Encoder;
+
+    private TankDriveIO io;
+    private TankDriveIOInputsAutoLogged inputs;
     public final DifferentialDriveKinematics kDriveKinematics;
 
-  
-  
-    private List<SparkMAXLite> leftControllers, rightControllers;
-    private List<SparkMAXLite> allMotors = new ArrayList<SparkMAXLite>();;
-  
-    private NavX navXMicro;
-  
+
     private DifferentialDriveOdometry odometry;
   
     private MustangCommand defaultCommand;
   
-    private SparkMaxPIDController leftPIDController;
-    private SparkMaxPIDController rightPIDController;
-    
     private double prevHeading;
-    
-    protected DifferentialDrive drive;
+
     // private MotorController leftMotors, rightMotors;
     private final Config kConfig;
-    public static record Config(double kDriveBaseTrackWidth, double kDriveBaseGearRatio, double kDriveBaseWheelDiameter, 
+    public static record Config(double kDriveBaseGearRatio, double kDriveBaseWheelDiameter, 
     double kTrackWidthMeters, int kLeftLeaderMotorID, int kLeftFollowerMotorID, int kRightLeaderMotorID,
-    int kRightFollowerMotorID, double deadband , boolean inverted, SerialPort.Port kNavPort, boolean kNavXReversed, AutonConfig autonConfig ) {
+    int kRightFollowerMotorID, double deadband , boolean inverted, SerialPort.Port kNavPort, boolean kNavXReversed, AutonConfig autonConfig) {
     }
     //Added an autonconfig to break up the config into easy to read chuncks. additionally, all of these values need to be updated whenever changes are amde to the tankdrive
     public static record AutonConfig(int kTimeoutMs, double leftKsVolts, double leftKvVoltSecondsPerMeter, 
     double leftKaVoltSecondsSquaredPerMeter,double rightKsVolts, double rightKvVoltSecondsPerMeter, 
     double rightKaVoltSecondsSquaredPerMeter, PIDController kLeftController, PIDController kRightController, double kMaxSpeedMetersPerSecond, double kMaxAccelerationMetersPerSecondSquared ){}
     public TankDrive(Config kConfig){
+        super(new TankDriveIO(kConfig), new TankDriveIOInputsAutoLogged());
         this.kConfig = kConfig;
-        kDriveKinematics = new DifferentialDriveKinematics(kConfig.kDriveBaseTrackWidth);
-        /**
-         * makes a spark max pair for the left motors
-         */
-        leftControllers = SparkMAXFactory.buildFactorySparkMAXPair(kConfig.kLeftLeaderMotorID, kConfig.kLeftFollowerMotorID,
-        false, MotorConfig.Motor_Type.NEO);
-        /**
-         * makes a spark max pair for the right motors
-         */       
-        rightControllers = SparkMAXFactory.buildFactorySparkMAXPair(kConfig.kRightLeaderMotorID,
-        kConfig.kRightFollowerMotorID, false, MotorConfig.Motor_Type.NEO);
-
-        allMotors.addAll(leftControllers);
-        allMotors.addAll(rightControllers);
-
-        left1 = leftControllers.get(0);
-        left2 = leftControllers.get(1);
-        right1 = rightControllers.get(0);
-        right2 = rightControllers.get(1);
-        
-        left1Encoder = left1.getEncoder();
-        left2Encoder = left2.getEncoder();
-        right1Encoder = right1.getEncoder();
-        right2Encoder = right2.getEncoder();
-
-
-        for(SparkMAXLite motorController : allMotors) {
-            // Do NOT invert for the right side here
-            motorController.getEncoder().setVelocityConversionFactor(getDrivebaseMetersPerRotation());
-            motorController.getEncoder().setPositionConversionFactor(getDrivebaseVelocityConversionFactor());
-          }
-            // The DifferentialDrive inverts the right side automatically, however we want
-        // invert straight from the Spark so that we can still use it properly with the
-        // CANPIDController, so we need to tell differenetial drive to not invert.
-        setMotorsInvert(leftControllers, false);
-        setMotorsInvert(rightControllers, true); // Invert right controllers here so they will work properly with the CANPIDController
-        setMotorControllers(left1, right1 ,false, false, .1, true);
-        
-        navXMicro = new NavX(kConfig.kNavPort);
-        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(getHeading()),0,0, new Pose2d(0, 0, new Rotation2d()));
-        prevHeading = getHeading();
-        initBrakeMode();
+        this.io=(TankDriveIO)super.io;
+        this.inputs=(TankDriveIOInputsAutoLogged)super.inputs;
+        kDriveKinematics = new DifferentialDriveKinematics(kConfig.kTrackWidthMeters);
+        odometry = new DifferentialDriveOdometry(Rotation2d.fromDegrees(io.getHeading()),0,0, new Pose2d(0, 0, new Rotation2d()));
+        prevHeading = io.getHeading();
+        io.initBrakeMode();
     
-        leftPIDController = left1.getPIDController();
-        rightPIDController = right1.getPIDController();
-        
-        leftPIDController.setP(kConfig.autonConfig.kLeftController.getP());
-        leftPIDController.setI(kConfig.autonConfig.kLeftController.getI());
-        leftPIDController.setD(kConfig.autonConfig.kLeftController.getD());
     
-        rightPIDController.setP(kConfig.autonConfig.kRightController.getP());
-        rightPIDController.setI(kConfig.autonConfig.kRightController.getI());
-        rightPIDController.setD(kConfig.autonConfig.kRightController.getD());
-    
-        leftPIDController.setOutputRange(-1, 1);
-        rightPIDController.setOutputRange(-1, 1);
     }
     public double getDrivebaseMetersPerRotation(){
         return  ( (1 / kConfig.kDriveBaseGearRatio) * kConfig.kDriveBaseWheelDiameter * Math.PI * 0.0254);
@@ -140,87 +79,10 @@ public abstract class TankDrive extends DriveBase {
         return getDrivebaseMetersPerRotation()/60;   
     }
 
-    /**
-     * This method is called by the constructor. Much of the time setup needs to be
-     * performed on motors, so perform the setup in a subclass, then call this
-     * method.
-     * 
-     * @param leftMotor        Leader of the left motors
-     *                          
-     * @param rightMotor       Leader of the right motors
-     *
-     * @param inverted          Invert the motors (make what would have been the
-     *                          front the back)
-     * @param rightSideInverted Invert the right motor outputs to counteract them
-     *                          being flipped comparatively with the left ones
-     * @param deadband          A minimum motor input to move the drivebase
-     * @param safetyEnabled     Safety Mode, enforces motor safety which turns off
-     *                          the motors if communication lost, other failures,
-     *                          etc.
-     */
-    protected void setMotorControllers(MotorController leftMotor, MotorController rightMotor, boolean inverted,
-            boolean rightSideInverted, double deadband, boolean safetyEnabled) {
 
-        drive = new DifferentialDrive(leftMotor, rightMotor);
-        rightMotor.setInverted(true);
-        drive.setDeadband(deadband);
-        drive.setSafetyEnabled(safetyEnabled);
-    }
 
-    /**
-     * This method is called by the constructor or in a subclass if motor setup
-     * needs to be performed. Much of the time setup needs to be performed on
-     * motors, so perform the setup in a subclass, then call this method.
-     * 
-     * @param leftMotor  Leader of the left motors
-     *
-     * @param rightMotor Leader of the right motors
-     */
-    protected void setMotorControllers(MotorController leftMotor, MotorController rightMotor) {
-        setMotorControllers(leftMotor, rightMotor, true, true, 0.02, true);
-    }
 
-    /**
-     * This method is called by the constructor. Much of the time setup needs to be
-     * performed on motors, so perform the setup in a subclass, then call this
-     * method.
-     * 
-     * @param leftMotor        Leader of the left motors
-     *
-     * @param rightMotor       Leader of the rigth motors
-     *
-     * @param inverted          Invert the motors (make what would have been the
-     *                          front the back)
-     * @param rightSideInverted Invert the right motor outputs to counteract them
-     *                          being flipped comparatively with the left ones
-     */
-    public void setMotorControllers(MotorController leftMotor, MotorController rightMotor, boolean inverted,
-            boolean rightSideInverted) {
-        setMotorControllers(leftMotor, rightMotor, inverted, rightSideInverted, 0.02, true);
-    }
-
-    /**
-     * Checks the health for driveBase. RED if all motors are dead, GREEN if all
-     * motors are alive, YELLOW if a motor is disconnected.
-     *
-     * @param isLeft1Error  boolean for left1 motor being errored
-     * @param isLeft2Error  boolean for left2 motor being errored
-     * @param isRight1Error boolean for right1 motor being errored
-     * @param isRight2Error boolean for right2 motor being errored
-     */
-    public HealthState checkHealth(boolean isLeft1Error, boolean isLeft2Error, boolean isRight1Error,
-            boolean isRight2Error) {
-        HealthState state = HealthState.GREEN;
-
-        if (!isLeft1Error && !isLeft2Error && !isRight1Error && !isRight2Error) {
-            state = HealthState.GREEN;
-        } else if (isLeft1Error && isLeft2Error && isRight1Error && isRight2Error) {
-            state = HealthState.RED;
-        } else {
-            state = HealthState.YELLOW;
-        }
-        return state;
-    }
+ 
 
 
 
@@ -247,7 +109,7 @@ public abstract class TankDrive extends DriveBase {
      * @param squaredInputs If true, decreases sensitivity at lower inputs
      */
     public void tankDrive(double leftSpeed, double rightSpeed, boolean squaredInputs) {
-        drive.tankDrive(leftSpeed, rightSpeed, squaredInputs);
+        io.tankDrive(leftSpeed, rightSpeed, squaredInputs);
     }
 
     /**
@@ -261,7 +123,7 @@ public abstract class TankDrive extends DriveBase {
      *                    backwards to turn faster
      */
     public void curvatureDrive(double xSpeed, double zRotation, boolean isQuickTurn) {
-        drive.curvatureDrive(xSpeed, zRotation, isQuickTurn);
+        io.curvatureDrive(xSpeed, zRotation, isQuickTurn);
     }
 
     /**
@@ -277,7 +139,7 @@ public abstract class TankDrive extends DriveBase {
      *                      function)
      */
     public void arcadeDrive(double xSpeed, double zRotation, boolean squaredInputs) {
-        drive.arcadeDrive(xSpeed, zRotation, squaredInputs);
+        io.arcadeDrive(xSpeed, zRotation, squaredInputs);
     }
 
     /**
@@ -297,42 +159,15 @@ public abstract class TankDrive extends DriveBase {
      * Stops the motors on the drive base (sets them to 0).
      */
     public void stop() {
-        drive.stopMotor();
+        io.stop();
     }
 
 
 
 
+   
 
 
-
-    public double getLeftPositionInches() {
-        return ticksToInches(getLeftPositionTicks());
-    }
-
-    public double getRightPositionInches() {
-        return ticksToInches(getRightPositionTicks());
-    }
-
-
-
-    /**
-     * @return Velocity of the left motors in inches per second
-     */
-    public double getLeftVelocityInches() {
-        return ticksToInches(getLeftVelocityTicks());
-    }
-
-    /**
-     * @return Velocity of the right motors in inches per second
-     */
-    public double getRightVelocityInches() {
-        return ticksToInches(getRightVelocityTicks());
-    }
-
-    public DifferentialDrive getDriveTrain() {
-        return drive;
-    }
 
 
  
@@ -341,7 +176,7 @@ public abstract class TankDrive extends DriveBase {
    * Returns the wheel speeds of the leftMain Motor and rightMainMotor
    */
   public DifferentialDriveWheelSpeeds getWheelSpeeds() {
-    return new DifferentialDriveWheelSpeeds(left1Encoder.getVelocity(), right1Encoder.getVelocity());
+    return new DifferentialDriveWheelSpeeds(inputs.leftVelocityRadPerSec/2.0/Math.PI*getDrivebaseMetersPerRotation(), inputs.rightVelocityRadPerSec/2.0/Math.PI*getDrivebaseMetersPerRotation());
   }
 
 
@@ -358,141 +193,69 @@ public abstract class TankDrive extends DriveBase {
     MustangScheduler.getInstance().cancel(defaultCommand);
   }
 
-  /**
-   * Checks the health for driveBase. RED if all motors are dead, GREEN if all
-   * motors are alive and navx is connected, YELLOW if a motor is disconnected or
-   * navX is not connected
-   */
-   
-  public HealthState checkHealth() {
-    HealthState motorHealth = checkHealth(left1.isErrored(), left2.isErrored(), right1.isErrored(), right2.isErrored());
-    HealthState overallHealth;
-    if(motorHealth == HealthState.GREEN && navXMicro != null)
-      overallHealth = HealthState.GREEN;
-    else if(motorHealth != HealthState.RED && navXMicro == null)
-      overallHealth = HealthState.YELLOW;
-    else
-      overallHealth = motorHealth;
 
-    return overallHealth;
-  }
 
   /**
    * Sets all motors to Brake Mode
    */
   public void initBrakeMode() {
-    setMotorsNeutralMode(allMotors, IdleMode.kBrake);
+    io.initBrakeMode();
   }
 
   /**
    * Sets all motors to Coast Mode
    */
   public void initCoastMode() {
-    setMotorsNeutralMode(allMotors, IdleMode.kCoast);
+    io.initCoastMode();
   }
 
-  /**
-   * Inverts a list of motors.
-   */
-  private void setMotorsInvert(List<SparkMAXLite> motorGroup, boolean invert) {
-    for (CANSparkMax m : motorGroup) {
-      m.setInverted(invert);
-    }
-  }
+
 
   /**
    * Sets all motors in the specified list to be in the specified mode
-   * @param motors Motors to be set to a particular IdleMode
+   * 
    * @param mode The target mode (coast or brake)
    */
-  public void setMotorsNeutralMode(List<SparkMAXLite> motors, IdleMode mode) {
-    for (CANSparkMax m : motors) {
-      m.setIdleMode(mode);
-    }
+  public void setMotorsNeutralMode( IdleMode mode) {
+    io.setMotorsNeutralMode(mode);
   }
 
-  /**
-   * Returns the Spark Max Encoder for the Left Main Motor
-   */
-  public RelativeEncoder getLeftMainEncoder() {
-    return left1Encoder;
-  }
 
-  /**
-   * Returns the Spark Max Encoder for the Left Follower Motor
-   */
-  public RelativeEncoder getLeftFollowerEncoder() {
-    return left2Encoder;
-  }
-
-  /**
-   * Returns the Spark Max Encoder for the Right Main Motor
-   */
-  public RelativeEncoder getRightMainEncoder() {
-    return right1Encoder;
-  }
-
-  /**
-   * Returns the Spark Max Encoder for the Right Follower Motor
-   */
-  public RelativeEncoder getRightFollowerEncoder() {
-    return right2Encoder;
-  }
-
-  /**
-   * Returns the Left Motor Controllers
-   * 
-   * @return The list of the motor controllers on the left side of the robot
-   */
-  public List<SparkMAXLite> getLeftControllers() {
-    return leftControllers;
-  }
-
-  /**
-   * Returns the Right Motor Controller
-   * 
-   * @return The list of the motor controllers on the right side of the robot
-   */
-  public List<SparkMAXLite> getRightControllers() {
-    return rightControllers;
-  }
 
   /**
    * Sets the ramp rate for the list of motors passed in.
    * @param rampRate The ramp rate in seconds from 0 to full throttle
    */
   public void setRampRate(List<SparkMAXLite> motors, double rampRate) {
-    for (CANSparkMax m : motors) {
-      m.setClosedLoopRampRate(rampRate);
-      m.setOpenLoopRampRate(rampRate);
-    }
+    io.setRampRate(motors, rampRate);
   }
 
   /**
    * @param rampRate The ramp rate in seconds from 0 to full throttle
    */
   public void setTeleopRampRate() {
-    setRampRate(allMotors, 0.36); // Will automatically cook some Cheezy Poofs
+    io.setTeleopRampRate(); // Will automatically cook some Cheezy Poofs ?
   }
 
-  public void sendEncoderDataToDashboard() {
-    SmartDashboard.putNumber("Left M Position Ticks", left1Encoder.getPosition());
-    SmartDashboard.putNumber("Left M Velocity Ticks", left1Encoder.getVelocity());
-    SmartDashboard.putNumber("Left S Position Ticks", left2Encoder.getPosition());
-    SmartDashboard.putNumber("Left S Velocity Ticks", left2Encoder.getVelocity());
-    SmartDashboard.putNumber("Right M Position Ticks", right1Encoder.getPosition());
-    SmartDashboard.putNumber("Right M Velocity Ticks", right1Encoder.getVelocity());
-    SmartDashboard.putNumber("Right S Position Ticks", right2Encoder.getPosition());
-    SmartDashboard.putNumber("Right S Velocity Ticks", right2Encoder.getVelocity());
-  }
+//   public void sendEncoderDataToDashboard() {
+//     SmartDashboard.putNumber("Left M Position Ticks", left1Encoder.getPosition());
+//     SmartDashboard.putNumber("Left M Velocity Ticks", left1Encoder.getVelocity());
+//     SmartDashboard.putNumber("Left S Position Ticks", left2Encoder.getPosition());
+//     SmartDashboard.putNumber("Left S Velocity Ticks", left2Encoder.getVelocity());
+//     SmartDashboard.putNumber("Right M Position Ticks", right1Encoder.getPosition());
+//     SmartDashboard.putNumber("Right M Velocity Ticks", right1Encoder.getVelocity());
+//     SmartDashboard.putNumber("Right S Position Ticks", right2Encoder.getPosition());
+//     SmartDashboard.putNumber("Right S Velocity Ticks", right2Encoder.getVelocity());
+//   }
 
    
   public void mustangPeriodic() {
-    odometry.update(Rotation2d.fromDegrees(getHeading()), left1Encoder.getPosition(), right1Encoder.getPosition());
-    if (SmartDashboard.getBoolean("aligned", false) && !MathUtils.doublesEqual(getHeading(), prevHeading, 0)) {
+    odometry.update(Rotation2d.fromRadians(-inputs.gyroYawRad), inputs.leftPositionRad*kConfig.kDriveBaseWheelDiameter/2, inputs.rightPositionRad*kConfig.kDriveBaseWheelDiameter/2);
+    if (SmartDashboard.getBoolean("aligned", false) && !MathUtils.doublesEqual(inputs.gyroYawRad, prevHeading, 0)) {
       SmartDashboard.putBoolean("aligned", false);
     }
-    prevHeading = getHeading();
+    Logger.getInstance().recordOutput("Odometry", getPose());
+
   }
 
   /**
@@ -511,30 +274,22 @@ public abstract class TankDrive extends DriveBase {
    */
   public void resetOdometry(Pose2d pose2d) {
     // zeroHeading();
-    navXMicro.reset(pose2d.getRotation().getDegrees() * (kConfig.kNavXReversed ? -1. : 1.));
+    io.resetOdometry(pose2d);
     odometry.resetPosition(pose2d.getRotation(),0.0,0.0, pose2d);
 
-    //If encoders aren't being properly zeroed, check if lE and rE are REVLibError.kOk
-    REVLibError lE = left1Encoder.setPosition(0);
-    REVLibError rE = right1Encoder.setPosition(0);
+   
   }
 
   /**
    * Resets the odometry to 0 and zeroes the encoders.
    */
   public void resetOdometry() {
-    zeroHeading();
-    resetOdometry(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)));
+    io.resetHeading();
+    io.resetOdometry(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)));
+    
   }
 
-  /**
-   * Returns the heading of the robot.
-   * 
-   * @return the robot's heading in degrees, in range [-180, 180]
-   */
-  public double getHeading() {
-    return Math.IEEEremainder(navXMicro.getAngle(), 360) * (kConfig.kNavXReversed ? -1. : 1.);
-  }
+
 
 
 
@@ -542,8 +297,7 @@ public abstract class TankDrive extends DriveBase {
    * sets the postion of the left and right encoders to zero
    */
   public void zeroEncoders() {
-    left1Encoder.setPosition(0);
-    right1Encoder.setPosition(0);
+    io.zeroEncoders();
   }
 
   /**
@@ -556,61 +310,55 @@ public abstract class TankDrive extends DriveBase {
    * side of the tank drive system.
    */
   public void tankDriveVoltage(double leftVoltage, double rightVoltage) {
-    left1.setVoltage(leftVoltage);
-    right1.setVoltage(rightVoltage);
+    io.tankDriveVoltage(leftVoltage, rightVoltage);
   }
 
    
   /**
-   * @return The left position of the drivebase in ticks.
+   * @return The left position of the drivebase in rads.
    */
   
-  public double getLeftPositionTicks() {
-    return (int) (left1Encoder.getPosition() / RobotConstantsBase.TankDriveBase.kSparkTicksPerRotation);
+  public double getLeftPositionRad() {
+    return inputs.leftPositionRad;
   }
 
    
   /**
-   * @return The method is returning the left velocity of the tank drive base in ticks per second.
+   * @return The method is returning the left velocity of the tank drive base in rads per second.
    */
-  public double getLeftVelocityTicks() {
-    return (left1Encoder.getVelocity() / RobotConstantsBase.TankDriveBase.kSparkTicksPerRotation / 60);
+  public double getLeftVelocityRad() {
+    return inputs.leftVelocityRadPerSec;
   }
 
 /**
-   * @return The right position of the drivebase in ticks.
+   * @return The right position of the drivebase in rad.
    */
-  public double getRightPositionTicks() {
-    return (int) (left1Encoder.getPosition() / RobotConstantsBase.TankDriveBase.kSparkTicksPerRotation);
+  public double getRightPositionRad() {
+    return inputs.rightPositionRad;
   }
 
    
 /**
-   * @return The method is returning the right velocity of the tank drive base in ticks per second.
+   * @return The method is returning the right velocity of the tank drive base in rads per second.
    */
-  public double getRightVelocityTicks() {
-    return (right1Encoder.getVelocity() / RobotConstantsBase.TankDriveBase.kSparkTicksPerRotation / 60);
+  public double getRightVelocityRad() {
+    return inputs.rightVelocityRadPerSec;
   }
 
    //The driver never uses quickturn
   public abstract boolean isQuickTurnPressed();
 
    
-  public void setEncodersPositionControl(double leftPos, double rightPos) {
-    left1Encoder.setPosition(leftPos);
-    right1Encoder.setPosition(rightPos);
-  }
+  
 
    
   public void setRampRate(double rampRate) {
-    left1.setOpenLoopRampRate(rampRate);
-    right1.setOpenLoopRampRate(rampRate);
+    io.setRampRate(rampRate);
   }
 
    
   public void setVelocityControl(double leftSpeed, double rightSpeed) {
-    left1.set(leftSpeed);
-    right1.set(rightSpeed);
+    io.setVelocityControl(leftSpeed, rightSpeed);
   }
 
   /**
@@ -631,7 +379,7 @@ public abstract class TankDrive extends DriveBase {
 
    
   public void zeroHeading() {
-    navXMicro.reset();
+    io.resetHeading();
   }
 
    
@@ -644,9 +392,8 @@ public abstract class TankDrive extends DriveBase {
     return kConfig.autonConfig.kLeftController;
   }
 
-  public SparkMaxPIDController getLeftSparkMaxPIDController(){
-    return leftPIDController;
-  }
+
+  
 
    
   public SimpleMotorFeedforward getLeftSimpleMotorFeedforward() {
@@ -659,9 +406,7 @@ public abstract class TankDrive extends DriveBase {
     return kConfig.autonConfig.kRightController;
   }
 
-  public SparkMaxPIDController getRightSparkMaxPIDController(){
-    return rightPIDController;
-  }
+
 
    
   public SimpleMotorFeedforward getRightSimpleMotorFeedforward() {
@@ -674,39 +419,27 @@ public abstract class TankDrive extends DriveBase {
    */
    
   public void toggleIdleMode() {
-    for (SparkMAXLite motor : allMotors) {
-      if (motor.getIdleMode() == IdleMode.kBrake) {
-        motor.setIdleMode(IdleMode.kCoast);
-      } else {
-        motor.setIdleMode(IdleMode.kBrake);
-      }
-    }
+    io.toggleIdleMode();
   }
 
-  public void holdPosition() {
-    getLeftSparkMaxPIDController().setReference(left1Encoder.getPosition(), CANSparkMax.ControlType.kPosition);
-    getRightSparkMaxPIDController().setReference(right1Encoder.getPosition(), CANSparkMax.ControlType.kPosition);
-  }
+ 
 
-  public void releasePosition() {
-    getLeftSparkMaxPIDController().setReference(0, CANSparkMax.ControlType.kDutyCycle);
-    getRightSparkMaxPIDController().setReference(0, CANSparkMax.ControlType.kDutyCycle);
-  }
 
    
   public void debugSubsystem() {
-    SmartDashboard.putNumber("Heading", getHeading());
-    SmartDashboard.putNumber("currentX", getPose().getX());
-    SmartDashboard.putNumber("currentY", getPose().getY());
-    SmartDashboard.putNumber("left 1 encoder", getLeftPositionTicks());
-    SmartDashboard.putNumber("right 1 encoder", getRightPositionTicks());
-    SmartDashboard.putNumber("left velocity", left1Encoder.getVelocity());
-    SmartDashboard.putNumber("right velocity", right1Encoder.getVelocity());
-    SmartDashboard.putNumber("left position", left1Encoder.getPosition());
-    SmartDashboard.putNumber("right position", right1Encoder.getPosition());
-    SmartDashboard.putNumber("Heading", getHeading());
-    SmartDashboard.putNumber("pose X", getPose().getX());
-    SmartDashboard.putNumber("pose Y", getPose().getY());
-    sendEncoderDataToDashboard();
+    // SmartDashboard.putNumber("Heading", getHeading());
+    // SmartDashboard.putNumber("currentX", getPose().getX());
+    // SmartDashboard.putNumber("currentY", getPose().getY());
+    // SmartDashboard.putNumber("left 1 encoder", getLeftPositionTicks());
+    // SmartDashboard.putNumber("right 1 encoder", getRightPositionTicks());
+    // SmartDashboard.putNumber("left velocity", left1Encoder.getVelocity());
+    // SmartDashboard.putNumber("right velocity", right1Encoder.getVelocity());
+    // SmartDashboard.putNumber("left position", left1Encoder.getPosition());
+    // SmartDashboard.putNumber("right position", right1Encoder.getPosition());
+    // SmartDashboard.putNumber("Heading", getHeading());
+    // SmartDashboard.putNumber("pose X", getPose().getX());
+    // SmartDashboard.putNumber("pose Y", getPose().getY());
+    // sendEncoderDataToDashboard();
   }
+
 }

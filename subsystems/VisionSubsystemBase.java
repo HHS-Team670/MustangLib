@@ -126,7 +126,7 @@
 //                 counter++;
 //             }
 //         }
-//         //iff all of the cameras are null or not connected healthstate = red
+//         //if all of the cameras are null or not connected healthstate = red
 //         if (counter == mCameras.length && mCameras.length!=0){
 //             state = HealthState.RED;
 //         }

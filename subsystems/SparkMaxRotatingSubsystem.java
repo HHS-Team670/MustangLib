@@ -1,14 +1,19 @@
 package frc.team670.mustanglib.subsystems;
 
 import org.littletonrobotics.junction.AutoLog;
+import org.littletonrobotics.junction.inputs.LoggableInputs;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
 import frc.team670.mustanglib.subsystems.SparkMaxRotatingSubsystemIO.Config;
+import frc.team670.mustanglib.subsystems.SparkMaxRotatingSubsystemIO.SparkMaxRotatingSubsystemIOInputs;
 import frc.team670.mustanglib.utils.Logger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
@@ -21,7 +26,7 @@ import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         implements TunableSubsystem {
     private SparkMaxRotatingSubsystemIO io;
-    private SparkMaxRotatingSubsystemIOInputsAutoLogged inputs;
+    protected SparkMaxRotatingSubsystemIOInputs inputs;
 
 
     
@@ -33,10 +38,10 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     
  
 
-    public SparkMaxRotatingSubsystem(Config kConfig,SparkMaxRotatingSubsystemIO io) {
-        super(io,new SparkMaxRotatingSubsystemIOInputsAutoLogged());
+    public SparkMaxRotatingSubsystem(SparkMaxRotatingSubsystemIO io, LoggableInputs inputs) {
+        super(io,inputs);
         this.io=io;
-        this.inputs=(SparkMaxRotatingSubsystemIOInputsAutoLogged)(super.getInputs());
+        this.inputs=(SparkMaxRotatingSubsystemIOInputs) inputs;
     }
 
     /**
@@ -121,6 +126,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         double rotations = (angle / 360) * io.kConfig.kRotatorGearRatio()
                 + ((int) (getUnadjustedPosition() / io.kConfig.kRotatorGearRatio()))
                         * io.kConfig.kRotatorGearRatio();
+        
         // Logger.consoleLog("Indexer motor rotations from angle is %s", rotations);
         return rotations;
     }

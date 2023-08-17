@@ -26,9 +26,9 @@ import frc.team670.mustanglib.utils.MustangNotifications;
  */
 public abstract class MustangSubsystemBase extends SubsystemBase {
 
-    private LoggableInputs inputs;
-    private MustangSubsystemBaseIO io;
-    private boolean failedLastTime=false;
+    protected LoggableInputs inputs;
+    protected MustangSubsystemBaseIO io;
+    private boolean failedLastTime = false;
 
 
 
@@ -38,8 +38,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      * health state is UNKNOWN (ID 0).
      */
     public MustangSubsystemBase(MustangSubsystemBaseIO io, LoggableInputs inputs) {
-        this.io=io;
-        this.inputs=inputs;
+        this.io = io;
+        this.inputs = inputs;
         
         // RobotContainer.addSubsystem(this);
         // this.lastHealthState = HealthState.UNKNOWN;
@@ -116,9 +116,9 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
                 
             }
         }
-        if(io.shouldDebugOutputs()){
+        // if(io.shouldDebugOutputs()){
             io.debugOutputs();
-        }
+        // }
         
     }
     /**
