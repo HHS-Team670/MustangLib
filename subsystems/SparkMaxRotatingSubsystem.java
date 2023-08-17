@@ -64,6 +64,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * limits and logs an error message if it is not.
      * 
      * @param setpoint The setpoint is the desired target value for the system's motion.
+     * @return if this action was sucessful
      */
     protected void setSystemMotionTarget(double setpoint) {
         
@@ -78,6 +79,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * something.
      * 
      * @param setpoint The temporary setpoint for the system, in motor rotations
+     * @return if this action was sucessful
      */
     protected void setTemporaryMotionTarget(double setpoint) {
         io.setTemporaryMotionTarget(setpoint);
@@ -89,6 +91,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * setpoint.
      * 
      * @param angle The target angle this subsystem should turn to, in degrees
+     * @return if this action was sucessful
      */
     public void setSystemTargetAngleInDegrees(double angle) {
         
@@ -101,6 +104,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * step in some process -- this setpoint won't be saved.
      * 
      * @param angle The angle this subsystem should turn to, in degrees
+     * @return if this action was sucessful
      */
     public void setTemporaryTargetAngleInDegrees(double angle) {
         
@@ -197,6 +201,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
     /**
      * Clears the setpoint of this subsystem
+     * @return if this action was sucessful
      */
     public void clearSetpoint() {
         

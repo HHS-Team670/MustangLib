@@ -1,4 +1,4 @@
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.swerve;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +40,4 @@ public class SetSwerveForwardDirection extends InstantCommand implements Mustang
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
     }
-    @Override
-    public void debugCommand(){}
 }

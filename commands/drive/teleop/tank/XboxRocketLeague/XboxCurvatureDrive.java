@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -37,7 +37,7 @@ public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
 
     /**
      * Constructs a new XboxCurvatureDrive.
-     * @param driveBase the drrivebase to be drivnr
+     * @param driveBase the drivebase to be driven
      * @param controller the controllers to be used
      */
     public XboxCurvatureDrive(TankDrive driveBase, MustangController controller) {
@@ -46,7 +46,7 @@ public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
         this.controller = controller;
         addRequirements(driveBase);
         healthRequirements.put(driveBase, HealthState.YELLOW);
-
+ 
     }
 
     // Called once when the command executes
@@ -63,7 +63,5 @@ public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
     }
-    @Override
-    public void debugCommand(){}
 
 }

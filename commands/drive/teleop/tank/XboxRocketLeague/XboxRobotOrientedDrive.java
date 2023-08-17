@@ -1,4 +1,4 @@
-package frc.team670.mustanglib.commands.drive.teleop;
+package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,14 +38,12 @@ public class XboxRobotOrientedDrive extends CommandBase implements MustangComman
         double ySpeed = JoystickUtils.smoothInput(m_controller.getLeftStickY());
 
         // twist from right joystick
-        double zRotation = JoystickUtils.smoothInput(m_controller.getRightStickX());
+        double zRotation = -JoystickUtils.smoothInput(m_controller.getRightStickX());
         driveBase.curvatureDrive(-ySpeed, zRotation, true);
     }
 
     @Override
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
-    }
-    @Override
-    public void debugCommand(){}    
+    }  
 }

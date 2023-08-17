@@ -148,12 +148,18 @@
 //         return !(m_ledBuffer.getLED(index).equals(newColor));
 //     }
 
-//     /**
-//      * Changes the LED strip so that all the LEDs are one color
-//      * Colors is in HSV FORMAT
-//      * 
-//      * @param Color The color
-//      **/
+    /**
+     * The function checks if the color of an LED at a given index has changed.
+     * 
+     * @param index The index parameter represents the position of the LED in the LED buffer. It is
+     * used to access the LED at the specified index in the buffer.
+     * @param newColor The new color that you want to compare with the color of the LED at the
+     * specified index.
+     * @return whether the color of an LED at a given index had been changed.
+     */
+    // private boolean colorChanged(int index, LEDColor newColor) {
+    //     return !(m_ledBuffer.getLED(index).equals(newColor));
+    // }
 
 //     public void solidhsv(LEDColor color) {
 //         if (this.color == null || !color.equals(this.color)) {

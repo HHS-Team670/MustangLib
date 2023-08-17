@@ -86,7 +86,7 @@ public final class NeoDriveControllerFactoryBuilder {
         }
 
         @Override
-        public Object getDriveMotor() {
+        public CANSparkMax getDriveMotor() {
             return this.motor;
         }
 

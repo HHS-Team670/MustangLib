@@ -23,7 +23,7 @@ public interface MustangCommand extends Command {
      * logs data revelant to debugging this command
      * For use when execute or other parts of command have logical errors
      */
-    public void debugCommand();
+    public default void  debugCommand(){}
     /**
      * schedules this command
      */

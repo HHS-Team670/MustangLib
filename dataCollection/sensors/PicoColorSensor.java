@@ -229,9 +229,8 @@ public class PicoColorSensor implements AutoCloseable {
       color1.blue = parseIntFromIndex(charSeq, read, lastComma);
       color1.ir = parseIntFromIndex(charSeq, read, lastComma);
    /**
-    * The function checks if the distance is within the threshold.
     * 
-    * @return The method is returning a boolean value.
+    * @return The method checks if the distance is within the threshold.
     */
       int prox1 = parseIntFromIndex(charSeq, read, lastComma);
 
@@ -272,8 +271,7 @@ public class PicoColorSensor implements AutoCloseable {
     readThread.start();
   }
 /**
- * Returns whether the sensor 0 is connected or not.
- * @return boolean value indicating whether sensor 0 is connected or not.
+ * @return whether the sensor 0 is connected or not.
  */
   public boolean isSensor0Connected() {
     try {
@@ -284,8 +282,7 @@ public class PicoColorSensor implements AutoCloseable {
     }
   }
 /**
- * Returns whether the sensor 1 is connected or not.
- * @return boolean value indicating whether sensor 1 is connected or not.
+ * @return whether the sensor 1 is connected or not.
  */
   public boolean isSensor1Connected() {
     try {

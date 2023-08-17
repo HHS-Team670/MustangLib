@@ -118,7 +118,7 @@ public class NavX {
     }
 
     /**
-     * @return The method is returning the angle value obtained from the mAHRS object.
+     * @return the angle value obtained from the mAHRS object relative to the last zero position.
      */
     public synchronized double getAngle() {
         return mAHRS.getAngle();
@@ -138,27 +138,13 @@ public class NavX {
         return 180.0 / Math.PI * getYawRateDegreesPerSec();
     }
 
-    /**
-     * 
-     * @return the raw acceleration in the x direction
-     */
-    public synchronized double getRawAccelX() {
-        return mAHRS.getRawAccelX();
-    }
+
 
     /**
      * Sets the offSet to the current yaw angle in degrees.
      */
     private synchronized void setOffSetAngle() {
         offSet = getRawYawDegrees();
-    }
-
-    /**
-     * @return the NavX object itself so be careful with it and don't reset it. This
-     * will be field centric.
-     */
-    public synchronized AHRS getFieldCentricNavXPIDSource() {
-        return mAHRS;
     }
 
     /**
@@ -186,10 +172,7 @@ public class NavX {
         return mAHRS.getRoll();
     }
     /**
-    * The function isMagnetometerCalibrated() returns a boolean value indicating whether the magnetometer
-    * is calibrated or not.
-    * 
-    * @return The method is returning a boolean value
+    * @return if the magnetometer is calibrated
     */
 
     public boolean isMagnetometerCalibrated() {
@@ -197,9 +180,9 @@ public class NavX {
     }
 
     /**
-     * The function returns the fused heading value from the mAHRS object.
+     * The function returns the fused heading value from the mAHRS object. Heading represents the sensor's best estimate of current heading
      * 
-     * @return The method is returning the fused heading value, which is a double.
+     * @return the heading that represents the sensor's best estimate of current heading
      */
     public double getFusedHeading() {
         return mAHRS.getFusedHeading();
@@ -209,7 +192,7 @@ public class NavX {
      * The function returns whether the AHRS (Attitude and Heading Reference System) is currently
      * calibrating.
      * 
-     * @return The method is returning a boolean value representing whether or not this navx is calibrating
+     * @return if this navx is calibrating or not
      */
     public boolean isCalibrating() {
         return mAHRS.isCalibrating();

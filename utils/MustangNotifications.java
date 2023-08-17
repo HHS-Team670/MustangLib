@@ -38,7 +38,7 @@ public class MustangNotifications {
      * @param message Message with optional format specifiers for listed parameters. Use '%s' for formatting. It makes the parameters appear in the String where the '%s' are in order of input.
      * @param parameters Parameter list matching format specifiers
      */
-    public static void reportWarning(String message, Object... parameters) {
+    public static void reportMajorWarning(String message, Object... parameters) {
         DriverStation.reportWarning(String.format(message, parameters), false);
         Logger.consoleWarning(message, parameters);
         warning.setString(String.format(message, parameters));

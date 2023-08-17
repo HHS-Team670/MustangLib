@@ -114,6 +114,32 @@
 //     public boolean isMeasurementBufferEmpty() {
 //         return mVisionMeasurementsBuffer.isEmpty();
 //     }
+//     /** @return the healthstate of the vision subsystem */
+//     @Override
+//     public HealthState checkHealth() {
+//         HealthState state = HealthState.GREEN;
+//         int counter = 0;
+//         // checks through the photon cameras and checks if they are null or !connected
+//         for (PhotonCamera camera: mCameras) {
+//             if(camera == null || !camera.isConnected()){
+//                 state = HealthState.YELLOW;
+//                 counter++;
+//             }
+//         }
+//         //iff all of the cameras are null or not connected healthstate = red
+//         if (counter == mCameras.length && mCameras.length!=0){
+//             state = HealthState.RED;
+//         }
+//         return state;
+//     }
+    
+//    /**
+//     * 
+//     * @return the cameras this subsystem uses
+//     */
+//     public PhotonCamera[] getCameras() {
+//         return mCameras;
+//     }
 
 //     private void processVisionFeed(CameraPoseEstimator cameraEstimator) {
 //         Optional<CameraPoseEstimator.CameraEstimatorMeasurement> optMeasurement = cameraEstimator.update();

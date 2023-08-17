@@ -135,7 +135,7 @@ public final class NeoSteerControllerFactoryBuilder {
         }
 
         @Override
-        public Object getSteerMotor() {
+        public CANSparkMax getSteerMotor() {
             return this.motor;
         }
 
