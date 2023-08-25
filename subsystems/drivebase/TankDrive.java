@@ -283,7 +283,7 @@ public abstract class TankDrive extends DriveBase {
    * Resets the odometry to 0 and zeroes the encoders.
    */
   public void resetOdometry() {
-    io.resetHeading();
+    io.resetHeading(inputs);
     io.resetOdometry(new Pose2d(0.0, 0.0, Rotation2d.fromDegrees(0.0)));
     
   }
@@ -378,7 +378,7 @@ public abstract class TankDrive extends DriveBase {
 
    
   public void resetHeading() {
-    io.resetHeading();
+    io.resetHeading(inputs);
   }
 
    

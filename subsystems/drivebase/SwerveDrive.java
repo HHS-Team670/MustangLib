@@ -18,7 +18,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.RobotConstantsBase;
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+// import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDriveIO.SwerveDriveIOInputs;
 // import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 
@@ -36,7 +36,7 @@ public abstract class SwerveDrive extends DriveBase {
     protected SwerveDriveIO io;
     protected SwervePoseEstimatorBase mPoseEstimator;
     
-    private VisionSubsystemBase mVision;
+    // private VisionSubsystemBase mVision;
 
     
     private final SwerveDriveKinematics kKinematics;
@@ -88,7 +88,7 @@ public abstract class SwerveDrive extends DriveBase {
      * currently facing to the 'forwards' direction.
      */
     public void resetHeading() {
-        io.resetHeading();
+        io.resetHeading((LoggableInputs)inputs);
     }
     public GearRatio getGearRatio(){
         return io.getGearRatio();
@@ -137,14 +137,14 @@ public abstract class SwerveDrive extends DriveBase {
     @Override
     public void mustangPeriodic() {
         io.checkPitchOffsetSet();
-        io.checkCalibration();
+        io.checkCalibration((LoggableInputs)inputs);
         
 
-        if (mVision != null) {
-            if (mPoseEstimator.getVision() == null) {
-                mPoseEstimator.initVision(mVision);
-            }
-        }
+        // if (mVision != null) {
+        //     if (mPoseEstimator.getVision() == null) {
+        //         mPoseEstimator.initVision(mVision);
+        //     }
+        // }
         mPoseEstimator.update();
         // SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
         // SmartDashboard.putNumber("pitch", getPitch());
@@ -152,9 +152,9 @@ public abstract class SwerveDrive extends DriveBase {
         
     }
 
-    public void initVision(VisionSubsystemBase vision) {
-        this.mVision = vision;
-    }
+    // public void initVision(VisionSubsystemBase vision) {
+    //     this.mVision = vision;
+    // }
 
     public SwervePoseEstimatorBase getPoseEstimator() {
         return mPoseEstimator;

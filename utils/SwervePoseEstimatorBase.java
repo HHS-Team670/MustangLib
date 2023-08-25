@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
+// import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+// import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 
 
@@ -33,7 +33,7 @@ import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 public abstract class SwervePoseEstimatorBase {
 
     private final SwerveDrive driveBase;
-    private VisionSubsystemBase vision;
+    // private VisionSubsystemBase vision;
 
     /**
      * Standard deviations of model states. Increase these numbers to trust your
@@ -61,29 +61,29 @@ public abstract class SwervePoseEstimatorBase {
 
     public SwervePoseEstimatorBase(SwerveDrive swerve) {
         this.driveBase = swerve;
-        this.vision = null;
+        // this.vision = null;
         poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),
                 swerve.getGyroscopeRotation(), swerve.getModulePositions(), new Pose2d(),
                 stateStdDevs, visionMeasurementStdDevs);
         SmartDashboard.putData(field2d);
     }
 
-    public void initVision(VisionSubsystemBase vision) {
-        this.vision = vision;
+    // public void initVision(VisionSubsystemBase vision) {
+    //     this.vision = vision;
 
-        SmartDashboard.putNumber("vision std x: ", 0.9);
-        SmartDashboard.putNumber("vision std y: ", 0.9);
-        SmartDashboard.putNumber("vision std deg: ", 0.9);
+    //     SmartDashboard.putNumber("vision std x: ", 0.9);
+    //     SmartDashboard.putNumber("vision std y: ", 0.9);
+    //     SmartDashboard.putNumber("vision std deg: ", 0.9);
 
-       // The commented code is loading a single substation pose to the SmartDashboard. It flips the
-       // pose based on the alliance color and sets it as the pose for the "Single Substation" object
-       // in the Field2d. It then puts the Field2d object and the formatted pose on the SmartDashboard.
-       //TODO move to 2023 // // load single sub to smartdashboard 
-        // Pose2d singlesub = FieldConstants.allianceFlip(FieldConstants.LoadingZone.IntakePoses[0]);
-        // field2d.getObject("Single Substation").setPose(singlesub);
-        // SmartDashboard.putData(field2d);
-        // SmartDashboard.putString("Single Substation", getFormattedPose(singlesub));
-    }
+    //    // The commented code is loading a single substation pose to the SmartDashboard. It flips the
+    //    // pose based on the alliance color and sets it as the pose for the "Single Substation" object
+    //    // in the Field2d. It then puts the Field2d object and the formatted pose on the SmartDashboard.
+    //    //TODO move to 2023 // // load single sub to smartdashboard 
+    //     // Pose2d singlesub = FieldConstants.allianceFlip(FieldConstants.LoadingZone.IntakePoses[0]);
+    //     // field2d.getObject("Single Substation").setPose(singlesub);
+    //     // SmartDashboard.putData(field2d);
+    //     // SmartDashboard.putString("Single Substation", getFormattedPose(singlesub));
+    // }
 
     public void addTrajectory(Trajectory traj) {
         field2d.getObject("Trajectory").setTrajectory(getAbsoluteFieldOrientedTrajectory(traj));
@@ -97,18 +97,18 @@ public abstract class SwervePoseEstimatorBase {
      */
     public void update() {
         // if (vision != null && !DriverStation.isAutonomous()) {
-        if (vision != null){
+        // if (vision != null){
 
-            while (!vision.isMeasurementBufferEmpty()) {
-                VisionMeasurement m = vision.getVisionMeasurement();
-                EstimatedRobotPose estimation = m.estimation();
-                Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
+        //     while (!vision.isMeasurementBufferEmpty()) {
+        //         VisionMeasurement m = vision.getVisionMeasurement();
+        //         EstimatedRobotPose estimation = m.estimation();
+        //         Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
 
-                poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
+        //         poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
 
-                field2d.getObject("camera pose").setPose(estimatedPose);
-            }
-        }
+        //         field2d.getObject("camera pose").setPose(estimatedPose);
+        //     }
+        // }
 
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
@@ -195,9 +195,9 @@ public abstract class SwervePoseEstimatorBase {
      * 
      * @return Return the VisionSubystemBase currently used
      */
-    public VisionSubsystemBase getVision() {
-        return vision;
-    }
+    // public VisionSubsystemBase getVision() {
+    //     return vision;
+    // }
     //Returns scoring and intaking targets
     protected abstract List<Pose2d> getTargets();
 

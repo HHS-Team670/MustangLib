@@ -111,8 +111,9 @@ public abstract class SwerveDriveIO extends DriveBaseIO {
      * currently facing to the 'forwards' direction.
      */
 
-    public void resetHeading(SwerveDriveIOInputs inputs) {
-        mGyroOffset = Rotation2d.fromRadians(inputs.gyroYawRadUnadjusted);
+    public void resetHeading(LoggableInputs inputs) {
+        
+        mGyroOffset = Rotation2d.fromRotations(((SwerveDriveIOInputs)inputs).gyroYawRadUnadjusted);
     }
 
 
@@ -133,9 +134,9 @@ public abstract class SwerveDriveIO extends DriveBaseIO {
     // Math.PI;
     // }
 
-    public void checkCalibration() {
+    public void checkCalibration(LoggableInputs inputs) {
         if (mGyroOffset == null && !mNavx.isCalibrating()) {
-            resetHeading();
+            resetHeading(inputs);
             realignModules();
         }
     }

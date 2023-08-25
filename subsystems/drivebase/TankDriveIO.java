@@ -375,7 +375,7 @@ public class TankDriveIO extends DriveBaseIO {
 
     }
     
-    public void resetHeading() {
+    public void resetHeading(LoggableInputs inputs) { 
         navXMicro.reset();
     }
     @Override
