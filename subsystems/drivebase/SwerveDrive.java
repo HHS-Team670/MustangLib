@@ -49,6 +49,8 @@ public abstract class SwerveDrive extends DriveBase {
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
     private final double kPitchOffset;
+
+    private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
@@ -249,23 +251,23 @@ public abstract class SwerveDrive extends DriveBase {
         // these
         // values.
 
-        // if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
-        // && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
-        // frontLeftAngle = frontLeftPrevAngle;
-        // frontRightAngle = frontRightPrevAngle;
-        // backLeftAngle = backLeftPrevAngle;
-        // backRightAngle = backRightPrevAngle;
-        // }
+        if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
+        && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
+        frontLeftAngle = frontLeftPrevAngle;
+        frontRightAngle = frontRightPrevAngle;
+        backLeftAngle = backLeftPrevAngle;
+        backRightAngle = backRightPrevAngle;
+        }
 
         mModules[0].set(frontLeftSpeed, frontLeftAngle);
         mModules[1].set(frontRightSpeed, frontRightAngle);
         mModules[2].set(backLeftSpeed, backLeftAngle);
         mModules[3].set(backRightSpeed, backRightAngle);
 
-        // frontLeftPrevAngle = frontLeftAngle;
-        // frontRightPrevAngle = frontRightAngle;
-        // backLeftPrevAngle = backLeftAngle;
-        // backRightPrevAngle = backRightAngle;
+        frontLeftPrevAngle = frontLeftAngle;
+        frontRightPrevAngle = frontRightAngle;
+        backLeftPrevAngle = backLeftAngle;
+        backRightPrevAngle = backRightAngle;
     }
 
     public void realignModules() {
