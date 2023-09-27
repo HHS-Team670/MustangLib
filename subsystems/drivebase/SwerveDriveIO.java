@@ -3,6 +3,8 @@ package frc.team670.mustanglib.subsystems.drivebase;
 import org.littletonrobotics.junction.AutoLog;
 import org.littletonrobotics.junction.inputs.LoggableInputs;
 
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -18,13 +20,14 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
+import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 
 
-public abstract class SwerveDriveIO extends DriveBaseIO {
+public  class SwerveDriveIO extends DriveBaseIO {
     private final NavX mNavx;
     private final SwerveModule[] mModules;
     private Config kConfig;
@@ -101,6 +104,7 @@ public abstract class SwerveDriveIO extends DriveBaseIO {
         
         kPitchOffset = RobotConstantsBase.SwerveDriveBase.kNoPitchCode;
         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
+        
     }
 
     // protected abstract void initPoseEstimator();
@@ -133,6 +137,18 @@ public abstract class SwerveDriveIO extends DriveBaseIO {
     // * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() *
     // Math.PI;
     // }
+    @Override
+    public HealthState checkHealth(){
+        for (SwerveModule curr : getModules()) {
+            CANSparkMax motor = (CANSparkMax) curr.getDriveMotor();
+            if (motor.getLastError() != REVLibError.kOk) {
+                SmartDashboard.putString("Swerve Module " + motor.getDeviceId() + " ERROR:",
+                        motor.getLastError().toString());
+                return HealthState.RED;
+            }
+        }
+        return HealthState.GREEN;
+    }
 
     public void checkCalibration(LoggableInputs inputs) {
         if (mGyroOffset == null && !mNavx.isCalibrating()) {

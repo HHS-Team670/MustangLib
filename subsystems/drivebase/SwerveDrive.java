@@ -64,12 +64,13 @@ public abstract class SwerveDrive extends DriveBase {
                 // Back right
                 new Translation2d(-io.getDriveBaseTrackWidth()/ 2.0,
                         -io.getDriveBaseWheelBase() / 2.0));
-
+        io.updateInputs(inputs);
+        initPoseEstimator()
         // mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
         // getModulePositions());
         // mPoseEstimator = new SwervePoseEstimatorBase(this);
-        initPoseEstimator();
+        ;
     
     }
     protected abstract void initPoseEstimator();

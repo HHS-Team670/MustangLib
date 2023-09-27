@@ -68,7 +68,7 @@ public class RobotBase extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-    Logger.getInstance().recordMetadata("ProjectName", "2023-Robot"); // Set a metadata value
+    Logger.getInstance().recordMetadata("ProjectName", "Swerve-Robot"); // Set a metadata value
 
     if (isReal()) {
         Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser")); // Log to a USB stick
