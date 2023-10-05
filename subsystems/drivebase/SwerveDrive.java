@@ -49,6 +49,8 @@ public abstract class SwerveDrive extends DriveBase {
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
     private final double kPitchOffset;
+    private final double kRollOffset;
+
 
     private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
    
@@ -131,6 +133,7 @@ public abstract class SwerveDrive extends DriveBase {
         // mPoseEstimator = new SwervePoseEstimatorBase(this);
         initPoseEstimator();
         kPitchOffset = mNavx.getPitch();
+        kRollOffset = mNavx.getRoll();
         SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
     }
     protected abstract void initPoseEstimator();
@@ -305,6 +308,10 @@ public abstract class SwerveDrive extends DriveBase {
 
     public double getPitch() {
         return mNavx.getPitch() - kPitchOffset;
+    }
+
+    public double getRoll() {
+        return mNavx.getRoll() - kRollOffset;
     }
 
     public void resetOdometry(Pose2d pose) {
