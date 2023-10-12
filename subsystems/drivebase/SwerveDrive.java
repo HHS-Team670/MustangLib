@@ -1,11 +1,14 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import java.util.Map;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.pathplanner.lib.auto.SwerveAutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-
+import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -225,8 +228,13 @@ public abstract class SwerveDrive extends DriveBase {
             }
         }
         mPoseEstimator.update();
-        SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("pitch", getPitch());
+        Logger.getInstance().recordOutput(getName()+"/navX Heading Deg", getPose().getRotation().getDegrees());
+        Logger.getInstance().recordOutput(getName()+"/pitch",getPitch());
+        Logger.getInstance().recordOutput(getName()+"/roll",getRoll());
+
+
+        // SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
+        // SmartDashboard.putNumber("pitch", getPitch());
     }
 
     public void initVision(VisionSubsystemBase vision) {

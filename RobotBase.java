@@ -7,13 +7,27 @@
 
 package frc.team670.mustanglib;
 
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Objects;
+
+import org.littletonrobotics.junction.LogFileUtil;
+import org.littletonrobotics.junction.LoggedRobot;
+import org.littletonrobotics.junction.Logger;
+import org.littletonrobotics.junction.networktables.NT4Publisher;
+import org.littletonrobotics.junction.wpilog.WPILOGReader;
+import org.littletonrobotics.junction.wpilog.WPILOGWriter;
+
+import edu.wpi.first.wpilibj.PowerDistribution;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
+// import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
-import frc.team670.mustanglib.utils.Logger;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -22,7 +36,7 @@ import frc.team670.mustanglib.utils.Logger;
  * creating this project, you must also update the build.gradle file in the
  * project.
  */
-public class RobotBase extends TimedRobot {
+public class RobotBase extends LoggedRobot {
 
   private MustangCommand m_autonomousCommand;
 
@@ -54,6 +68,21 @@ public class RobotBase extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    Logger.getInstance().recordMetadata("ProjectName", "2023-Robot"); // Set a metadata value
+
+    if (isReal()) {
+        Logger.getInstance().addDataReceiver(new WPILOGWriter("/home/lvuser")); // Log to a USB stick
+        Logger.getInstance().addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
+        // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
+    } else {
+        setUseTiming(false); // Run as fast as possible
+        String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
+        Logger.getInstance().setReplaySource(new WPILOGReader(logPath)); // Read replay log
+        Logger.getInstance().addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim"))); // Save outputs to a new log
+    }
+    
+    // Logger.getInstance().disableDeterministicTimestamps() // See "Deterministic Timestamps" in the "Understanding Data Flow" page
+    Logger.getInstance().start(); // Start logging! No more data receivers, replay sources, or metadata values may be added
     // Instantiate our RobotContainer. This will perform all our button bindings
     RobotContainerBase.checkSubsystemsHealth();
     timer = new Timer();
@@ -117,20 +146,18 @@ public class RobotBase extends TimedRobot {
   public void disabledInit() {
     robotContainer.disabled();
   }
-  /**
-   * This function runs called periodically while the robot is disabled.
-   */
+
   @Override
   public void disabledPeriodic() {
     robotContainer.disabledPeriodic();
   }
 
   /**
-   * This autonomous runs the autonomous command selected by Sebby
+   * This autonomous runs the autonomous command selected by your
    */
   @Override
   public void autonomousInit() {
-    Logger.consoleLog("Autonomous Init");
+    // Logger.consoleLog("Autonomous Init");
     robotContainer.autonomousInit();
     m_autonomousCommand = robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
@@ -158,7 +185,7 @@ public class RobotBase extends TimedRobot {
     if (m_autonomousCommand != null) {
       MustangScheduler.getInstance().cancel((MustangCommand) (m_autonomousCommand));
     }
-    Logger.consoleLog("Teleop Init");
+    // Logger.consoleLog("Teleop Init");
     robotContainer.teleopInit();
   }
 
@@ -176,7 +203,7 @@ public class RobotBase extends TimedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     MustangScheduler.getInstance().cancelAll();
-    Logger.consoleLog("Test Init");
+    // Logger.consoleLog("Test Init");
     LiveWindow.setEnabled(false);
     robotContainer.testInit();
   }

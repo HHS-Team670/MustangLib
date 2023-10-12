@@ -3,7 +3,8 @@ package frc.team670.mustanglib.utils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-
+import org.littletonrobotics.junction.Logger;
+import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import org.photonvision.EstimatedRobotPose;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
@@ -20,7 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+// import frc.team670.mustanglib.subsystems.VisionfSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 
@@ -112,8 +113,8 @@ public abstract class SwervePoseEstimatorBase {
 
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
-        SmartDashboard.putString("Estimated Pose",
-                getFormattedPose(getAbsoluteFieldOrientedPoseFromAllianceOriented()));
+        Logger.getInstance().recordOutput("Estimated Pose",
+                getAbsoluteFieldOrientedPoseFromAllianceOriented());
     }
 
     private String getFormattedPose() {
