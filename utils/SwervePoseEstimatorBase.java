@@ -107,6 +107,7 @@ public abstract class SwervePoseEstimatorBase {
                 poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
 
                 field2d.getObject("camera pose").setPose(estimatedPose);
+                SmartDashboard.putString("Estimated Vision Pose", getFormattedPose(estimatedPose));
             }
         }
 
