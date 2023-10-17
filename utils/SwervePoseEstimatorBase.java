@@ -113,7 +113,7 @@ public abstract class SwervePoseEstimatorBase {
 
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
-        Logger.getInstance().recordOutput("Estimated Pose",
+        Logger.getInstance().recordOutput("DriveBase/Estimated Pose",
                 getAbsoluteFieldOrientedPoseFromAllianceOriented());
     }
 
