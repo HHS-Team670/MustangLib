@@ -29,29 +29,14 @@ public class RobotConstantsBase {
      
     public  static class SwerveDriveBase {
         
-        //Front Left
-        public static final int kFrontLeftModuleSteerMotorID = 20;
-        public static final int kFrontLeftModuleDriveMotorID = 21;
-        public static final int kFrontLeftModuleSteerEncoderID = 30;
-        //Front Right
-        public static final int kFrontRightModuleSteerMotorID = 22;
-        public static final int kFrontRightModuleDriveMotorID = 23;
-        public static final int kFrontRightModuleSteerEncoderID = 32;
-       //Back Right
-        public static final int kBackRightModuleSteerMotorID = 24;
-        public static final int kBackRightModuleDriveMotorID = 25;
-        public static final int kBackRightModuleSteerEncoderID = 34;
-        //Back Left
-        public static final int kBackLeftModuleSteerMotorID = 26;
-        public static final int kBackLeftModuleDriveMotorID = 27;
-        public static final int kBackLeftModuleSteerEncoderID = 36;
-        
-        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 8;//What if we turn this up?  //Not robot specific
-        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI * 16;// Not robot specific
+
+
+        public static final double kMaxAngularSpeedRadiansPerSecond = Math.PI * 4;//What if we turn this up?  //Not robot specific
+        public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI * 8;// Not robot specific
 
         public static final double kMaxVoltage = 12.0;// Good defaults
-        public static final double kMaxDriveCurrent = 70.0;//Defaults
-        public static final double kMaxSteerCurrent = 30.0;//Defaults
+        public static final double kMaxDriveCurrent = 60.0;//Defaults
+        public static final double kMaxSteerCurrent = 20.0;//Defaults
 
         // The formula for calculating the theoretical maximum velocity is:
         // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
@@ -60,7 +45,7 @@ public class RobotConstantsBase {
         // 5880.0 / 60.0 / SdsModuleConfigurations.MK4_L2.getDriveReduction() *
         // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
         
-        // Good defaults
+        // Treated as not robot specific for now, consulting with former leads to check
         public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
         public static final PIDConstants kAutonThetaPID = new PIDConstants(0.5, 0, 0);
 
