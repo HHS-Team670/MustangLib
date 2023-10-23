@@ -147,6 +147,8 @@ public class NavX {
         offSet = getRawYawDegrees();
     }
 
+
+
     /**
      * Gets the field centric yaw (0 degrees is forward for the robot from its
      * starting position),

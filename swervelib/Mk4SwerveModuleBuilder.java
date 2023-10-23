@@ -24,7 +24,22 @@ public class Mk4SwerveModuleBuilder {
         }
     }
 
-   
+    private static DriveControllerFactory<?, Integer> getFalcon500DriveFactory(Mk4ModuleConfiguration configuration) {
+        return new Falcon500DriveControllerFactoryBuilder()
+                .withVoltageCompensation(configuration.getNominalVoltage())
+                .withCurrentLimit(configuration.getDriveCurrentLimit())
+                .build();
+    }
+
+    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getFalcon500SteerFactory(Mk4ModuleConfiguration configuration) {
+        return new Falcon500SteerControllerFactoryBuilder()
+                .withVoltageCompensation(configuration.getNominalVoltage())
+                .withPidConstants(0.2, 0.0, 0.1)
+                .withCurrentLimit(configuration.getSteerCurrentLimit())
+                .build(new CanCoderFactoryBuilder()
+                        .withReadingUpdatePeriod(100)
+                        .build());
+    }
 
     private static DriveControllerFactory<?, Integer> getNeoDriveFactory(Mk4ModuleConfiguration configuration) {
         return new NeoDriveControllerFactoryBuilder()
@@ -55,7 +70,7 @@ public class Mk4SwerveModuleBuilder {
     private int steerMotorPort = -1;
     private String steerCanbus = "";
 
-
+    private MotorType steerMotorType;
     private int steerEncoderPort = -1;
     private double steerOffset = 0;
     private String steerEncoderCanbus = "";
@@ -78,31 +93,45 @@ public class Mk4SwerveModuleBuilder {
         return this;
     }
 
-    public Mk4SwerveModuleBuilder withDriveMotor( int motorPort, String motorCanbus) {
-        
+    public Mk4SwerveModuleBuilder withDriveMotor(MotorType motorType, int motorPort, String motorCanbus) {
+        switch (motorType) {
+            case FALCON:
+                this.driveFactory = getFalcon500DriveFactory(this.configuration);
+                break;
+            case NEO:
                 this.driveFactory = getNeoDriveFactory(this.configuration);
-
+                break;
+            default:
+                break;
+        }
         this.driveMotorPort = motorPort;
         this.driveCanbus = motorCanbus;
         return this;
     }
 
-    public Mk4SwerveModuleBuilder withDriveMotor( int motorPort) {
-        return this.withDriveMotor( motorPort, "");
+    public Mk4SwerveModuleBuilder withDriveMotor(MotorType motorType, int motorPort) {
+        return this.withDriveMotor(motorType, motorPort, "");
     }
 
-    public Mk4SwerveModuleBuilder withSteerMotor( int motorPort, String motorCanbus) {
-        
-        this.steerFactory = getNeoSteerFactory(this.configuration);
-        
-   
+    public Mk4SwerveModuleBuilder withSteerMotor(MotorType motorType, int motorPort, String motorCanbus) {
+        switch (motorType) {
+            case FALCON:
+                this.steerFactory = getFalcon500SteerFactory(this.configuration);
+                break;
+            case NEO:
+                this.steerFactory = getNeoSteerFactory(this.configuration);
+                break;
+            default:
+                break;
+        }
+        this.steerMotorType = motorType;
         this.steerMotorPort = motorPort;
         this.steerCanbus = motorCanbus;
         return this;
     }
 
-    public Mk4SwerveModuleBuilder withSteerMotor( int motorPort) {
-        return this.withSteerMotor( motorPort, "");
+    public Mk4SwerveModuleBuilder withSteerMotor(MotorType motorType, int motorPort) {
+        return this.withSteerMotor(motorType, motorPort, "");
     }
 
     public Mk4SwerveModuleBuilder withSteerEncoderPort(int encoderPort, String canbus) {
@@ -153,17 +182,27 @@ public class Mk4SwerveModuleBuilder {
 
         SteerConfiguration<CanCoderAbsoluteConfiguration> steerConfig;
 
-       
-       
-        steerConfig = new SteerConfiguration<>(
-                steerMotorPort, 
-                new CanCoderAbsoluteConfiguration(
-                        steerEncoderPort, 
-                        steerOffset,
-                        steerEncoderCanbus
-                )
+        if (steerMotorType == MotorType.FALCON) {
+            steerConfig = new SteerConfiguration<>(
+                    steerMotorPort, 
+                    new CanCoderAbsoluteConfiguration(
+                            steerEncoderPort, 
+                            steerOffset,
+                            steerEncoderCanbus
+                    )
             );
-        
+        } else if (steerMotorType == MotorType.NEO) {
+            steerConfig = new SteerConfiguration<>(
+                    steerMotorPort, 
+                    new CanCoderAbsoluteConfiguration(
+                            steerEncoderPort, 
+                            steerOffset,
+                            steerEncoderCanbus
+                    )
+            );
+        } else {
+            throw new RuntimeException("Steer Motor Type should not be null!");
+        }
 
         if (container == null) {
             return factory.create(
