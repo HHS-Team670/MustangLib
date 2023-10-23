@@ -20,7 +20,6 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.RobotConstantsBase;
@@ -137,7 +136,8 @@ public abstract class SwerveDrive extends DriveBase {
         initPoseEstimator();
         kPitchOffset = mNavx.getPitch();
         kRollOffset = mNavx.getRoll();
-        SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
+        Logger.getInstance().recordOutput(getName()+"/MAX VELOCITY M/S", config.kMaxVelocity);
+        
     }
     protected abstract void initPoseEstimator();
 
@@ -201,7 +201,8 @@ public abstract class SwerveDrive extends DriveBase {
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
-                SmartDashboard.putNumber("gyro offset", mGyroOffset.getDegrees());
+                Logger.getInstance().recordOutput(getName()+"/Gyro offset", mGyroOffset.getDegrees());
+             
                 return angle;
             } else {
                 return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
@@ -233,8 +234,7 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.getInstance().recordOutput(getName()+"/roll",getRoll());
 
 
-        // SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
-        // SmartDashboard.putNumber("pitch", getPitch());
+        
     }
 
     public void initVision(VisionSubsystemBase vision) {

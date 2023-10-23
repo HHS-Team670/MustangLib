@@ -7,6 +7,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team670.mustanglib.RobotConstantsBase;
@@ -35,7 +36,7 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
 
         MAX_VELOCITY = swerveDriveBase.getMaxVelocityMetersPerSecond();
         MAX_ANGULAR_VELOCITY = swerveDriveBase.getMaxAngularVelocityMetersPerSecond();
-
+        SmartDashboard.putNumber("Swerve Speed", 0.66);
         addRequirements(driveBase);
     }
 
@@ -58,8 +59,8 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
             thetaVel = rotPIDController.calculateRotationSpeed(driveBase.getGyroscopeRotation(),
                     desiredHeading);
         }
-
-        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
+        double speedMult= SmartDashboard.getNumber("Swerve Speed", 0.66);
+        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xVel*speedMult, yVel*speedMult, thetaVel*speedMult,
                 driveBase.getGyroscopeRotation()));
 
     }

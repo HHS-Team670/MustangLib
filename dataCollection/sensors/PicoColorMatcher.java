@@ -1,12 +1,13 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.Logger;
+
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
+
 import edu.wpi.first.wpilibj.util.Color;
 import frc.team670.mustanglib.dataCollection.sensors.PicoColorSensor.RawColor;
-
-import com.revrobotics.ColorMatchResult;
-import com.revrobotics.ColorMatch;
 
 public class PicoColorMatcher {
 
@@ -91,11 +92,12 @@ public class PicoColorMatcher {
     int colorNumber;
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor(convertRawToColor(detectedColor));
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
-    SmartDashboard.putNumber("Confidence", match.confidence);
-    SmartDashboard.putBoolean("CS: sensor is connected", m_colorSensor.isSensor0Connected());
+    Logger.getInstance().recordOutput("ColorMatcher/Red", detectedColor.red);
+    Logger.getInstance().recordOutput("ColorMatcher/Green", detectedColor.green);
+    Logger.getInstance().recordOutput("ColorMatcher/Blue", detectedColor.blue);
+    Logger.getInstance().recordOutput("ColorMatcher/Confidence", match.confidence);
+    Logger.getInstance().recordOutput("ColorMatcher/SensorConnected", m_colorSensor.isSensor0Connected());
+    
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {
         //   coaalorString = "Blue";

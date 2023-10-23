@@ -1,7 +1,8 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Used to get inputs from an IR Sensor
@@ -31,10 +32,10 @@ public class IRSensor {
     }
 
     /**
-     * Write the state of this IR sensor to SmartDashboard
+     * Write the state of this IR sensor to Advantage Scope
      */
     public void sendIRDataToDashboard() {
-        SmartDashboard.putBoolean("IR Sensor on" + dio + ":", isTriggered());
+        Logger.getInstance().recordOutput("IRSensor/" + dio + "/isTriggered", isTriggered());
     }
 
 }

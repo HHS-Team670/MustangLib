@@ -1,11 +1,13 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.ColorMatch;
 /**
  * A sensor object that gets and matches colors from a Rev Color Sensor V3.
@@ -92,10 +94,10 @@ public class ColorMatcher {
     int colorNumber;
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor(new Color(detectedColor.red, detectedColor.green, detectedColor.blue));
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
-    SmartDashboard.putNumber("Confidence", match.confidence);
+    Logger.getInstance().recordOutput("ColorMatcher/Red", detectedColor.red);
+    Logger.getInstance().recordOutput("ColorMatcher/Green", detectedColor.green);
+    Logger.getInstance().recordOutput("ColorMatcher/Blue", detectedColor.blue);
+    Logger.getInstance().recordOutput("ColorMatcher/Confidence", match.confidence);
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {
         //   colorString = "Blue";
