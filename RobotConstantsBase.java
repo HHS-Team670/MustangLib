@@ -94,6 +94,7 @@ public class RobotConstantsBase {
      */
     public static String getMACAddress() {
         try {
+            
             Enumeration<NetworkInterface> nwInterface = NetworkInterface.getNetworkInterfaces();
             StringBuilder ret = new StringBuilder();
             while (nwInterface.hasMoreElements()) {
