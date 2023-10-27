@@ -30,6 +30,13 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     private LEDColor color = new LEDColor(0, 0, 0);
     private int blinkCounter;
     private LEDColor blinkColor;
+    private int counter = 0;
+    private int t = 0;
+
+
+    public enum status {
+        RAINBOW, BLINKING, SOLID;
+    }
 
     /**
      * Creates a new LEDSubsystem
@@ -63,6 +70,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      */
 
     public void rainbow() {
+        setStatus(status.RAINBOW);
         // For every pixel
         for (var i = 0; i < m_ledBuffer.getLength(); i++) {
           // Calculate the hue - hue is easier for rainbows because the color
@@ -77,7 +85,17 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         m_rainbowFirstPixelHue %= 180;
       }
 
+    public void setStatus(status status){
+        currentStatus = status;
+    }
 
+    public void blinking(){
+        currentStatus = status.BLINKING;
+        counter = 1 - counter;
+        for (var i = 0; i < m_ledBuffer.getLenght(); i++){
+            m_ledBuffer.setHSV(i, h:0, s:0, counter);
+        }
+    }
     /**
      * Changes the LED strip so that all the LEDs are one solif color
      * Colors is in HSV FORMAT
