@@ -29,7 +29,10 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     private int m_mustangRainbowFirstSaturation;
     private LEDColor color = new LEDColor(0, 0, 0);
     private int blinkCounter;
-    private LEDColor blinkColor;
+    private LEDColor blinkColor; 
+    private int CounterCounter;
+
+    
 
     /**
      * Creates a new LEDSubsystem
@@ -51,6 +54,13 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         m_led.setData(m_ledBuffer);
         m_led.start();
     }
+
+    public enum status {
+        RAINBOW, BLINKING, SOLID, PATT
+    }
+
+    private LEDSubsystem.Status status;
+
     /**
      * Instructions:
      * make a state enum for rainbow, blinking and solid/not moving
@@ -96,9 +106,21 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
     }
 
+     public void blinking(LEDColor color, LEDColor color) {
+
+        while (CounterCounter <= 30) {
+            solidhsv(RED);
+            wait(1);
+            solidhsv(LIGHT_BLUE);
+            CounterCounter++;
+        }
+
+     }
+
     public void mustangPeriodic() {
        // Fill the buffer with a rainbow
-        rainbow();
+        //rainbow();
+        blinking();
         // Set the LEDs
         m_led.setData(m_ledBuffer);
     }
@@ -144,7 +166,7 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
 
         public static final LEDColor PINK = new LEDColor(169);
 
-        public static final LEDColor WHITE = new LEDColor(0, 0);
+        public static final LEDColor SEXY_WHITE = new LEDColor(0, 0);
 
         public static final LEDColor SEXY_PURPLE = new LEDColor(137);
 
