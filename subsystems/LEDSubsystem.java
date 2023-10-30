@@ -31,6 +31,15 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     private int blinkCounter;
     private LEDColor blinkColor;
 
+    private int counterCounter;
+
+    public enum Status {
+            RAINBOW, BLINKING, SOLID, PATT, PATT2;
+    }
+    
+
+    private LEDSubsystem.Status status;
+
     /**
      * Creates a new LEDSubsystem
      * 
@@ -60,7 +69,21 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * make a blinking method (could also just switch between solid hsv and off)
      * If you finish and it builds talk to me and we can test it out
      * Once your code works you can add whatever new methods and colors
+     * 
      */
+
+    public void blinking() {
+        setBlinking();
+    }
+
+    public void Patt(){
+        setPatt();
+    }
+
+    public void Patt2(){
+        setPatt2();
+    }
+
 
     public void rainbow() {
         // For every pixel
@@ -85,6 +108,13 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
      * @param Color The color
      **/
 
+     public void off() {
+        if (this.color == null || !color.equals(this.color)) {
+            for (var i = startIndex; i < m_ledBuffer.getLength(); i++) {
+                m_ledBuffer.setHSV(i,0, 0, 0);
+            }
+        }
+    }
     public void solidhsv(LEDColor color) {
         if (this.color == null || !color.equals(this.color)) {
             this.color = color;
@@ -92,13 +122,41 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
                 m_ledBuffer.setHSV(i, (int) color.h, (int) color.s, (int) color.v);
 
             }
-        }
+        } 
 
     }
-
+    
     public void mustangPeriodic() {
-       // Fill the buffer with a rainbow
-        rainbow();
+        if (status == Status.RAINBOW) {
+            if (counterCounter >= 60) {
+                rainbow();
+                counterCounter = 0;
+            }
+        }
+        if (status == Status.BLINKING) {
+            if (counterCounter == 30){
+                solidhsv(LEDColor.BLUE);
+            }
+            if (counterCounter == 60) {
+                solidhsv(new LEDColor(0, 0, 0));
+                counterCounter = 0;
+            }
+            
+        }
+        //Homestead vibes
+        if (status == Status.PATT){
+            if (counterCounter == 30){
+                solidhsv(LEDColor.GREEN);
+            }
+            if (counterCounter == 60){
+                solidhsv(LEDColor.WHITE);
+                counterCounter = 0;
+            }
+        if (status == Status.PATT2){
+            solidhsv(LEDColor.RED);
+        }
+        }
+        counterCounter++;
         // Set the LEDs
         m_led.setData(m_ledBuffer);
     }
@@ -120,6 +178,32 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
     public void setBuffer(AddressableLEDBuffer buffer) {
         this.m_ledBuffer = buffer;
    }
+
+    private void setStatus(LEDSubsystem.Status status) {
+        this.status = status;
+    }
+
+        
+
+    public void setRainbow() {
+        setStatus(Status.RAINBOW);
+    }
+
+    public void setBlinking() {
+        setStatus(Status.BLINKING);
+    }
+
+    public void setPatt(){
+        setStatus(Status.PATT);
+    }
+
+    public void setPatt2(){
+        setStatus(Status.PATT2);
+    }
+
+    public void setSolidHSV() {
+        setStatus(Status.SOLID);
+    }
 
     /**
      * Represents colors that our LED subsystem supports
@@ -175,6 +259,8 @@ public abstract class LEDSubsystem extends MustangSubsystemBase {
         public LEDColor brighter() {
             return new LEDColor(h, s, v * 3);
         }
+
+        
     }
 
 }
