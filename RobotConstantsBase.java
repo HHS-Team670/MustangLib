@@ -19,6 +19,7 @@ import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.ModuleConfiguration;
 import frc.team670.mustanglib.swervelib.SdsModuleConfigurations;
+import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
 /**
  * A place for storing constants required in mustanglib. 
  * This includes most drivebase constants. For every robot, add mac address like below as well as relevant constants
@@ -68,6 +69,9 @@ public class RobotConstantsBase {
         public static final PIDController xController = new PIDController(3, 0, 0);
         public static final PIDController yController = new PIDController(3, 0, 0);
         public static final PIDController thetaController = new PIDController(0.2, 0, 0);
+
+        // Absolute Encoder Type
+        public static final AbsoluteEncoderType absoluteEncoderType = AbsoluteEncoderType.CANCODER;
       
     }
     public static  class TankDriveBase{

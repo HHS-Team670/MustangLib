@@ -1,6 +1,7 @@
 package frc.team670.mustanglib.swervelib;
 
 import frc.team670.mustanglib.swervelib.ctre.*;
+import frc.team670.mustanglib.swervelib.redux.*;
 import frc.team670.mustanglib.swervelib.rev.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
@@ -54,8 +55,23 @@ public final class Mk4iSwerveModuleHelper {
             int driveMotorPort,
             int steerMotorPort,
             int steerEncoderPort,
-            double steerOffset
+            double steerOffset,
+            AbsoluteEncoderType encoderType
     ) {
+        if(encoderType == AbsoluteEncoderType.HELIUMCANCODER){
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getNeoDriveFactory(configuration),
+                        getNeoSteerFactory(configuration)
+                ).create(
+                        container,
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        )
+                );
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getNeoDriveFactory(configuration),
@@ -68,6 +84,7 @@ public final class Mk4iSwerveModuleHelper {
                         new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
                 )
         );
+
     }
 
     /**
@@ -90,7 +107,7 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
-        return createNeo(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createNeo(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset, AbsoluteEncoderType.CANCODER);
     }
 
     /**
