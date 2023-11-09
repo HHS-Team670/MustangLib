@@ -28,6 +28,7 @@ import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
+import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
 import frc.team670.mustanglib.utils.SwervePoseEstimatorBase;
 
 /**
@@ -59,12 +60,16 @@ public abstract class SwerveDrive extends DriveBase {
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
             int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset,
+            AbsoluteEncoderType kFrontLeftModuleEncoderType,
             int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
             int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset,
+            AbsoluteEncoderType kFrontRightModuleEncoderType,
             int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
             int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset,
+            AbsoluteEncoderType kBackLeftModuleEncoderType,
             int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
-            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset) {
+            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset,
+            AbsoluteEncoderType kBackRightModuleEncoderType) {
     }
 
     public SwerveDrive(Config config) {
@@ -86,7 +91,7 @@ public abstract class SwerveDrive extends DriveBase {
                         .withPosition(0, 0),
                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
                 config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
-                config.kFrontLeftModuleSteerOffset);
+                config.kFrontLeftModuleSteerOffset, config.kFrontLeftModuleEncoderType);
 
         // front right
         mModules[1] = Mk4iSwerveModuleHelper.createNeo(
@@ -94,7 +99,7 @@ public abstract class SwerveDrive extends DriveBase {
                         .withPosition(2, 0),
                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
-                config.kFrontRightModuleSteerOffset);
+                config.kFrontRightModuleSteerOffset, config.kFrontRightModuleEncoderType);
 
         // back left
         mModules[2] = Mk4iSwerveModuleHelper.createNeo(
@@ -102,7 +107,7 @@ public abstract class SwerveDrive extends DriveBase {
                         .withPosition(4, 0),
                 kModuleConfig, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
-                config.kBackLeftModuleSteerOffset);
+                config.kBackLeftModuleSteerOffset, config.kBackLeftModuleEncoderType);
 
         // back right
         mModules[3] = Mk4iSwerveModuleHelper.createNeo(
@@ -110,7 +115,7 @@ public abstract class SwerveDrive extends DriveBase {
                         .withPosition(6, 0),
                 kModuleConfig, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
-                config.kBackRightModuleSteerOffset);
+                config.kBackRightModuleSteerOffset, config.kBackRightModuleEncoderType);
 
         kKinematics = new SwerveDriveKinematics(
                 // Front left

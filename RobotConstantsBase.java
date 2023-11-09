@@ -71,7 +71,10 @@ public class RobotConstantsBase {
         public static final PIDController thetaController = new PIDController(0.2, 0, 0);
 
         // Absolute Encoder Type
-        public static final AbsoluteEncoderType absoluteEncoderType = AbsoluteEncoderType.CANCODER;
+        public static final AbsoluteEncoderType kFrontRightModuleEncoderType = AbsoluteEncoderType.CANCODER;
+        public static final AbsoluteEncoderType kFrontLeftModuleEncoderType = AbsoluteEncoderType.CANCODER;
+        public static final AbsoluteEncoderType kBackRightModuleEncoderType = AbsoluteEncoderType.CANCODER;
+        public static final AbsoluteEncoderType kBackLeftModuleEncoderType = AbsoluteEncoderType.CANCODER;
       
     }
     public static  class TankDriveBase{
