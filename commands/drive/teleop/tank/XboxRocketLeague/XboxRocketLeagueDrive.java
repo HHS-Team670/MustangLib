@@ -35,6 +35,8 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
   private TankDrive driveBase;
   private MustangController controller;
   
+  private static final String DRIVEBASE_IS_DRIVE_REVERSED_KEY = "DriveBase/DriveReversed";
+
   private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
   /**
    * 
@@ -115,8 +117,7 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
    */
   public static void setDriveReversed(boolean reversed) {
     XboxRocketLeagueDrive.isReversed = reversed;
-    Logger.getInstance().recordOutput("Misc/drive-reversed", reversed);
-    
+    Logger.getInstance().recordOutput(DRIVEBASE_IS_DRIVE_REVERSED_KEY, reversed);
   }
  
   @Override

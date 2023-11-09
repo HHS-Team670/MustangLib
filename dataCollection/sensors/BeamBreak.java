@@ -13,6 +13,7 @@ public class BeamBreak {
 
     private DigitalInput dio;
     private int port;
+    private final String BEAMBREAK_IS_TRIGGERED_KEY;
 
     /**
      * Constructs a BeamBreak sensor
@@ -22,6 +23,7 @@ public class BeamBreak {
     public BeamBreak(int dioPort) {
         dio = new DigitalInput(dioPort);
         this.port = dioPort;
+        BEAMBREAK_IS_TRIGGERED_KEY = "BeamBreak/"+port+"/Triggered";
     }
 
     /**
@@ -36,8 +38,6 @@ public class BeamBreak {
      * Writes the state of this beam break sensor to AdvantageScope
      */
     public void sendBeamBreakDataToDashboard() {
-        Logger.getInstance().recordOutput("BeamBreak/"+port+"/isTriggered", isTriggered());
-      
+        Logger.getInstance().recordOutput(BEAMBREAK_IS_TRIGGERED_KEY, isTriggered());
     }
-
 }

@@ -32,7 +32,7 @@ public class ColorMatcher {
    * with given confidence range.
    */
   private final ColorMatch m_colorMatcher = new ColorMatch();
-
+  private final String COLORMATCHER_IS_RED, COLORMATCHER_IS_GREEN, COLORMATCHER_IS_BLUE, COLORMATCHER_IS_CONFIDENCE;
   public enum colors {
 
     BLUE(0, new Color(0.136, 0.412, 0.450)), // 2022 blue game piece
@@ -65,6 +65,10 @@ public class ColorMatcher {
 
   public ColorMatcher() {
     init();
+    COLORMATCHER_IS_RED = "ColorMatcher/Red";
+    COLORMATCHER_IS_GREEN = "ColorMatcher/Green";
+    COLORMATCHER_IS_BLUE = "ColorMatcher/Blue";
+    COLORMATCHER_IS_CONFIDENCE = "ColorMatcher/Confidence";
   }
 
   public void init() {
@@ -94,10 +98,10 @@ public class ColorMatcher {
     int colorNumber;
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor(new Color(detectedColor.red, detectedColor.green, detectedColor.blue));
-    Logger.getInstance().recordOutput("ColorMatcher/Red", detectedColor.red);
-    Logger.getInstance().recordOutput("ColorMatcher/Green", detectedColor.green);
-    Logger.getInstance().recordOutput("ColorMatcher/Blue", detectedColor.blue);
-    Logger.getInstance().recordOutput("ColorMatcher/Confidence", match.confidence);
+    Logger.getInstance().recordOutput(COLORMATCHER_IS_RED, detectedColor.red);
+    Logger.getInstance().recordOutput(COLORMATCHER_IS_GREEN, detectedColor.green);
+    Logger.getInstance().recordOutput(COLORMATCHER_IS_BLUE, detectedColor.blue);
+    Logger.getInstance().recordOutput(COLORMATCHER_IS_CONFIDENCE, match.confidence);
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {
         //   colorString = "Blue";

@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.DigitalInput;
 public class IRSensor {
 
     private static DigitalInput dio;
+    private final String IRSENSOR_IS_TRIGGERED;
 
     /**
      * Used to declare an IR Sensor on a specific port
@@ -20,6 +21,7 @@ public class IRSensor {
      */
     public IRSensor(int dioPort) {
         dio = new DigitalInput(dioPort);
+        IRSENSOR_IS_TRIGGERED = "IRSensor/" + dio + "/Triggered";
     }
 
     /**
@@ -35,7 +37,7 @@ public class IRSensor {
      * Write the state of this IR sensor to Advantage Scope
      */
     public void sendIRDataToDashboard() {
-        Logger.getInstance().recordOutput("IRSensor/" + dio + "/isTriggered", isTriggered());
+        Logger.getInstance().recordOutput(IRSENSOR_IS_TRIGGERED, isTriggered());
     }
 
 }
