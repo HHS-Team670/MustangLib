@@ -24,7 +24,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
 
     protected HealthState lastHealthState;
     private boolean failedLastTime = false;
-
+    private final String BASE_HEALTH;
     private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
     private static NetworkTable table = instance.getTable("/SmartDashboard");
 
@@ -37,6 +37,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public MustangSubsystemBase() {
         // RobotContainer.addSubsystem(this);
         this.lastHealthState = HealthState.UNKNOWN;
+        BASE_HEALTH = this.getName()+"/Health";
     }
 
     /**
@@ -121,7 +122,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     }
 
     public void pushHealthToDashboard() {
-        Logger.getInstance().recordOutput(this.getName()+"/Health", getHealth(false).toString());
+        Logger.getInstance().recordOutput(BASE_HEALTH, getHealth(false).toString());
         // NetworkTableEntry subsystem = table.getEntry(this.getName());
         // subsystem.setString(getHealth(false).toString());
         // if (getHealth(false).toString().equals("YELLOW") || getHealth(false).toString().equals("RED")) {

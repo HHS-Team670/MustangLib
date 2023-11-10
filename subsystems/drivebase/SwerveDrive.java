@@ -46,7 +46,7 @@ public abstract class SwerveDrive extends DriveBase {
     private final SwerveDriveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
-
+    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL;
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
@@ -136,7 +136,14 @@ public abstract class SwerveDrive extends DriveBase {
         initPoseEstimator();
         kPitchOffset = mNavx.getPitch();
         kRollOffset = mNavx.getRoll();
-        Logger.getInstance().recordOutput(getName()+"/MAX VELOCITY M/S", config.kMaxVelocity);
+
+        DRIVEBASE_MAX_VELOCITY = getName()+"/MAX VELOCITY M/S";
+        DRIVEBASE_OFFSET = getName()+"/Gyro offset";
+        DRIVEBASE_HEADING_DEGREE = getName()+"/navX Heading Deg";
+        DRIVEBASE_PITCH = getName()+"/pitch";
+        DRIVEBASE_ROLL = getName()+"/roll";
+
+        Logger.getInstance().recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
         
     }
     protected abstract void initPoseEstimator();
@@ -201,7 +208,7 @@ public abstract class SwerveDrive extends DriveBase {
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
-                Logger.getInstance().recordOutput(getName()+"/Gyro offset", mGyroOffset.getDegrees());
+                Logger.getInstance().recordOutput(DRIVEBASE_OFFSET, mGyroOffset.getDegrees());
              
                 return angle;
             } else {
@@ -229,9 +236,9 @@ public abstract class SwerveDrive extends DriveBase {
             }
         }
         mPoseEstimator.update();
-        Logger.getInstance().recordOutput(getName()+"/navX Heading Deg", getPose().getRotation().getDegrees());
-        Logger.getInstance().recordOutput(getName()+"/pitch",getPitch());
-        Logger.getInstance().recordOutput(getName()+"/roll",getRoll());
+        Logger.getInstance().recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
+        Logger.getInstance().recordOutput(DRIVEBASE_PITCH,getPitch());
+        Logger.getInstance().recordOutput(DRIVEBASE_ROLL,getRoll());
 
 
         

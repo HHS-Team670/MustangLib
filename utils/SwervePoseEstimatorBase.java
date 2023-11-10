@@ -35,7 +35,7 @@ public abstract class SwervePoseEstimatorBase {
 
     private final SwerveDrive driveBase;
     private VisionSubsystemBase vision;
-
+    private final String DRIVEBASE_ESTIMATED_POSE;
     /**
      * Standard deviations of model states. Increase these numbers to trust your
      * model's state
@@ -61,6 +61,7 @@ public abstract class SwervePoseEstimatorBase {
     private final Field2d field2d = new Field2d();
 
     public SwervePoseEstimatorBase(SwerveDrive swerve) {
+        DRIVEBASE_ESTIMATED_POSE = "DriveBase/Estimated Pose";
         this.driveBase = swerve;
         this.vision = null;
         poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),
@@ -113,7 +114,7 @@ public abstract class SwervePoseEstimatorBase {
 
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
-        Logger.getInstance().recordOutput("DriveBase/Estimated Pose",
+        Logger.getInstance().recordOutput(DRIVEBASE_ESTIMATED_POSE,
                 getAbsoluteFieldOrientedPoseFromAllianceOriented());
     }
 
