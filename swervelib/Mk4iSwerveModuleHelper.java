@@ -3,6 +3,9 @@ package frc.team670.mustanglib.swervelib;
 import frc.team670.mustanglib.swervelib.ctre.*;
 import frc.team670.mustanglib.swervelib.redux.*;
 import frc.team670.mustanglib.swervelib.rev.*;
+
+import com.reduxrobotics.sensors.canandcoder.CanandcoderSettings;
+
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
 public final class Mk4iSwerveModuleHelper {
@@ -18,7 +21,7 @@ public final class Mk4iSwerveModuleHelper {
                 .build();
     }
 
-    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getNeoSteerFactory(Mk4ModuleConfiguration configuration) {
+    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getNeoCanCoderSteerFactory(Mk4ModuleConfiguration configuration) {
         return new NeoSteerControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
                 .withPidConstants(1.0, 0.0, 0.1)
@@ -28,7 +31,15 @@ public final class Mk4iSwerveModuleHelper {
                         .build());
     }
 
-    
+        private static SteerControllerFactory<?, SteerConfiguration<CanandCoderAbsoluteConfiguration>> getNeoHeliumSteerFactory(Mk4ModuleConfiguration configuration) {
+        return new NeoSteerControllerFactoryBuilder()
+                .withVoltageCompensation(configuration.getNominalVoltage())
+                .withPidConstants(1.0, 0.0, 0.1)
+                .withCurrentLimit(configuration.getSteerCurrentLimit())
+                .build(new HeliumCanCoderFactoryBuilder()
+                        .withReadingUpdatePeriod(100)
+                        .build());
+    }
   
 
    
@@ -56,27 +67,26 @@ public final class Mk4iSwerveModuleHelper {
             int driveMotorPort,
             int steerMotorPort,
             int steerEncoderPort,
-            double steerOffset,
-            AbsoluteEncoderType encoderType
+            double steerOffset
     ) {
-        if(encoderType == AbsoluteEncoderType.HELIUMCANCODER){
+        if(configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER){
                 return new SwerveModuleFactory<>(
                         gearRatio.getConfiguration(),
                         getNeoDriveFactory(configuration),
-                        getNeoSteerFactory(configuration)
+                        getNeoHeliumSteerFactory(configuration)
                 ).create(
                         container,
                         driveMotorPort,
                         new SteerConfiguration<>(
                                 steerMotorPort,
-                                new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
                         )
                 );
         }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getNeoDriveFactory(configuration),
-                getNeoSteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration)
         ).create(
                 container,
                 driveMotorPort,
@@ -107,10 +117,10 @@ public final class Mk4iSwerveModuleHelper {
             int driveMotorPort,
             int steerMotorPort,
             int steerEncoderPort,
-            double steerOffset,
-            AbsoluteEncoderType encoderType
+            double steerOffset
+            
     ) {
-        return createNeo(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset, encoderType);
+        return createNeo(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
     }
 
     /**
@@ -131,26 +141,26 @@ public final class Mk4iSwerveModuleHelper {
             int driveMotorPort,
             int steerMotorPort,
             int steerEncoderPort,
-            double steerOffset,
-            AbsoluteEncoderType encoderType
+            double steerOffset
+            
     ) {
-        if(encoderType == AbsoluteEncoderType.HELIUMCANCODER){
+        if(configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER){
                 return new SwerveModuleFactory<>(
                         gearRatio.getConfiguration(),
                         getNeoDriveFactory(configuration),
-                        getNeoSteerFactory(configuration)
+                        getNeoHeliumSteerFactory(configuration)
                 ).create(
                         driveMotorPort,
                         new SteerConfiguration<>(
                                 steerMotorPort,
-                                new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
                         )
                 );
         }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getNeoDriveFactory(configuration),
-                getNeoSteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration)
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
@@ -176,10 +186,10 @@ public final class Mk4iSwerveModuleHelper {
             int driveMotorPort,
             int steerMotorPort,
             int steerEncoderPort,
-            double steerOffset,
-            AbsoluteEncoderType encoderType
+            double steerOffset
+            
     ) {
-        return createNeo(new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset, encoderType);
+        return createNeo(new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
     }
 
     

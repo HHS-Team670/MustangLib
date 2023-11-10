@@ -60,16 +60,16 @@ public abstract class SwerveDrive extends DriveBase {
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
             int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset,
-            AbsoluteEncoderType kFrontLeftModuleEncoderType,
+            
             int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
             int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset,
-            AbsoluteEncoderType kFrontRightModuleEncoderType,
+            
             int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
             int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset,
-            AbsoluteEncoderType kBackLeftModuleEncoderType,
+            
             int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
-            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset,
-            AbsoluteEncoderType kBackRightModuleEncoderType) {
+            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset
+            ) {
     }
 
     public SwerveDrive(Config config) {
@@ -91,7 +91,7 @@ public abstract class SwerveDrive extends DriveBase {
                         .withPosition(0, 0),
                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
                 config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
-                config.kFrontLeftModuleSteerOffset, config.kFrontLeftModuleEncoderType);
+                config.kFrontLeftModuleSteerOffset);
 
         // front right
         mModules[1] = Mk4iSwerveModuleHelper.createNeo(
@@ -99,23 +99,27 @@ public abstract class SwerveDrive extends DriveBase {
                         .withPosition(2, 0),
                 kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
-                config.kFrontRightModuleSteerOffset, config.kFrontRightModuleEncoderType);
+                config.kFrontRightModuleSteerOffset);
 
         // back left
+         Mk4ModuleConfiguration heliumModuleConfig = new Mk4ModuleConfiguration();
+        heliumModuleConfig.setNominalVoltage(kMaxVoltage);
+        heliumModuleConfig.setDriveCurrentLimit(config.kMaxDriveCurrent);
+         heliumModuleConfig.setSteerCurrentLimit(config.kMaxSteerCurrent);
         mModules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
-                kModuleConfig, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
+                heliumModuleConfig, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
-                config.kBackLeftModuleSteerOffset, config.kBackLeftModuleEncoderType);
-
+                config.kBackLeftModuleSteerOffset);
+        
         // back right
         mModules[3] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(6, 0),
                 kModuleConfig, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
                 config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
-                config.kBackRightModuleSteerOffset, config.kBackRightModuleEncoderType);
+                config.kBackRightModuleSteerOffset);
 
         kKinematics = new SwerveDriveKinematics(
                 // Front left

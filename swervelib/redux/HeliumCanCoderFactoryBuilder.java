@@ -8,7 +8,9 @@ import com.ctre.phoenix.sensors.WPI_CANCoder;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
 import frc.team670.mustanglib.swervelib.ctre.CtreUtils;
-import com.reduxrobotics.sensors.canandcoder;
+import com.reduxrobotics.sensors.canandcoder.Canandcoder;
+import com.reduxrobotics.sensors.canandcoder.CanandcoderFaults;
+import com.reduxrobotics.sensors.canandcoder.CanandcoderSettings;
 
 public class HeliumCanCoderFactoryBuilder {
 
@@ -26,19 +28,12 @@ public class HeliumCanCoderFactoryBuilder {
         return this;
     }
 
-    public AbsoluteEncoderFactory<HeliumCanCoderAbsoluteConfiguration> build() {
+    public AbsoluteEncoderFactory<CanandCoderAbsoluteConfiguration> build() {
         return configuration -> {
-            CANCoderConfiguration config = new CANCoderConfiguration();
-            config.absoluteSensorRange = AbsoluteSensorRange.Unsigned_0_to_360;
-            config.magnetOffsetDegrees = Math.toDegrees(configuration.getOffset());
-            config.sensorDirection = direction == Direction.CLOCKWISE;
-            config.initializationStrategy = configuration.getInitStrategy();
+           
 
-            WPI_CANCoder encoder = new WPI_CANCoder(configuration.getId(), configuration.getCanbus());
-            CtreUtils.checkCtreError(encoder.configAllSettings(config, 250), "Failed to configure CANCoder");
-
-            CtreUtils.checkCtreError(encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250), "Failed to configure CANCoder update rate");
-
+            Canandcoder encoder = new Canandcoder(configuration.getId());
+          
             return new EncoderImplementation(encoder);
         };
     }
@@ -46,9 +41,9 @@ public class HeliumCanCoderFactoryBuilder {
     private static class EncoderImplementation implements AbsoluteEncoder {
         private final int ATTEMPTS = 3;
 
-        private final WPI_CANCoder encoder;
+        private final Canandcoder encoder;
 
-        private EncoderImplementation(WPI_CANCoder encoder) {
+        private EncoderImplementation(Canandcoder encoder) {
             this.encoder = encoder;
         }
 
@@ -56,18 +51,16 @@ public class HeliumCanCoderFactoryBuilder {
         public double getAbsoluteAngle() {
             double angle = Math.toRadians(encoder.getPosition());
 
-            ErrorCode code = encoder.getLastError();
+            CanandcoderFaults code = encoder.getActiveFaults();
 
             for (int i = 0; i < ATTEMPTS; i++) {
-                if (code == ErrorCode.OK) break;
+                if (!code.faultsValid()) break; //note disable if this breaks stuff
                 try {
                     Thread.sleep(10);
                 } catch (InterruptedException e) { }
                 angle = Math.toRadians(encoder.getPosition());
-                code = encoder.getLastError();
+                code = encoder.getActiveFaults();
             }
-
-            CtreUtils.checkCtreError(code, "Failed to retrieve CANcoder "+encoder.getDeviceID()+" absolute position after "+ATTEMPTS+" tries");
 
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {
