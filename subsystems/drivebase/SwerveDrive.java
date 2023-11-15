@@ -105,7 +105,8 @@ public abstract class SwerveDrive extends DriveBase {
          Mk4ModuleConfiguration heliumModuleConfig = new Mk4ModuleConfiguration();
         heliumModuleConfig.setNominalVoltage(kMaxVoltage);
         heliumModuleConfig.setDriveCurrentLimit(config.kMaxDriveCurrent);
-         heliumModuleConfig.setSteerCurrentLimit(config.kMaxSteerCurrent);
+        heliumModuleConfig.setSteerCurrentLimit(config.kMaxSteerCurrent);
+        heliumModuleConfig.setSteerEncoderType(AbsoluteEncoderType.HELIUM_CANCODER);
         mModules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),

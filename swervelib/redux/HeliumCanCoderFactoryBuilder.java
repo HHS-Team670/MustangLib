@@ -12,6 +12,8 @@ import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 import com.reduxrobotics.sensors.canandcoder.CanandcoderFaults;
 import com.reduxrobotics.sensors.canandcoder.CanandcoderSettings;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 public class HeliumCanCoderFactoryBuilder {
 
     private Direction direction = Direction.COUNTER_CLOCKWISE;
@@ -45,22 +47,22 @@ public class HeliumCanCoderFactoryBuilder {
 
         private EncoderImplementation(Canandcoder encoder) {
             this.encoder = encoder;
-        }
+        }  
 
         @Override
         public double getAbsoluteAngle() {
-            double angle = Math.toRadians(encoder.getPosition());
+            double angle = Math.toRadians(360/2/Math.PI*encoder.getPosition());
+            SmartDashboard.putNumber("HeliumPos", angle);
+            // CanandcoderFaults code = encoder.getActiveFaults();
 
-            CanandcoderFaults code = encoder.getActiveFaults();
-
-            for (int i = 0; i < ATTEMPTS; i++) {
-                if (!code.faultsValid()) break; //note disable if this breaks stuff
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) { }
-                angle = Math.toRadians(encoder.getPosition());
-                code = encoder.getActiveFaults();
-            }
+            // for (int i = 0; i < ATTEMPTS; i++) {
+            //     if (!code.faultsValid()) break; //note disable if this breaks stuff
+            //     try {
+            //         Thread.sleep(10);
+            //     } catch (InterruptedException e) { }
+            //     angle = Math.toRadians(encoder.getPosition());
+            //     code = encoder.getActiveFaults();
+            // }
 
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {
@@ -68,6 +70,7 @@ public class HeliumCanCoderFactoryBuilder {
             }
 
             return angle;
+
         }
 
         @Override
@@ -75,6 +78,7 @@ public class HeliumCanCoderFactoryBuilder {
             return this.encoder;
         }
     }
+    
 
     public enum Direction {
         CLOCKWISE,
