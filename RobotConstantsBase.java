@@ -33,7 +33,7 @@ public class RobotConstantsBase {
         //Front Left
         public static final int kFrontLeftModuleSteerMotorID = 20;
         public static final int kFrontLeftModuleDriveMotorID = 21;
-        public static final int kFrontLeftModuleSteerEncoderID = 30;
+        public static final int kFrontLeftModuleSteerEncoderID = 34;
         //Front Right
         public static final int kFrontRightModuleSteerMotorID = 22;
         public static final int kFrontRightModuleDriveMotorID = 23;
@@ -41,7 +41,7 @@ public class RobotConstantsBase {
        //Back Right
         public static final int kBackRightModuleSteerMotorID = 24;
         public static final int kBackRightModuleDriveMotorID = 25;
-        public static final int kBackRightModuleSteerEncoderID = 34;
+        public static final int kBackRightModuleSteerEncoderID = 30;
         //Back Left
         public static final int kBackLeftModuleSteerMotorID = 26;
         public static final int kBackLeftModuleDriveMotorID = 27;

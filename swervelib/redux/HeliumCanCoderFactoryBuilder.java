@@ -8,6 +8,7 @@ import com.ctre.phoenix.sensors.WPI_CANCoder;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
 import frc.team670.mustanglib.swervelib.ctre.CtreUtils;
+
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 import com.reduxrobotics.sensors.canandcoder.CanandcoderFaults;
 import com.reduxrobotics.sensors.canandcoder.CanandcoderSettings;
@@ -51,7 +52,7 @@ public class HeliumCanCoderFactoryBuilder {
 
         @Override
         public double getAbsoluteAngle() {
-            double angle = Math.toRadians(360/2/Math.PI*encoder.getPosition());
+            double angle = 2*Math.PI*encoder.getAbsPosition();
             SmartDashboard.putNumber("HeliumPos", angle);
             // CanandcoderFaults code = encoder.getActiveFaults();
 
