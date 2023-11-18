@@ -7,7 +7,7 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.ExternalFollower;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 import com.revrobotics.CANSparkMax.ControlType;
@@ -152,7 +152,7 @@ public class SparkMAXFactory {
         sparkMaxLeader.follow(ExternalFollower.kFollowerDisabled, 0);
         sparkMaxFollower.follow(sparkMaxLeader, invertFollower);
         List<SparkMAXLite> motorPair = Arrays.asList(sparkMaxLeader, sparkMaxFollower);
-        Logger.consoleLog("SparkMaxLeaderID %s, SparkMaxFollowerID %s", sparkMaxLeader.getDeviceId(),
+        ConsoleLogger.consoleLog("SparkMaxLeaderID %s, SparkMaxFollowerID %s", sparkMaxLeader.getDeviceId(),
                 sparkMaxFollower.getDeviceId());
         return motorPair;
     }

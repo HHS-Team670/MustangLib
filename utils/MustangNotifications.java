@@ -40,7 +40,7 @@ public class MustangNotifications {
      */
     public static void reportMajorWarning(String message, Object... parameters) {
         DriverStation.reportWarning(String.format(message, parameters), false);
-        Logger.consoleWarning(message, parameters);
+        ConsoleLogger.consoleWarning(message, parameters);
         warning.setString(String.format(message, parameters));
         if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
             throw new RuntimeException(message);
@@ -53,7 +53,7 @@ public class MustangNotifications {
      */
     public static void reportMinorWarning(String message, Object... parameters) {
         DriverStation.reportWarning(String.format(message, parameters), false);
-        Logger.consoleWarning(message, parameters);
+        ConsoleLogger.consoleWarning(message, parameters);
         warning.setString(String.format(message, parameters));
     }
 
@@ -64,7 +64,7 @@ public class MustangNotifications {
      */
     public static void reportError(String message, Object... parameters) {
         DriverStation.reportError(String.format(message, parameters), false);
-        Logger.consoleError(message, parameters);
+        ConsoleLogger.consoleError(message, parameters);
         warning.setString(String.format(message, parameters));
         if (!atCompetition()) //If not at competition, jar should be stopped to trace the problem and solve
             throw new RuntimeException(message);
@@ -77,7 +77,7 @@ public class MustangNotifications {
      */
     public static void notify(String message, Object... parameters) {
         DriverStation.reportWarning(String.format(message, parameters), false);
-        Logger.consoleLog(message, parameters);
+        ConsoleLogger.consoleLog(message, parameters);
         warning.setString(String.format(message, parameters));
     }
 }

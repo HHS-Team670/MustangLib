@@ -1,7 +1,7 @@
 package frc.team670.mustanglib.swervelib;
 
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 @FunctionalInterface
 public interface DriveControllerFactory<Controller extends DriveController, DriveConfiguration> {

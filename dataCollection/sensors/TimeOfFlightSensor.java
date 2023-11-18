@@ -4,6 +4,7 @@ package frc.team670.mustanglib.dataCollection.sensors;
 import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.I2C;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**
@@ -257,7 +258,7 @@ public class TimeOfFlightSensor {
      */
     protected void update() {
         // wait for device to be ready for range measurement
-        // Logger.consoleLog("Indexer read: %s");
+        ConsoleLogger.consoleLog("Indexer read: %s");
         while ((readShortInt(VL6180X_REG_RESULT_RANGE_STATUS) & 0x01) == 0);
 
         // Start a range measurement

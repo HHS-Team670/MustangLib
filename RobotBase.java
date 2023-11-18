@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 
 /**
@@ -153,11 +154,11 @@ public class RobotBase extends LoggedRobot {
   }
 
   /**
-   * This autonomous runs the autonomous command selected by your
+   * This autonomous runs the selected Autonomous Command
    */
   @Override
   public void autonomousInit() {
-    // Logger.consoleLog("Autonomous Init");
+    ConsoleLogger.consoleLog("Autonomous Init");
     robotContainer.autonomousInit();
     m_autonomousCommand = robotContainer.getAutonomousCommand();
     // schedule the autonomous command (example)
@@ -185,7 +186,7 @@ public class RobotBase extends LoggedRobot {
     if (m_autonomousCommand != null) {
       MustangScheduler.getInstance().cancel((MustangCommand) (m_autonomousCommand));
     }
-    // Logger.consoleLog("Teleop Init");
+    ConsoleLogger.consoleLog("Teleop Init");
     robotContainer.teleopInit();
   }
 
@@ -203,7 +204,7 @@ public class RobotBase extends LoggedRobot {
   public void testInit() {
     // Cancels all running commands at the start of test mode.
     MustangScheduler.getInstance().cancelAll();
-    // Logger.consoleLog("Test Init");
+    ConsoleLogger.consoleLog("Test Init");
     LiveWindow.setEnabled(false);
     robotContainer.testInit();
   }
