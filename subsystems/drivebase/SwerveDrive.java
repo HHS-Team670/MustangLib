@@ -137,9 +137,9 @@ public abstract class SwerveDrive extends DriveBase {
         kPitchOffset = mNavx.getPitch();
         kRollOffset = mNavx.getRoll();
 
-        DRIVEBASE_MAX_VELOCITY = getName()+"/MAX VELOCITY M/S";
-        DRIVEBASE_OFFSET = getName()+"/Gyro offset";
-        DRIVEBASE_HEADING_DEGREE = getName()+"/navX Heading Deg";
+        DRIVEBASE_MAX_VELOCITY = getName()+"/MaxVelocityMps";
+        DRIVEBASE_OFFSET = getName()+"/GyroOffset";
+        DRIVEBASE_HEADING_DEGREE = getName()+"/NavXHeadingDeg";
         DRIVEBASE_PITCH = getName()+"/pitch";
         DRIVEBASE_ROLL = getName()+"/roll";
 
