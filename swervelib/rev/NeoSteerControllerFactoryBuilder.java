@@ -159,9 +159,9 @@ public final class NeoSteerControllerFactoryBuilder {
             // end up getting a good reading. If we reset periodically this won't matter
             // anymore.
             // if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-            ConsoleLogger.consoleLog("Reset Iteration: "+resetIteration);
+            // ConsoleLogger.consoleLog("Reset Iteration: "+resetIteration);
             // if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-            ConsoleLogger.consoleLog("resetIterationHit--");
+            // ConsoleLogger.consoleLog("resetIterationHit--");
             // resetIteration = 0;
             // double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
             // motorEncoder.setPosition(absoluteAngle);
