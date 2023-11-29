@@ -46,9 +46,9 @@ public abstract class RobotContainerBase {
         // MustangScheduler.getInstance().setDefaultCommand(s,
         // s.getDefaultMustangCommand());
         // }
-      } else if (s.getHealth(false).equals(HealthState.RED)) {
-        MustangScheduler.getInstance().cancel(s.getDefaultMustangCommand());
-        MustangScheduler.getInstance().unregisterSubsystem(s);
+      // } else if (s.getHealth(false).equals(HealthState.RED)) {
+      //   MustangScheduler.getInstance().cancel(s.getDefaultMustangCommand());
+      //   MustangScheduler.getInstance().unregisterSubsystem(s);
       }
       s.pushHealthToDashboard();
     }

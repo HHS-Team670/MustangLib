@@ -86,7 +86,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      */
     private void setFieldOrigin() {
         var origin = DriverStation.getAlliance() == Alliance.Blue
-                ? OriginPosition.kBlueAllianceWallRightSide
+            ? OriginPosition.kBlueAllianceWallRightSide
                 : OriginPosition.kRedAllianceWallRightSide;
         kFieldLayout.setOrigin(origin);
     }
@@ -183,10 +183,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 counter++;
             }
         }
-        //iff all of the cameras are null or not connected healthstate = red
-        if (counter == mCameras.length && mCameras.length!=0){
-            state = HealthState.RED;
-        }
+        // //iff all of the cameras are null or not connected healthstate = red //TODO: Healthcheck needs work
+        // if (counter == mCameras.length && mCameras.length!=0){
+        //     state = HealthState.RED;
+        // }
         return state;
     }
     
@@ -223,22 +223,27 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
          *         Bad frames are ignored.
          */
         public Optional<CameraEstimatorMeasurement> update() {
-            PhotonPipelineResult result = photonCamera.getLatestResult();
-            if (ignoreFrame(result))
-                return Optional.empty();
-
-            Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
-            if (optEstimation.isEmpty())
-                return Optional.empty();
-            EstimatedRobotPose estimation = optEstimation.get();
-
-            if (estimation.targetsUsed.size() == 1) {
-                double ambiguity = estimation.targetsUsed.get(0).getPoseAmbiguity();
-                if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
+            try {
+                PhotonPipelineResult result = photonCamera.getLatestResult();
+                if (ignoreFrame(result))
                     return Optional.empty();
-            }
 
-            return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result));
+                Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
+                if (optEstimation.isEmpty())
+                    return Optional.empty();
+                EstimatedRobotPose estimation = optEstimation.get();
+
+                if (estimation.targetsUsed.size() == 1) {
+                    double ambiguity = estimation.targetsUsed.get(0).getPoseAmbiguity();
+                    if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
+                        return Optional.empty();
+                }
+
+                return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result)); 
+            }catch(java.lang.ArrayIndexOutOfBoundsException e) {
+                return Optional.ofNullable(null);
+            }
+        
         }
 
         /**
