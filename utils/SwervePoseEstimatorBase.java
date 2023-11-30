@@ -5,6 +5,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import org.photonvision.EstimatedRobotPose;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
@@ -19,7 +20,6 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
@@ -104,7 +104,8 @@ public abstract class SwervePoseEstimatorBase {
                 EstimatedRobotPose estimation = m.estimation();
                 Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
 
-                poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
+                poseEstimator.addVisionMeasurement(new Pose2d(estimatedPose.getX()*0.3048, estimatedPose.getY()*0.3048, new Rotation2d())
+                                                            , estimation.timestampSeconds, m.confidence());
 
                 field2d.getObject("camera pose").setPose(estimatedPose);
 

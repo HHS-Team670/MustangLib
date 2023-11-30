@@ -23,6 +23,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.utils.Logger;
 
 /**
@@ -88,7 +89,8 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         var origin = DriverStation.getAlliance() == Alliance.Blue
             ? OriginPosition.kBlueAllianceWallRightSide
                 : OriginPosition.kRedAllianceWallRightSide;
-        kFieldLayout.setOrigin(origin);
+        var origin1 = OriginPosition.kRedAllianceWallRightSide;
+        kFieldLayout.setOrigin(origin1);
     }
     /**
      * Attempts to initalize vision and estimate robot pose after processing the vision feed
@@ -166,7 +168,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         double sumDistance = 0;
         for (var target : estimation.targetsUsed) {
             var t3d = target.getBestCameraToTarget();
+
             sumDistance += Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+
+
         }
         return sumDistance / estimation.targetsUsed.size();
     }
@@ -238,7 +243,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                     if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
                         return Optional.empty();
                 }
-
+                SmartDashboard.putString("Estimation of Camera "+photonCamera.getName(), ""+estimation.estimatedPose);
                 return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result)); 
             }catch(java.lang.ArrayIndexOutOfBoundsException e) {
                 return Optional.ofNullable(null);
