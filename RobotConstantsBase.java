@@ -7,8 +7,7 @@ import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Map;
 
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;

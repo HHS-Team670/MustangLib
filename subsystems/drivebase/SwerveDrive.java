@@ -1,8 +1,12 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import java.util.Map;
-import com.pathplanner.lib.PathPlannerTrajectory;
-import com.pathplanner.lib.auto.SwerveAutoBuilder;
+
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.path.PathPlannerTrajectory;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
+import com.pathplanner.lib.auto.AutoBuilder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 
@@ -28,6 +32,7 @@ import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
+import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
 import frc.team670.mustanglib.utils.SwervePoseEstimatorBase;
 
 /**
@@ -39,6 +44,7 @@ public abstract class SwerveDrive extends DriveBase {
     protected SwervePoseEstimatorBase mPoseEstimator;
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
+    public SwerveDriveKinematics kinematics;
 
     private final SwerveModule[] mModules;
     private final SwerveDriveKinematics kKinematics;
@@ -47,52 +53,76 @@ public abstract class SwerveDrive extends DriveBase {
 
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
-    private final Mk4ModuleConfiguration kModuleConfig = new Mk4ModuleConfiguration();
+    private final Mk4ModuleConfiguration kModuleConfigFrontLeft = new Mk4ModuleConfiguration();
+    private final Mk4ModuleConfiguration kModuleConfigFrontRight = new Mk4ModuleConfiguration();
+    private final Mk4ModuleConfiguration kModuleConfigBackLeft = new Mk4ModuleConfiguration();
+    private final Mk4ModuleConfiguration kModuleConfigBackRight = new Mk4ModuleConfiguration();
     private final double kPitchOffset;
     private final double kRollOffset;
 
-
-    private double frontLeftPrevAngle, frontRightPrevAngle, backLeftPrevAngle, backRightPrevAngle;
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
-            int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset,
+            int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset, AbsoluteEncoderType kFrontLeftModuleEncoderType,
+            
             int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
-            int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset,
+            int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset, AbsoluteEncoderType kFrontRightModuleEncoderType,
+            
             int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
-            int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset,
+            int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset, AbsoluteEncoderType kBackLeftModuleEncoderType,
+            
             int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
-            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset) {
+            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset, AbsoluteEncoderType kBackRightModuleEncoderType
+            ) {
     }
-
     public SwerveDrive(Config config) {
         this.kConfig=config;
         
         kMaxVelocity = config.kMaxVelocity;
         kMaxVoltage = config.kMaxVoltage;
 
-        kModuleConfig.setNominalVoltage(kMaxVoltage);
-        kModuleConfig.setDriveCurrentLimit(config.kMaxDriveCurrent);
-        kModuleConfig.setSteerCurrentLimit(config.kMaxSteerCurrent);
+        kModuleConfigFrontLeft.setNominalVoltage(kMaxVoltage);
+        kModuleConfigFrontLeft.setDriveCurrentLimit(config.kMaxDriveCurrent);
+        kModuleConfigFrontLeft.setSteerCurrentLimit(config.kMaxSteerCurrent);
+        kModuleConfigFrontLeft.setSteerEncoderType(config.kFrontLeftModuleEncoderType);
+
+
+        kModuleConfigFrontRight.setNominalVoltage(kMaxVoltage);
+        kModuleConfigFrontRight.setDriveCurrentLimit(config.kMaxDriveCurrent);
+        kModuleConfigFrontRight.setSteerCurrentLimit(config.kMaxSteerCurrent);
+        kModuleConfigFrontRight.setSteerEncoderType(config.kFrontRightModuleEncoderType);
+
+
+        kModuleConfigBackLeft.setNominalVoltage(kMaxVoltage);
+        kModuleConfigBackLeft.setDriveCurrentLimit(config.kMaxDriveCurrent);
+        kModuleConfigBackLeft.setSteerCurrentLimit(config.kMaxSteerCurrent);
+        kModuleConfigBackLeft.setSteerEncoderType(config.kBackLeftModuleEncoderType);
+
+
+        kModuleConfigBackRight.setNominalVoltage(kMaxVoltage);
+        kModuleConfigBackRight.setDriveCurrentLimit(config.kMaxDriveCurrent);
+        kModuleConfigBackRight.setSteerCurrentLimit(config.kMaxSteerCurrent);
+        kModuleConfigBackRight.setSteerEncoderType(config.kBackRightModuleEncoderType);
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
         mModules = new SwerveModule[4];
 
-        // front left
-        mModules[0] = Mk4iSwerveModuleHelper.createNeo(
-                tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
-                        .withPosition(0, 0),
-                kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
-                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
-                config.kFrontLeftModuleSteerOffset);
+       // front left
+       
+       mModules[0] = Mk4iSwerveModuleHelper.createNeo(
+        tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
+                .withPosition(0, 0),
+        kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
+        config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
+        config.kFrontLeftModuleSteerOffset);
 
         // front right
         mModules[1] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
-                kModuleConfig, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
+                kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
                 config.kFrontRightModuleSteerOffset);
 
@@ -100,17 +130,17 @@ public abstract class SwerveDrive extends DriveBase {
         mModules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
-                kModuleConfig, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
+                kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
                 config.kBackLeftModuleSteerOffset);
 
         // back right
         mModules[3] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
-                        .withPosition(6, 0),
-                kModuleConfig, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
-                config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
-                config.kBackRightModuleSteerOffset);
+                    .withPosition(6, 0),
+            kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
+            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
+            config.kBackRightModuleSteerOffset);
 
         kKinematics = new SwerveDriveKinematics(
                 // Front left
@@ -254,23 +284,23 @@ public abstract class SwerveDrive extends DriveBase {
         // these
         // values.
 
-        if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
-        && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
-        frontLeftAngle = frontLeftPrevAngle;
-        frontRightAngle = frontRightPrevAngle;
-        backLeftAngle = backLeftPrevAngle;
-        backRightAngle = backRightPrevAngle;
-        }
+        // if (Math.abs(frontLeftSpeed) <= 0.01 && Math.abs(frontRightSpeed) <= 0.01
+        // && Math.abs(backLeftSpeed) <= 0.01 && Math.abs(backRightSpeed) <= 0.01) {
+        // frontLeftAngle = frontLeftPrevAngle;
+        // frontRightAngle = frontRightPrevAngle;
+        // backLeftAngle = backLeftPrevAngle;
+        // backRightAngle = backRightPrevAngle;
+        // }
 
         mModules[0].set(frontLeftSpeed, frontLeftAngle);
         mModules[1].set(frontRightSpeed, frontRightAngle);
         mModules[2].set(backLeftSpeed, backLeftAngle);
         mModules[3].set(backRightSpeed, backRightAngle);
 
-        frontLeftPrevAngle = frontLeftAngle;
-        frontRightPrevAngle = frontRightAngle;
-        backLeftPrevAngle = backLeftAngle;
-        backRightPrevAngle = backRightAngle;
+        // frontLeftPrevAngle = frontLeftAngle;
+        // frontRightPrevAngle = frontRightAngle;
+        // backLeftPrevAngle = backLeftAngle;
+        // backRightPrevAngle = backRightAngle;
     }
 
     public void realignModules() {
@@ -302,6 +332,15 @@ public abstract class SwerveDrive extends DriveBase {
         }
     }
 
+    public void driveRobotRelative(ChassisSpeeds speeds) {
+        SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(speeds);
+    
+        SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, kMaxVelocity);
+    
+        setModuleStates(targetStates);
+    }
+    
+
     public Pose2d getPose() {
         return mPoseEstimator.getCurrentPose();
     }
@@ -309,7 +348,6 @@ public abstract class SwerveDrive extends DriveBase {
     public double getPitch() {
         return mNavx.getPitch() - kPitchOffset;
     }
-
     public double getRoll() {
         return mNavx.getRoll() - kRollOffset;
     }
@@ -354,17 +392,23 @@ public abstract class SwerveDrive extends DriveBase {
         setModuleStates(states);
     }
 
-    public SwerveAutoBuilder getAutoBuilderFromEvents(Map<String, Command> eventMap) {
-        return new SwerveAutoBuilder(this::getPose, this::resetOdometry, kKinematics,
-        RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID,
-        RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, this::setModuleStates, eventMap, true,
-                new Subsystem[] { this });
-    }
+    public void configureHolonomic(Subsystem[] reqSubsystems, double driveBaseRadius) {
 
-    public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerTrajectory traj) {
-        return new MustangPPSwerveControllerCommand(traj, this::getPose, getSwerveKinematics(),
-        RobotConstantsBase.SwerveDriveBase.xController, RobotConstantsBase.SwerveDriveBase.yController,
-        RobotConstantsBase.SwerveDriveBase.thetaController, this::setModuleStates,
-                new Subsystem[] { this });
+        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
+        kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
+        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, (Subsystem)this);
+    
+    }
+ 
+    /**
+     * @param path
+     * @param reqSubsytems
+     * @param driveBaseRadius in meters (for swerve) the distance between the center of the robot to the furthest module (for mecanum this is the width of the drivebase / 2)
+     */
+    public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerPath path, Subsystem[] reqSubsystems, double driveBaseRadius) {
+        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
+        kMaxVelocity, driveBaseRadius, new ReplanningConfig());
+
+        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, reqSubsystems);
     }
 }

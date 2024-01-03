@@ -67,7 +67,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      */
     public void initalize() {
         // does nothing if DS not initialized yet
-        if (DriverStation.getAlliance() == Alliance.Invalid) {
+        if (!DriverStation.getAlliance().isPresent()) {
             mInit = false;
             return;
         }
@@ -85,7 +85,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      * Sets origin based on field side (red alliance or blue alliance)
      */
     private void setFieldOrigin() {
-        var origin = DriverStation.getAlliance() == Alliance.Blue
+        var origin = DriverStation.getAlliance().get() == Alliance.Blue
                 ? OriginPosition.kBlueAllianceWallRightSide
                 : OriginPosition.kRedAllianceWallRightSide;
         kFieldLayout.setOrigin(origin);
@@ -206,7 +206,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         public CameraPoseEstimator(PhotonCamera photonCamera, Transform3d robotToCam,
                 AprilTagFieldLayout fieldLayout) {
             this.photonCamera = photonCamera;
-            estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP,
+            estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_RIO,
                     photonCamera, robotToCam);
             estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         }

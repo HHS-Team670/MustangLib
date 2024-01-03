@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
@@ -27,7 +27,7 @@ import frc.team670.mustanglib.utils.MustangController;
  * Cheesy Drive also applies some non-linearity to the joystick input so that there is more control at the low speeds. Larger changes in joystick inputs result in smaller changes in real speed when driving slow, but when the joystick is pushed to a high speed, you jump up to full speed faster.
  * Third, that turn input is affected by a negative inertia accumulator. Most robots have a fair bit of turning inertia, which can make it easy to accidentally overshoot a turn. The negative inertia accumulator acts almost like a reverse integral controller  the longer the robot has been turning (fast) for, the slower the robot will turn.
  */
-public class XboxCurvatureDrive extends CommandBase implements MustangCommand {
+public class XboxCurvatureDrive extends Command implements MustangCommand {
 
     private TankDrive driveBase;
     private MustangController controller;

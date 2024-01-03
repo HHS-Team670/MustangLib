@@ -20,7 +20,7 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.utils.Logger;
 
@@ -38,7 +38,7 @@ import frc.team670.mustanglib.utils.Logger;
  * controller.
  */
 @SuppressWarnings("PMD.TooManyFields")
-public class RamseteCommand extends CommandBase {
+public class RamseteCommand extends Command {
   private final Timer m_timer = new Timer();
   private final boolean m_usePID;
   private final Trajectory m_trajectory;
