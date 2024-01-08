@@ -2,6 +2,7 @@ package frc.team670.mustanglib.subsystems.drivebase;
 
 import java.util.Map;
 
+
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -11,6 +12,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
 
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -34,6 +36,7 @@ import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
 import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
 import frc.team670.mustanglib.utils.SwervePoseEstimatorBase;
+import frc.team670.mustanglib.utils.motorcontroller.MotorConfig.Motor_Type;
 
 /**
  * Swerve Drive subsystem with pose estimation.
@@ -64,17 +67,24 @@ public abstract class SwerveDrive extends DriveBase {
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
+
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
+            Motor_Type kFrontLeftDriveMotorType, Motor_Type kFrontLeftSteerMotorType, 
             int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset, AbsoluteEncoderType kFrontLeftModuleEncoderType,
             
             int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
+            Motor_Type kFrontRightDriveMotorType, Motor_Type kFrontRightSteerMotorType,
             int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset, AbsoluteEncoderType kFrontRightModuleEncoderType,
             
             int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
+            Motor_Type kBackLeftDriveMotorType, Motor_Type kBackLeftSteerMotorType,
             int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset, AbsoluteEncoderType kBackLeftModuleEncoderType,
             
             int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
+            Motor_Type kBackRightDriveMotorType, Motor_Type kBackRightSteerMotorType,
             int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset, AbsoluteEncoderType kBackRightModuleEncoderType
+
+            
             ) {
     }
     public SwerveDrive(Config config) {
@@ -110,37 +120,74 @@ public abstract class SwerveDrive extends DriveBase {
         mModules = new SwerveModule[4];
 
        // front left
-       
-       mModules[0] = Mk4iSwerveModuleHelper.createNeo(
+       if (config.kFrontLeftDriveMotorType == Motor_Type.NEO) {
+        mModules[0] = Mk4iSwerveModuleHelper.createNeo(
         tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                 .withPosition(0, 0),
         kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
         config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
         config.kFrontLeftModuleSteerOffset);
+       } else {
+        mModules[0] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
+        tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
+                .withPosition(0, 0),
+        kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
+        config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
+        config.kFrontLeftModuleSteerOffset);
+       }
+
 
         // front right
-        mModules[1] = Mk4iSwerveModuleHelper.createNeo(
+        if (config.kFrontRightDriveMotorType == Motor_Type.NEO) {
+            mModules[1] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
                 kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
                 config.kFrontRightModuleSteerOffset);
+        } else {
+            mModules[1] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
+                tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
+                        .withPosition(2, 0),
+                kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
+                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
+                config.kFrontRightModuleSteerOffset);
+        }
+        
 
         // back left
-        mModules[2] = Mk4iSwerveModuleHelper.createNeo(
+        if (config.kBackLeftDriveMotorType == Motor_Type.NEO) {
+            mModules[2] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
                 kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
                 config.kBackLeftModuleSteerOffset);
+        } else {
+            mModules[2] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
+                tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
+                        .withPosition(4, 0),
+                kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
+                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
+                config.kBackLeftModuleSteerOffset);
+        }
 
         // back right
-        mModules[3] = Mk4iSwerveModuleHelper.createNeo(
+        if (config.kBackRightDriveMotorType == Motor_Type.NEO) {
+            mModules[3] = Mk4iSwerveModuleHelper.createNeo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                     .withPosition(6, 0),
             kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
             config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
             config.kBackRightModuleSteerOffset);
+        } else {
+            mModules[3] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
+                tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
+                    .withPosition(6, 0),
+            kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
+            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
+            config.kBackRightModuleSteerOffset);
+        }
 
         kKinematics = new SwerveDriveKinematics(
                 // Front left
