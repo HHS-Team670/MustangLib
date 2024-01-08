@@ -37,7 +37,7 @@ public class XboxCurvatureDrive extends Command implements MustangCommand {
 
     /**
      * Constructs a new XboxCurvatureDrive.
-     * @param driveBase the drivebase to be driven
+     * @param driveBase the drrivebase to be drivnr
      * @param controller the controllers to be used
      */
     public XboxCurvatureDrive(TankDrive driveBase, MustangController controller) {
@@ -46,7 +46,7 @@ public class XboxCurvatureDrive extends Command implements MustangCommand {
         this.controller = controller;
         addRequirements(driveBase);
         healthRequirements.put(driveBase, HealthState.YELLOW);
- 
+
     }
 
     // Called once when the command executes
@@ -63,5 +63,6 @@ public class XboxCurvatureDrive extends Command implements MustangCommand {
     public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
         return healthRequirements;
     }
+
 
 }
