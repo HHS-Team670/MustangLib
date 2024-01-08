@@ -392,7 +392,7 @@ public abstract class SwerveDrive extends DriveBase {
         setModuleStates(states);
     }
 
-    public void configureHolonomic(Subsystem[] reqSubsystems, double driveBaseRadius) {
+    public void configureHolonomic(double driveBaseRadius) {
 
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
         kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
