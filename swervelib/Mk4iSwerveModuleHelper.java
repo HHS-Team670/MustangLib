@@ -302,7 +302,7 @@ public final class Mk4iSwerveModuleHelper {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getFalcon500DriveFactory(configuration),
-                getNeoSteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration) // ADD HELIUM LOGIC HERE
         ).create(
                 container,
                 driveMotorPort,
@@ -358,7 +358,7 @@ public final class Mk4iSwerveModuleHelper {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getFalcon500DriveFactory(configuration),
-                getNeoSteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration)// ADD HELIUM LOGIC HERE
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
