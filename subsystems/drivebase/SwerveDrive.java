@@ -127,7 +127,7 @@ public abstract class SwerveDrive extends DriveBase {
         kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
         config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
         config.kFrontLeftModuleSteerOffset);
-       } else {
+       } else if (config.kFrontLeftDriveMotorType == Motor_Type.KRAKEN_X60) {
         mModules[0] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
         tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                 .withPosition(0, 0),
@@ -145,7 +145,7 @@ public abstract class SwerveDrive extends DriveBase {
                 kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
                 config.kFrontRightModuleSteerOffset);
-        } else {
+        } else if (config.kFrontRightDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[1] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
@@ -163,7 +163,7 @@ public abstract class SwerveDrive extends DriveBase {
                 kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
                 config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
                 config.kBackLeftModuleSteerOffset);
-        } else {
+        } else if (config.kBackLeftDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[2] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
@@ -180,7 +180,7 @@ public abstract class SwerveDrive extends DriveBase {
             kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
             config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
             config.kBackRightModuleSteerOffset);
-        } else {
+        } else if (config.kBackRightDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[3] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                     .withPosition(6, 0),

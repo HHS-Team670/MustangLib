@@ -93,7 +93,7 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
-        return createFalcon500(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createFalcon500(container, gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
     }
 
     /**
@@ -116,7 +116,7 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
-        return createKrakenX60(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createKrakenX60(container, gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
     }
 
     /**
