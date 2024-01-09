@@ -1,6 +1,7 @@
 package frc.team670.mustanglib.swervelib.pathplanner;
 
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
@@ -31,11 +32,11 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 public class MustangPPSwerveControllerCommand extends FollowPathHolonomic implements MustangCommand {
 
     
-    public MustangPPSwerveControllerCommand(PathPlannerPath path, Supplier<Pose2d> poseSupplier,
-            Supplier<ChassisSpeeds> currentRobotRelativeSpeeds,Consumer<ChassisSpeeds> output, HolonomicPathFollowerConfig config,
+     public MustangPPSwerveControllerCommand(PathPlannerPath path, Supplier<Pose2d> poseSupplier,
+            Supplier<ChassisSpeeds> currentRobotRelativeSpeeds,Consumer<ChassisSpeeds> output, HolonomicPathFollowerConfig config, BooleanSupplier shouldFlipPath,
             Subsystem[] requirements) {
 
-        super(path, poseSupplier, currentRobotRelativeSpeeds, output, config, requirements);
+        super(path, poseSupplier, currentRobotRelativeSpeeds, output, config.translationConstants, config.rotationConstants, config.maxModuleSpeed, config.driveBaseRadius, config.period, config.replanningConfig, shouldFlipPath, requirements);
     }
 
     /**
