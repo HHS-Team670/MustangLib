@@ -60,8 +60,8 @@ public final class KrakenX60DriveControllerFactoryBuilder {
             }
 
             WPI_TalonFX motor = new WPI_TalonFX(id, canbus);
-            CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration),
-                    "Failed to configure Falcon 500");
+            // CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration),
+            //         "Failed to configure Falcon 500"); // DROPPED FROM API
 
             if (hasVoltageCompensation()) {
                 // Enable voltage compensation
@@ -75,10 +75,10 @@ public final class KrakenX60DriveControllerFactoryBuilder {
             motor.setSensorPhase(true);
 
             // Reduce CAN status frame rates
-            CtreUtils.checkCtreError(
-                    motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS, CAN_TIMEOUT_MS),
-                    "Failed to configure Falcon status frame period");
+            // CtreUtils.checkCtreError(
+            //         motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,
+            //                 STATUS_FRAME_GENERAL_PERIOD_MS, CAN_TIMEOUT_MS),
+            //         "Failed to configure Falcon status frame period"); // DROPPED FROM API
 
             return new ControllerImplementation(motor, sensorVelocityCoefficient);
         }
@@ -88,7 +88,7 @@ public final class KrakenX60DriveControllerFactoryBuilder {
         private final WPI_TalonFX motor;
         private final double sensorVelocityCoefficient;
         private final double nominalVoltage = hasVoltageCompensation()
-                ? Falcon500DriveControllerFactoryBuilder.this.nominalVoltage
+                ? KrakenX60DriveControllerFactoryBuilder.this.nominalVoltage
                 : 12.0;
 
         private ControllerImplementation(WPI_TalonFX motor, double sensorVelocityCoefficient) {

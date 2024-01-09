@@ -1,7 +1,7 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import java.util.Map;
-
+import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.path.PathPlannerTrajectory;
@@ -26,6 +26,8 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
@@ -443,7 +445,13 @@ public abstract class SwerveDrive extends DriveBase {
 
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
         kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
-        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, (Subsystem)this);
+        BooleanSupplier alliance = new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return DriverStation.getAlliance().get() != Alliance.Blue;
+            }
+        };
+        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, alliance, (Subsystem)this);
     
     }
  
@@ -455,7 +463,12 @@ public abstract class SwerveDrive extends DriveBase {
     public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerPath path, Subsystem[] reqSubsystems, double driveBaseRadius) {
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
         kMaxVelocity, driveBaseRadius, new ReplanningConfig());
-
-        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, reqSubsystems);
+        BooleanSupplier alliance = new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return DriverStation.getAlliance().get() != Alliance.Blue;
+            }
+        };
+        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, alliance, reqSubsystems);
     }
 }

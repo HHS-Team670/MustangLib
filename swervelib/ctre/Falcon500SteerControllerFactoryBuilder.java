@@ -116,27 +116,27 @@ public final class Falcon500SteerControllerFactoryBuilder {
             }
 
             WPI_TalonFX motor = new WPI_TalonFX(steerConfiguration.getMotorPort(), canbus);
-            checkCtreError(motor.configAllSettings(motorConfiguration, CAN_TIMEOUT_MS), "Failed to configure Falcon 500 settings");
+            // checkCtreError(motor.configAllSettings(motorConfiguration, CAN_TIMEOUT_MS), "Failed to configure Falcon 500 settings"); // CHECK THIS, DROPPED FROM API
 
             if (hasVoltageCompensation()) {
                 motor.enableVoltageCompensation(true);
             }
-            checkCtreError(motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, CAN_TIMEOUT_MS), "Failed to set Falcon 500 feedback sensor");
+            // checkCtreError(motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, CAN_TIMEOUT_MS), "Failed to set Falcon 500 feedback sensor"); // DROPPED FROM API
             motor.setSensorPhase(true);
             motor.setInverted(moduleConfiguration.isSteerInverted() ? TalonFXInvertType.CounterClockwise : TalonFXInvertType.Clockwise);
             motor.setNeutralMode(NeutralMode.Brake);
 
-            checkCtreError(motor.setSelectedSensorPosition(absoluteEncoder.getAbsoluteAngle() / sensorPositionCoefficient, 0, CAN_TIMEOUT_MS), "Failed to set Falcon 500 encoder position");
+            // checkCtreError(motor.setSelectedSensorPosition(absoluteEncoder.getAbsoluteAngle() / sensorPositionCoefficient, 0, CAN_TIMEOUT_MS), "Failed to set Falcon 500 encoder position"); // DROPPED FROM API
 
             // Reduce CAN status frame rates
-            CtreUtils.checkCtreError(
-                    motor.setStatusFramePeriod(
-                            StatusFrameEnhanced.Status_1_General,
-                            STATUS_FRAME_GENERAL_PERIOD_MS,
-                            CAN_TIMEOUT_MS
-                    ),
-                    "Failed to configure Falcon status frame period"
-            );
+            // CtreUtils.checkCtreError(
+            //         motor.setStatusFramePeriod(
+            //                 StatusFrameEnhanced.Status_1_General,
+            //                 STATUS_FRAME_GENERAL_PERIOD_MS,
+            //                 CAN_TIMEOUT_MS
+            //         ),
+            //         "Failed to configure Falcon status frame period"
+            // ); // DROPPED FROM API
 
             return new ControllerImplementation(motor,
                     sensorPositionCoefficient,
