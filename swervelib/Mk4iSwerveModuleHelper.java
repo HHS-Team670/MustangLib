@@ -138,10 +138,35 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getFalcon500DriveFactory(configuration),
+        //         getFalcon500SteerFactory(configuration)
+        // ).create(
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+        //         )
+        // );
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getFalcon500DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getFalcon500DriveFactory(configuration),
-                getFalcon500SteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
@@ -170,10 +195,35 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getKrakenX60DriveFactory(configuration),
+        //         getKrakenX60SteerFactory(configuration)
+        // ).create(
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+        //         )
+        // );
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getKrakenX60DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getKrakenX60DriveFactory(configuration),
-                getKrakenX60SteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
@@ -443,6 +493,7 @@ public final class Mk4iSwerveModuleHelper {
             double steerOffset
     ) {
         if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
                 return new SwerveModuleFactory<>(
                         gearRatio.getConfiguration(),
                         getKrakenX60DriveFactory(configuration),
@@ -534,17 +585,44 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getFalcon500DriveFactory(configuration),
+        //         getNeoHeliumSteerFactory(configuration)
+        // ).create(
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+        //         )
+        // );
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getFalcon500DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getFalcon500DriveFactory(configuration),
-                getNeoHeliumSteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
                 )
         );
+
+        
     }
 
     /**
@@ -566,15 +644,40 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getKrakenX60DriveFactory(configuration),
+        //         getNeoHeliumSteerFactory(configuration)
+        // ).create(
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+        //         )
+        // );
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getKrakenX60DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getKrakenX60DriveFactory(configuration),
-                getNeoHeliumSteerFactory(configuration)
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
                 )
         );
     }
@@ -642,10 +745,37 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getNeoDriveFactory(configuration),
+        //         getFalcon500SteerFactory(configuration)
+        // ).create(
+        //         container,
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+        //         )
+        // );
+
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getFalcon500DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
-                getNeoDriveFactory(configuration),
-                getFalcon500SteerFactory(configuration)
+                getFalcon500DriveFactory(configuration),
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 container,
                 driveMotorPort,
@@ -678,10 +808,36 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getNeoDriveFactory(configuration),
+        //         getKrakenX60SteerFactory(configuration)
+        // ).create(
+        //         container,
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+        //         )
+        // );
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getKrakenX60DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
-                getNeoDriveFactory(configuration),
-                getKrakenX60SteerFactory(configuration)
+                getKrakenX60DriveFactory(configuration),
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 container,
                 driveMotorPort,
@@ -757,10 +913,35 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getNeoDriveFactory(configuration),
+        //         getFalcon500SteerFactory(configuration)
+        // ).create(
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+        //         )
+        // );
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getFalcon500DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
-                getNeoDriveFactory(configuration),
-                getFalcon500SteerFactory(configuration)
+                getFalcon500DriveFactory(configuration),
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
@@ -789,10 +970,35 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        // return new SwerveModuleFactory<>(
+        //         gearRatio.getConfiguration(),
+        //         getNeoDriveFactory(configuration),
+        //         getKrakenX60SteerFactory(configuration)
+        // ).create(
+        //         driveMotorPort,
+        //         new SteerConfiguration<>(
+        //                 steerMotorPort,
+        //                 new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+        //         )
+        // );
+        if (configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER) {
+        
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getKrakenX60DriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );  
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
-                getNeoDriveFactory(configuration),
-                getKrakenX60SteerFactory(configuration)
+                getKrakenX60DriveFactory(configuration),
+                getNeoCanCoderSteerFactory(configuration) 
         ).create(
                 driveMotorPort,
                 new SteerConfiguration<>(
