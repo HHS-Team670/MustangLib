@@ -24,40 +24,11 @@ public class Mk4SwerveModuleBuilder {
         }
     }
 
-    private static DriveControllerFactory<?, Integer> getFalcon500DriveFactory(Mk4ModuleConfiguration configuration) {
-        return new Falcon500DriveControllerFactoryBuilder()
-                .withVoltageCompensation(configuration.getNominalVoltage())
-                .withCurrentLimit(configuration.getDriveCurrentLimit())
-                .build();
-    }
-
-    
-
-    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getFalcon500SteerFactory(Mk4ModuleConfiguration configuration) {
-        return new Falcon500SteerControllerFactoryBuilder()
-                .withVoltageCompensation(configuration.getNominalVoltage())
-                .withPidConstants(0.2, 0.0, 0.1)
-                .withCurrentLimit(configuration.getSteerCurrentLimit())
-                .build(new CanCoderFactoryBuilder()
-                        .withReadingUpdatePeriod(100)
-                        .build());
-    }
-
     private static DriveControllerFactory<?, Integer> getKrakenX60DriveFactory(Mk4ModuleConfiguration configuration) {
         return new KrakenX60DriveControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
                 .withCurrentLimit(configuration.getDriveCurrentLimit())
                 .build();
-    }
-
-    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getKrakenX60SteerFactory(Mk4ModuleConfiguration configuration) {
-        return new KrakenX60SteerControllerFactoryBuilder()
-                .withVoltageCompensation(configuration.getNominalVoltage())
-                .withPidConstants(0.2, 0.0, 0.1)
-                .withCurrentLimit(configuration.getSteerCurrentLimit())
-                .build(new CanCoderFactoryBuilder()
-                        .withReadingUpdatePeriod(100)
-                        .build());
     }
 
     private static DriveControllerFactory<?, Integer> getNeoDriveFactory(Mk4ModuleConfiguration configuration) {
@@ -114,13 +85,10 @@ public class Mk4SwerveModuleBuilder {
 
     public Mk4SwerveModuleBuilder withDriveMotor(MotorType motorType, int motorPort, String motorCanbus) {
         switch (motorType) {
-            case FALCON:
-                this.driveFactory = getFalcon500DriveFactory(this.configuration);
-                break;
             case NEO:
                 this.driveFactory = getNeoDriveFactory(this.configuration);
                 break;
-            case KRAKEN:
+            case KRAKEN_X60:
                 this.driveFactory = getKrakenX60DriveFactory(this.configuration);
                 break;
             default:
@@ -137,14 +105,8 @@ public class Mk4SwerveModuleBuilder {
 
     public Mk4SwerveModuleBuilder withSteerMotor(MotorType motorType, int motorPort, String motorCanbus) {
         switch (motorType) {
-            case FALCON:
-                this.steerFactory = getFalcon500SteerFactory(this.configuration);
-                break;
             case NEO:
                 this.steerFactory = getNeoSteerFactory(this.configuration);
-                break;
-            case KRAKEN:
-                this.driveFactory = getKrakenX60DriveFactory(this.configuration);
                 break;
             default:
                 break;
@@ -207,25 +169,7 @@ public class Mk4SwerveModuleBuilder {
 
         SteerConfiguration<CanCoderAbsoluteConfiguration> steerConfig;
 
-        if (steerMotorType == MotorType.FALCON) {
-            steerConfig = new SteerConfiguration<>(
-                    steerMotorPort, 
-                    new CanCoderAbsoluteConfiguration(
-                            steerEncoderPort, 
-                            steerOffset,
-                            steerEncoderCanbus
-                    )
-            );
-        } else if (steerMotorType == MotorType.NEO) {
-            steerConfig = new SteerConfiguration<>(
-                    steerMotorPort, 
-                    new CanCoderAbsoluteConfiguration(
-                            steerEncoderPort, 
-                            steerOffset,
-                            steerEncoderCanbus
-                    )
-            );
-        } else if (steerMotorType == MotorType.KRAKEN) {
+        if (steerMotorType == MotorType.KRAKEN_X60) {
             steerConfig = new SteerConfiguration<>(
                     steerMotorPort, 
                     new CanCoderAbsoluteConfiguration(

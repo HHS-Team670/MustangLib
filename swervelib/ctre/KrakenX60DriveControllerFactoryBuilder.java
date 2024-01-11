@@ -1,14 +1,18 @@
 package frc.team670.mustanglib.swervelib.ctre;
 
 import com.ctre.phoenix.motorcontrol.*;
-import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+//import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
+
 import frc.team670.mustanglib.swervelib.DriveController;
 import frc.team670.mustanglib.swervelib.DriveControllerFactory;
 import frc.team670.mustanglib.swervelib.ModuleConfiguration;
 
 public final class KrakenX60DriveControllerFactoryBuilder {
-    // REPLACE CONSTANTS
+    // REPLACE CONSTANTS, THEY ARE INVALID
     private static final double TICKS_PER_ROTATION = 2048.0;
 
     private static final int CAN_TIMEOUT_MS = 250;
@@ -45,40 +49,27 @@ public final class KrakenX60DriveControllerFactoryBuilder {
         public ControllerImplementation create(Integer id, String canbus,
                 ModuleConfiguration moduleConfiguration) {
             TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
-
+            
             double sensorPositionCoefficient = Math.PI * moduleConfiguration.getWheelDiameter()
                     * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 
-            if (hasVoltageCompensation()) {
-                motorConfiguration.voltageCompSaturation = nominalVoltage;
-            }
-
             if (hasCurrentLimit()) {
-                motorConfiguration.supplyCurrLimit.currentLimit = currentLimit;
-                motorConfiguration.supplyCurrLimit.enable = true;
+                motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit;
+                motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
             }
 
-            WPI_TalonFX motor = new WPI_TalonFX(id, canbus);
-            // CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration),
-            //         "Failed to configure Falcon 500"); // DROPPED FROM API
+            TalonFX motor = new TalonFX(id, canbus);
+            CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration),
+                    "Failed to configure Falcon 500");
 
-            if (hasVoltageCompensation()) {
-                // Enable voltage compensation
-                motor.enableVoltageCompensation(true);
-            }
-
-            motor.setNeutralMode(NeutralMode.Brake);
+            motor.setNeutralMode(NeutralModeValue.Brake);
 
             motor.setInverted(moduleConfiguration.isDriveInverted() ? TalonFXInvertType.Clockwise
                     : TalonFXInvertType.CounterClockwise);
             motor.setSensorPhase(true);
 
             // Reduce CAN status frame rates
-            // CtreUtils.checkCtreError(
-            //         motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General,
-            //                 STATUS_FRAME_GENERAL_PERIOD_MS, CAN_TIMEOUT_MS),
-            //         "Failed to configure Falcon status frame period"); // DROPPED FROM API
 
             return new ControllerImplementation(motor, sensorVelocityCoefficient);
         }

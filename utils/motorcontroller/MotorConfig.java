@@ -13,7 +13,7 @@ public class MotorConfig {
 
     public enum Motor_Type {
 
-        NEO, NEO_550, REDLINE_775PRO, BAG, CIM, FALCON_500, KRAKEN_X60;
+        NEO, NEO_550, REDLINE_775PRO, BAG, CIM, KRAKEN_X60;
 
     }
 
@@ -24,8 +24,7 @@ public class MotorConfig {
             put(Motor_Type.REDLINE_775PRO, 30);
             put(Motor_Type.BAG, 30);
             put(Motor_Type.CIM, 20);
-            put(Motor_Type.FALCON_500, 40); // CHANGE THESE CONSTANTS
-            put(Motor_Type.KRAKEN_X60, 25);
+            put(Motor_Type.KRAKEN_X60, 40); 
         }
     };
 
@@ -36,8 +35,7 @@ public class MotorConfig {
             put(Motor_Type.REDLINE_775PRO, MotorType.kBrushed);
             put(Motor_Type.BAG, MotorType.kBrushed);
             put(Motor_Type.CIM, MotorType.kBrushed);
-            put(Motor_Type.FALCON_500, MotorType.kBrushless); // CONFIRM WHETHER FALCON 500 IS ACTUALLY BRUSHLESS
-            put(Motor_Type.KRAKEN_X60, MotorType.kBrushless);
+            put(Motor_Type.KRAKEN_X60, MotorType.kBrushless); // CHANGE CONSTANT
         }
     };
 
