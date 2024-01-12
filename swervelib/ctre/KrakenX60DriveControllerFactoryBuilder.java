@@ -1,8 +1,6 @@
 package frc.team670.mustanglib.swervelib.ctre;
 
 import com.ctre.phoenix.motorcontrol.*;
-//import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
-import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -15,10 +13,10 @@ public final class KrakenX60DriveControllerFactoryBuilder {
     // REPLACE CONSTANTS, THEY ARE INVALID
     private static final double TICKS_PER_ROTATION = 2048.0;
 
-    private static final int CAN_TIMEOUT_MS = 250;
+    private static final int CAN_TIMEOUT_MS = 250; 
     private static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
 
-    private double nominalVoltage = Double.NaN;
+    private double nominalVoltage = Double.NaN; 
     private double currentLimit = Double.NaN;
 
     public KrakenX60DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
@@ -60,14 +58,12 @@ public final class KrakenX60DriveControllerFactoryBuilder {
             }
 
             TalonFX motor = new TalonFX(id, canbus);
-            CtreUtils.checkCtreError(motor.configAllSettings(motorConfiguration),
-                    "Failed to configure Falcon 500");
+            CtreUtils.checkCtreError(motor.getConfigurator().apply(motorConfiguration),
+                    "Failed to configure Kraken X60");
 
             motor.setNeutralMode(NeutralModeValue.Brake);
 
-            motor.setInverted(moduleConfiguration.isDriveInverted() ? TalonFXInvertType.Clockwise
-                    : TalonFXInvertType.CounterClockwise);
-            motor.setSensorPhase(true);
+            motor.setInverted(moduleConfiguration.isDriveInverted()); // is inverted in clockwise or not? we don't know
 
             // Reduce CAN status frame rates
 
@@ -76,13 +72,13 @@ public final class KrakenX60DriveControllerFactoryBuilder {
     }
 
     private class ControllerImplementation implements DriveController {
-        private final WPI_TalonFX motor;
+        private final TalonFX motor;
         private final double sensorVelocityCoefficient;
         private final double nominalVoltage = hasVoltageCompensation()
                 ? KrakenX60DriveControllerFactoryBuilder.this.nominalVoltage
                 : 12.0;
 
-        private ControllerImplementation(WPI_TalonFX motor, double sensorVelocityCoefficient) {
+        private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
         }
@@ -94,18 +90,18 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
         @Override
         public void setReferenceVoltage(double voltage) {
-            motor.set(TalonFXControlMode.PercentOutput, voltage / nominalVoltage);
+            motor.setVoltage(voltage / nominalVoltage); // not in percentage
         }
 
         @Override
         public double getStateVelocity() {
-            return motor.getSelectedSensorVelocity() * sensorVelocityCoefficient;
+            return (motor.getRotorVelocity().getValue() * sensorVelocityCoefficient);
         }
 
         @Override
         public double getDistanceMoved() {
             throw new UnsupportedOperationException();
-            // return motor.getSelectedSensorPosition();
+            //return motor.getSelectedSensorPosition();
         }
     }
 }

@@ -35,7 +35,7 @@ public class MotorConfig {
             put(Motor_Type.REDLINE_775PRO, MotorType.kBrushed);
             put(Motor_Type.BAG, MotorType.kBrushed);
             put(Motor_Type.CIM, MotorType.kBrushed);
-            put(Motor_Type.KRAKEN_X60, MotorType.kBrushless); // CHANGE CONSTANT
+            put(Motor_Type.KRAKEN_X60, MotorType.kBrushless); 
         }
     };
 
