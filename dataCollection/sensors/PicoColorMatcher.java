@@ -98,11 +98,11 @@ public class PicoColorMatcher {
     int colorNumber;
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor(convertRawToColor(detectedColor));
-    Logger.getInstance().recordOutput(COLORMATCHER_RED, detectedColor.red);
-    Logger.getInstance().recordOutput(COLORMATCHER_BLUE, detectedColor.green);
-    Logger.getInstance().recordOutput(COLORMATCHER_GREEN, detectedColor.blue);
-    Logger.getInstance().recordOutput(COLORMATCHER_CONFIDENCE, match.confidence);
-    Logger.getInstance().recordOutput(COLORMATCHER_SENSOR_CONNECTED, m_colorSensor.isSensor0Connected());
+    Logger.recordOutput(COLORMATCHER_RED, detectedColor.red);
+    Logger.recordOutput(COLORMATCHER_BLUE, detectedColor.green);
+    Logger.recordOutput(COLORMATCHER_GREEN, detectedColor.blue);
+    Logger.recordOutput(COLORMATCHER_CONFIDENCE, match.confidence);
+    Logger.recordOutput(COLORMATCHER_SENSOR_CONNECTED, m_colorSensor.isSensor0Connected());
     
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {

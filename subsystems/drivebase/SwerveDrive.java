@@ -174,7 +174,7 @@ public abstract class SwerveDrive extends DriveBase {
         DRIVEBASE_PITCH = getName()+"/pitch";
         DRIVEBASE_ROLL = getName()+"/roll";
 
-        Logger.getInstance().recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
+        Logger.recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
         
     }
     protected abstract void initPoseEstimator();
@@ -239,7 +239,7 @@ public abstract class SwerveDrive extends DriveBase {
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
-                Logger.getInstance().recordOutput(DRIVEBASE_OFFSET, mGyroOffset.getDegrees());
+                Logger.recordOutput(DRIVEBASE_OFFSET, mGyroOffset.getDegrees());
              
                 return angle;
             } else {
@@ -267,9 +267,9 @@ public abstract class SwerveDrive extends DriveBase {
             }
         }
         mPoseEstimator.update();
-        Logger.getInstance().recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
-        Logger.getInstance().recordOutput(DRIVEBASE_PITCH,getPitch());
-        Logger.getInstance().recordOutput(DRIVEBASE_ROLL,getRoll());
+        Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
+        Logger.recordOutput(DRIVEBASE_PITCH,getPitch());
+        Logger.recordOutput(DRIVEBASE_ROLL,getRoll());
 
 
         

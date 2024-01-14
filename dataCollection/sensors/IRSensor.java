@@ -37,7 +37,7 @@ public class IRSensor {
      * Write the state of this IR sensor to Advantage Scope
      */
     public void sendIRDataToDashboard() {
-        Logger.getInstance().recordOutput(IRSENSOR_IS_TRIGGERED, isTriggered());
+        Logger.recordOutput(IRSENSOR_IS_TRIGGERED, isTriggered());
     }
 
 }

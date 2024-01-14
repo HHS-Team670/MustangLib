@@ -98,10 +98,10 @@ public class ColorMatcher {
     int colorNumber;
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor(new Color(detectedColor.red, detectedColor.green, detectedColor.blue));
-    Logger.getInstance().recordOutput(COLORMATCHER_RED, detectedColor.red);
-    Logger.getInstance().recordOutput(COLORMATCHER_GREEN, detectedColor.green);
-    Logger.getInstance().recordOutput(COLORMATCHER_BLUE, detectedColor.blue);
-    Logger.getInstance().recordOutput(COLORMATCHER_CONFIDENCE, match.confidence);
+    Logger.recordOutput(COLORMATCHER_RED, detectedColor.red);
+    Logger.recordOutput(COLORMATCHER_GREEN, detectedColor.green);
+    Logger.recordOutput(COLORMATCHER_BLUE, detectedColor.blue);
+    Logger.recordOutput(COLORMATCHER_CONFIDENCE, match.confidence);
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {
         //   colorString = "Blue";

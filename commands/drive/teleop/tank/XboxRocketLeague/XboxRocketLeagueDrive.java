@@ -116,7 +116,7 @@ public class XboxRocketLeagueDrive extends Command implements MustangCommand {
    */
   public static void setDriveReversed(boolean reversed) {
     XboxRocketLeagueDrive.isReversed = reversed;
-    Logger.getInstance().recordOutput(DRIVEBASE_IS_DRIVE_REVERSED_KEY, reversed);
+    Logger.recordOutput(DRIVEBASE_IS_DRIVE_REVERSED_KEY, reversed);
   }
  
   @Override

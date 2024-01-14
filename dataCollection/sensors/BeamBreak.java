@@ -38,6 +38,6 @@ public class BeamBreak {
      * Writes the state of this beam break sensor to AdvantageScope
      */
     public void sendBeamBreakDataToDashboard() {
-        Logger.getInstance().recordOutput(BEAMBREAK_IS_TRIGGERED_KEY, isTriggered());
+        Logger.recordOutput(BEAMBREAK_IS_TRIGGERED_KEY, isTriggered());
     }
 }
