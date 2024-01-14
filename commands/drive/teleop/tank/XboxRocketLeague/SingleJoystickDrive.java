@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
@@ -21,7 +21,7 @@ import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 * uses a singles joystick to control the left and right sides of the tank drive
 * Forward back for froward reverse and twist to turn
 */
-public class SingleJoystickDrive extends CommandBase implements MustangCommand {
+public class SingleJoystickDrive extends Command implements MustangCommand {
 
     private TankDrive driveBase;
     private Joystick leftJoystick;

@@ -10,10 +10,9 @@ package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 import java.util.HashMap;
 import java.util.Map;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
 import org.littletonrobotics.junction.Logger;
-
-import edu.wpi.first.wpilibj2.command.CommandBase;
-
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
@@ -28,7 +27,7 @@ import frc.team670.mustanglib.utils.functions.JoystickUtils;
  * Note: This is for tank drive only
  * @author lakshbhambhani, armaan g, aditi k
  */
-public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand {
+public class XboxRocketLeagueDrive extends Command implements MustangCommand {
 
   private static boolean isReversed;
 

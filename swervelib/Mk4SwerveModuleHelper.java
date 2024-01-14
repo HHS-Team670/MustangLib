@@ -27,9 +27,8 @@ public final class Mk4SwerveModuleHelper {
                         .withReadingUpdatePeriod(100)
                         .build());
     }
+   
 
-
-    
     /**
      * Creates a Mk4 swerve module that uses NEOs for driving and steering.
      * Module information is displayed in the specified ShuffleBoard container.
@@ -140,7 +139,6 @@ public final class Mk4SwerveModuleHelper {
     ) {
         return createNeo(Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
     }
-
 
     public enum GearRatio {
         L1(SdsModuleConfigurations.MK4_L1),

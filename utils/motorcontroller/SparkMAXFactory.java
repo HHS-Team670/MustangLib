@@ -139,9 +139,9 @@ public class SparkMAXFactory {
             MustangNotifications.reportError("SparkMaxControllerID %s and SparkMaxControllerID %s are broken",
                     sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
         } else if (isMotor2Error) {
-            MustangNotifications.reportMajorWarning("SparkMaxControllerID %s is broken.", sparkMaxFollower.getDeviceId());
+            MustangNotifications.reportWarning("SparkMaxControllerID %s is broken.", sparkMaxFollower.getDeviceId());
         } else if (isMotor1Error) {
-            MustangNotifications.reportMajorWarning("SparkMaxControllerID %s is broken. Switching to SparkMaxControllerID %s",
+            MustangNotifications.reportWarning("SparkMaxControllerID %s is broken. Switching to SparkMaxControllerID %s",
                     sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
             SparkMAXLite sparkMaxTemp = sparkMaxLeader;
             sparkMaxLeader = sparkMaxFollower;

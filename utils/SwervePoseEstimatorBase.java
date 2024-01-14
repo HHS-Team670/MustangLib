@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 // import frc.team670.mustanglib.subsystems.VisionfSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
+import frc.team670.robot.constants.FieldConstants;
 
 
 /**
@@ -161,7 +162,7 @@ public abstract class SwervePoseEstimatorBase {
         List<State> states = traj.getStates();
         List<State> adjusted = new ArrayList<>(states.size());
         states.forEach(s -> {
-            if (DriverStation.getAlliance() == Alliance.Red) {
+            if (FieldConstants.getAlliance() == Alliance.Red) {
                 adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond,
                         s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPoseFromAllianceOriented(s.poseMeters),
                         -s.curvatureRadPerMeter));
