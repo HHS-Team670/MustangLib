@@ -1,10 +1,8 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
-import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.pathplanner.lib.auto.AutoBuilder;
@@ -25,11 +23,9 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
@@ -268,8 +264,8 @@ public abstract class SwerveDrive extends DriveBase {
         }
         mPoseEstimator.update();
         Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
-        Logger.recordOutput(DRIVEBASE_PITCH,getPitch());
-        Logger.recordOutput(DRIVEBASE_ROLL,getRoll());
+        Logger.recordOutput(DRIVEBASE_PITCH, getPitch());
+        Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
 
 
         

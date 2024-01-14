@@ -3,24 +3,23 @@ package frc.team670.mustanglib.utils;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+
 import org.littletonrobotics.junction.Logger;
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import org.photonvision.EstimatedRobotPose;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
+import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 // import frc.team670.mustanglib.subsystems.VisionfSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
@@ -62,7 +61,7 @@ public abstract class SwervePoseEstimatorBase {
     private final Field2d field2d = new Field2d();
 
     public SwervePoseEstimatorBase(SwerveDrive swerve) {
-        DRIVEBASE_ESTIMATED_POSE = "DriveBase/Estimated Pose";
+        DRIVEBASE_ESTIMATED_POSE = swerve.getName()+"/Estimated Pose";
         this.driveBase = swerve;
         this.vision = null;
         poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),

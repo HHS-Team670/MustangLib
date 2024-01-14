@@ -20,10 +20,9 @@ import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 
 import edu.wpi.first.wpilibj.PowerDistribution;
-import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 // import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.PowerDistribution.ModuleType;
 import edu.wpi.first.wpilibj.livewindow.LiveWindow;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
@@ -69,12 +68,11 @@ public class RobotBase extends LoggedRobot {
    */
   @Override
   public void robotInit() {
-    Logger.recordMetadata("ProjectName", "2023-Robot"); // Set a metadata value
+    Logger.recordMetadata("ProjectName", "670-Robot"); // Set a metadata value
 
     if (isReal()) {
         Logger.addDataReceiver(new WPILOGWriter("/home/lvuser")); // Log to a USB stick
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
-        // new PowerDistribution(1, ModuleType.kRev); // Enables power distribution logging
     } else {
         setUseTiming(false); // Run as fast as possible
         String logPath = LogFileUtil.findReplayLog(); // Pull the replay log from AdvantageScope (or prompt the user)
