@@ -19,6 +19,7 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -40,6 +41,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     private ThreadPoolExecutor mExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
     private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
     private boolean mInit = false;
+    private double averageDistance;
 
     /**
      * A vision configuration that stores important information about the field and vision subsystem on the robot
@@ -151,11 +153,20 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             return;
         CameraPoseEstimator.CameraEstimatorMeasurement measurement = optMeasurement.get();
         EstimatedRobotPose estimation = measurement.estimation;
+        Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
+                
+        SmartDashboard.putString("Estimated Vision Pose",
+        String.format("(%.2f, %.2f) %.2f degrees", estimatedPose.getX(), estimatedPose.getY(),
+        estimatedPose.getRotation().getDegrees()));
+
         double avgDistance = getAverageDistance(estimation); // TODO: figure out how vision std work
+        averageDistance = avgDistance;
+        double visionStdDev = Math.pow(avgDistance, 4.84) * 0.54;
         Vector<N3> deviation = kConfig.kVisionStdFromTagsSeen.get(MathUtil.clamp(estimation.targetsUsed.size(),
                 0,
                 kConfig.kVisionStdFromTagsSeen.keySet().size()))
                 .computeDeviation(avgDistance);
+  
         mVisionMeasurementsBuffer.add(new VisionMeasurement(estimation, deviation));
     }
     /**
@@ -237,12 +248,12 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 if (optEstimation.isEmpty())
                     return Optional.empty();
                 EstimatedRobotPose estimation = optEstimation.get();
-
                 if (estimation.targetsUsed.size() == 1) {
                     double ambiguity = estimation.targetsUsed.get(0).getPoseAmbiguity();
                     if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
                         return Optional.empty();
                 }
+
                 SmartDashboard.putString("Estimation of Camera "+photonCamera.getName(), ""+estimation.estimatedPose);
                 return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result)); 
             }catch(java.lang.ArrayIndexOutOfBoundsException e) {
@@ -298,6 +309,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         }
 
     }
+         
     /**
      * A record that stores and computes deviation of a target( a tag)
      */
