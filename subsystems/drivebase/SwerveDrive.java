@@ -47,7 +47,6 @@ public abstract class SwerveDrive extends DriveBase {
     protected SwervePoseEstimatorBase mPoseEstimator;
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
-    public SwerveDriveKinematics kinematics;
 
     private final SwerveModule[] mModules;
     private final SwerveDriveKinematics kKinematics;
@@ -336,7 +335,7 @@ public abstract class SwerveDrive extends DriveBase {
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
-        SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(speeds);
+        SwerveModuleState[] targetStates = kKinematics.toSwerveModuleStates(speeds);
     
         SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, kMaxVelocity);
     

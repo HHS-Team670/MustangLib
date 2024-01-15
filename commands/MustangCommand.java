@@ -11,7 +11,7 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
  * 
  * @author lakshbhambhani, ethan c, armaan, aditi
  */
-public interface MustangCommand {
+public interface MustangCommand{
 
     /**
      * @return A Map containing the minimum health condition for each subsystem that
