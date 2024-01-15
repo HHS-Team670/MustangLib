@@ -60,7 +60,7 @@ public final class NeoSteerControllerFactoryBuilder {
 
         @Override
         public void addDashboardEntries(ShuffleboardContainer container, ControllerImplementation controller) {
-            ConsoleLogger.consoleLog("Called super.addDashboardEntries");
+
             SteerControllerFactory.super.addDashboardEntries(container, controller);
             container.addNumber("Absolute Encoder Angle",
                     () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
@@ -195,7 +195,6 @@ public final class NeoSteerControllerFactoryBuilder {
             resetIteration = 0;
             double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
             motorEncoder.setPosition(absoluteAngle);
-            ConsoleLogger.consoleLog("called Realign method " + absoluteAngle);
             return absoluteAngle;
         }
 
