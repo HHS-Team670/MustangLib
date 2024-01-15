@@ -71,7 +71,7 @@ public class RobotBase extends LoggedRobot {
     Logger.recordMetadata("ProjectName", "670-Robot"); // Set a metadata value
 
     if (isReal()) {
-        Logger.addDataReceiver(new WPILOGWriter("/home/lvuser")); // Log to a USB stick
+        Logger.addDataReceiver(new WPILOGWriter("/U/logs")); // Log to a USB stick
         Logger.addDataReceiver(new NT4Publisher()); // Publish data to NetworkTables
     } else {
         setUseTiming(false); // Run as fast as possible
