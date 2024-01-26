@@ -123,11 +123,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
 
     public void pushHealthToDashboard() {
         Logger.recordOutput(BASE_HEALTH, getHealth(false).toString());
-        // NetworkTableEntry subsystem = table.getEntry(this.getName());
-        // subsystem.setString(getHealth(false).toString());
-        // if (getHealth(false).toString().equals("YELLOW") || getHealth(false).toString().equals("RED")) {
-        //     // RobotContainer.notifyDriverController(1.0, 0.3);
-        // }
+
     }
     /**
      * 

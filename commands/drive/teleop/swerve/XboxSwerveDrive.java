@@ -38,7 +38,7 @@ public class XboxSwerveDrive extends Command implements MustangCommand {
 
         MAX_VELOCITY = swerveDriveBase.getMaxVelocityMetersPerSecond();
         MAX_ANGULAR_VELOCITY = swerveDriveBase.getMaxAngularVelocityMetersPerSecond();
-        SmartDashboard.putNumber("Swerve Speed", 0.66);
+        
         addRequirements(driveBase);
     }
 
@@ -61,8 +61,8 @@ public class XboxSwerveDrive extends Command implements MustangCommand {
             thetaVel = rotPIDController.calculateRotationSpeed(driveBase.getGyroscopeRotation(),
                     desiredHeading);
         }
-        double speedMult= SmartDashboard.getNumber("Swerve Speed", 0.66);
-        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xVel*speedMult, yVel*speedMult, thetaVel*speedMult,
+        
+        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
                 driveBase.getGyroscopeRotation()));
 
     }
