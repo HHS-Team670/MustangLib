@@ -1,11 +1,13 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
 import edu.wpi.first.wpilibj.I2C;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorMatchResult;
+
+import org.littletonrobotics.junction.Logger;
+
 import com.revrobotics.ColorMatch;
 /**
  * A sensor object that gets and matches colors from a Rev Color Sensor V3.
@@ -30,7 +32,7 @@ public class ColorMatcher {
    * with given confidence range.
    */
   private final ColorMatch m_colorMatcher = new ColorMatch();
-
+  private final String COLORMATCHER_RED, COLORMATCHER_GREEN, COLORMATCHER_BLUE, COLORMATCHER_CONFIDENCE;
   public enum colors {
 
     BLUE(0, new Color(0.136, 0.412, 0.450)), // 2022 blue game piece
@@ -63,6 +65,10 @@ public class ColorMatcher {
 
   public ColorMatcher() {
     init();
+    COLORMATCHER_RED = "ColorMatcher/Red";
+    COLORMATCHER_GREEN = "ColorMatcher/Green";
+    COLORMATCHER_BLUE = "ColorMatcher/Blue";
+    COLORMATCHER_CONFIDENCE = "ColorMatcher/Confidence";
   }
 
   public void init() {
@@ -92,10 +98,10 @@ public class ColorMatcher {
     int colorNumber;
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor(new Color(detectedColor.red, detectedColor.green, detectedColor.blue));
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
-    SmartDashboard.putNumber("Confidence", match.confidence);
+    Logger.recordOutput(COLORMATCHER_RED, detectedColor.red);
+    Logger.recordOutput(COLORMATCHER_GREEN, detectedColor.green);
+    Logger.recordOutput(COLORMATCHER_BLUE, detectedColor.blue);
+    Logger.recordOutput(COLORMATCHER_CONFIDENCE, match.confidence);
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {
         //   colorString = "Blue";

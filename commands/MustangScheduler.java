@@ -7,7 +7,7 @@ import frc.team670.mustanglib.utils.MustangNotifications;
 import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -123,7 +123,7 @@ public class MustangScheduler {
                 }
                 this.currentCommand = m_command;
                 scheduler.schedule(currentCommand);
-                Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+                ConsoleLogger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
             } finally {
                 this.currentCommand = null;
             }
@@ -153,7 +153,7 @@ public class MustangScheduler {
 
         this.currentCommand = group;
         scheduler.schedule(currentCommand);
-        Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+        ConsoleLogger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
         
     }
 
@@ -165,7 +165,7 @@ public class MustangScheduler {
      */
     public void check(Command command) throws RuntimeException {
         if (command == null) {
-            Logger.consoleLog("Command is null");
+            ConsoleLogger.consoleLog("Command is null");
             return;
         } else {
             if (!(command instanceof MustangCommand)) {
@@ -199,7 +199,7 @@ public class MustangScheduler {
             }
             this.currentCommand = m_command;
             scheduler.setDefaultCommand(subsystem, currentCommand);
-            Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+            ConsoleLogger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
         } finally {
             this.currentCommand = null;
         }

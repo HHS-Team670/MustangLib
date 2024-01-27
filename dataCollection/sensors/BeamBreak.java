@@ -1,7 +1,8 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.DigitalInput;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * Used to get inputs from an beam break sensor
@@ -12,6 +13,7 @@ public class BeamBreak {
 
     private DigitalInput dio;
     private int port;
+    private final String BEAMBREAK_IS_TRIGGERED_KEY;
 
     /**
      * Constructs a BeamBreak sensor
@@ -21,6 +23,7 @@ public class BeamBreak {
     public BeamBreak(int dioPort) {
         dio = new DigitalInput(dioPort);
         this.port = dioPort;
+        BEAMBREAK_IS_TRIGGERED_KEY = "BeamBreak/"+port+"/Triggered";
     }
 
     /**
@@ -32,10 +35,9 @@ public class BeamBreak {
     }
 
     /**
-     * Writes the state of this beam break sensor to SmartDashboard
+     * Writes the state of this beam break sensor to AdvantageScope
      */
     public void sendBeamBreakDataToDashboard() {
-        SmartDashboard.putBoolean("Beam Break on " + port + ":", isTriggered());
+        Logger.recordOutput(BEAMBREAK_IS_TRIGGERED_KEY, isTriggered());
     }
-
 }

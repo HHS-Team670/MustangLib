@@ -23,7 +23,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 /**
  * Subsystem base vision. Mainly used for april tags pose estimation.
@@ -283,7 +283,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                     break;
             }
             if (!possible)
-                Logger.consoleLog("Impossible FIDs combination: " + ids);
+                ConsoleLogger.consoleLog("Impossible FIDs combination: " + ids);
             return possible;
         }
 
