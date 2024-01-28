@@ -16,6 +16,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.Trajectory.State;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -35,7 +36,7 @@ public abstract class SwervePoseEstimatorBase {
     private final SwerveDrive driveBase;
     private VisionSubsystemBase vision;
     private final String DRIVEBASE_ESTIMATED_POSE;
-    private static DriveBase.Alliance alliance = null;
+    private static DriverStation.Alliance alliance = null;
     /**
      * Standard deviations of model states. Increase these numbers to trust your
      * model's state
