@@ -23,7 +23,6 @@ import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 // import frc.team670.mustanglib.subsystems.VisionfSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
-import frc.team670.robot.constants.FieldConstants;
 
 
 /**
@@ -36,6 +35,7 @@ public abstract class SwervePoseEstimatorBase {
     private final SwerveDrive driveBase;
     private VisionSubsystemBase vision;
     private final String DRIVEBASE_ESTIMATED_POSE;
+    private static DriveBase.Alliance alliance = null;
     /**
      * Standard deviations of model states. Increase these numbers to trust your
      * model's state
@@ -59,6 +59,13 @@ public abstract class SwervePoseEstimatorBase {
     private SwerveDrivePoseEstimator poseEstimator;
 
     private final Field2d field2d = new Field2d();
+
+    public static DriverStation.Alliance getAlliance(){
+        if(DriverStation.getAlliance().isPresent()){
+                alliance = DriverStation.getAlliance().get();
+        }
+        return alliance;
+    }
 
     public SwervePoseEstimatorBase(SwerveDrive swerve) {
         DRIVEBASE_ESTIMATED_POSE = swerve.getName()+"/Estimated Pose";
@@ -161,7 +168,7 @@ public abstract class SwervePoseEstimatorBase {
         List<State> states = traj.getStates();
         List<State> adjusted = new ArrayList<>(states.size());
         states.forEach(s -> {
-            if (FieldConstants.getAlliance() == Alliance.Red) {
+            if (getAlliance() == Alliance.Red) {
                 adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond,
                         s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPoseFromAllianceOriented(s.poseMeters),
                         -s.curvatureRadPerMeter));
@@ -212,10 +219,7 @@ public abstract class SwervePoseEstimatorBase {
     public List<Pose2d> getSortedTargetTranslations() {
         List<Pose2d> targets = getTargets();
 
-        // for (Translation2d p : FieldConstants.Grids.complexLowTranslations)
-        //     targets.add(FieldConstants.allianceFlip(new Pose2d(p, new Rotation2d())));
-        // for (Pose2d p : FieldConstants.LoadingZone.IntakePoses)
-        //     targets.add(FieldConstants.allianceFlip(p));
+     
 
         Translation2d robotTranslation = getCurrentPose().getTranslation();
         targets.sort(new Comparator<Pose2d>() {
