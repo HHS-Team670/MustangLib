@@ -15,12 +15,15 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
     private static final int CAN_TIMEOUT_MS = 250; 
     private static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
+    private static final double ENCODER_CPR = 1;
+    private double encoderDistancePerPulse;
 
     private double nominalVoltage = Double.NaN; 
     private double currentLimit = Double.NaN;
 
-    public KrakenX60DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
+    public KrakenX60DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage, int wheelDiameter) {
         this.nominalVoltage = nominalVoltage;
+        encoderDistancePerPulse = (wheelDiameter * Math.PI) / ENCODER_CPR;
         return this;
     }
 
@@ -100,8 +103,7 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
         @Override
         public double getDistanceMoved() {
-            throw new UnsupportedOperationException();
-            //return motor.getSelectedSensorPosition();
+            return motor.getSelectedSensorPosition() * encoderDistancePerPulse;
         }
     }
 }
