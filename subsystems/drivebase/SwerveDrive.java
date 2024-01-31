@@ -444,18 +444,21 @@ public abstract class SwerveDrive extends DriveBase {
         setModuleStates(states);
     }
 
-    public void configureHolonomic(double driveBaseRadius) {
-
-        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
-        kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
+    private BooleanSupplier getAlliance() {
         BooleanSupplier alliance = new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
                 return DriverStation.getAlliance().get() != Alliance.Blue;
             }
         };
-        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, alliance, (Subsystem)this);
-    
+        return alliance;
+    }
+
+    public void configureHolonomic(double driveBaseRadius) {
+
+        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
+        kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
+        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, getAlliance(), (Subsystem)this);
     }
  
     /**
@@ -466,12 +469,6 @@ public abstract class SwerveDrive extends DriveBase {
     public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerPath path, Subsystem[] reqSubsystems, double driveBaseRadius) {
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
         kMaxVelocity, driveBaseRadius, new ReplanningConfig());
-        BooleanSupplier alliance = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return DriverStation.getAlliance().get() != Alliance.Blue;
-            }
-        };
-        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, alliance, reqSubsystems);
+        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, getAlliance(), reqSubsystems);
     }
 }
