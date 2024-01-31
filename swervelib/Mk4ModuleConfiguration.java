@@ -145,10 +145,4 @@ public class Mk4ModuleConfiguration {
         config.setSteerPID(1.0, 0.0, 0.1);
         return config;
     }
-
-    public static Mk4ModuleConfiguration getDefaultSteerKrakenX60() { // CHANGE CONSTANTS LATER
-        Mk4ModuleConfiguration config = new Mk4ModuleConfiguration();
-        config.setSteerPID(0.2, 0.0, 0.1);
-        return config;
-    }
 }

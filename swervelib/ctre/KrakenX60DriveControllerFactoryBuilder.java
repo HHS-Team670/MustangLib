@@ -15,15 +15,12 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
     private static final int CAN_TIMEOUT_MS = 250; 
     private static final int STATUS_FRAME_GENERAL_PERIOD_MS = 250;
-    private static final double ENCODER_CPR = 1;
-    private double encoderDistancePerPulse;
 
     private double nominalVoltage = Double.NaN; 
     private double currentLimit = Double.NaN;
 
     public KrakenX60DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage, int wheelDiameter) {
         this.nominalVoltage = nominalVoltage;
-        encoderDistancePerPulse = (wheelDiameter * Math.PI) / ENCODER_CPR;
         return this;
     }
 
@@ -51,6 +48,7 @@ public final class KrakenX60DriveControllerFactoryBuilder {
                 ModuleConfiguration moduleConfiguration) {
             TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
             
+            double encoderDistancePerPulse = (moduleConfiguration.getWheelDiameter() * Math.PI) / TICKS_PER_ROTATION;
             double sensorPositionCoefficient = Math.PI * moduleConfiguration.getWheelDiameter()
                     * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
@@ -70,7 +68,7 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
             // Reduce CAN status frame rates
 
-            return new ControllerImplementation(motor, sensorVelocityCoefficient);
+            return new ControllerImplementation(motor, sensorVelocityCoefficient, encoderDistancePerPulse);
         }
     }
 
@@ -80,10 +78,12 @@ public final class KrakenX60DriveControllerFactoryBuilder {
         private final double nominalVoltage = hasVoltageCompensation()
                 ? KrakenX60DriveControllerFactoryBuilder.this.nominalVoltage
                 : 12.0;
+        private final double encoderDistancePerPulse;
 
-        private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient) {
+        private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient, double encoderDistancePerPulse) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
+            this.encoderDistancePerPulse = encoderDistancePerPulse;
         }
 
         @Override
