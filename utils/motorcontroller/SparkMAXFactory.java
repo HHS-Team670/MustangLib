@@ -39,12 +39,19 @@ public class SparkMAXFactory {
     }
 
     public static final Config defaultConfig = new Config();
+    public static final Config defaultVelocityConfig = new Config();
+    public static final Config defaultPositionConfig = new Config();
+    public static final Config defaultLowUpdateRateConfig = new Config();
     public static final Config defaultFollowerConfig = new Config();
 
     static {
         defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 1000;
         defaultFollowerConfig.STATUS_FRAME_1_RATE_MS = 1000;
         defaultFollowerConfig.STATUS_FRAME_2_RATE_MS = 1000;
+        defaultVelocityConfig.STATUS_FRAME_1_RATE_MS = 60;
+        defaultPositionConfig.STATUS_FRAME_2_RATE_MS = 60;
+        defaultLowUpdateRateConfig.STATUS_FRAME_1_RATE_MS = 60;
+        defaultLowUpdateRateConfig.STATUS_FRAME_2_RATE_MS = 60;
     }
 
     /**
@@ -52,6 +59,19 @@ public class SparkMAXFactory {
      */
     public static SparkMAXLite buildFactorySparkMAX(int deviceID, MotorConfig.Motor_Type motorType) {
         return buildSparkMAX(deviceID, defaultConfig, motorType);
+    }
+
+    public static SparkMAXLite buildFactorySparkMAX(int deviceID, MotorConfig.Motor_Type motorType, boolean velocityImportant, boolean positionImportant) {
+        if (velocityImportant && positionImportant) {
+            return buildSparkMAX(deviceID, defaultConfig, motorType);
+        } else if (velocityImportant) {
+            return buildSparkMAX(deviceID, defaultVelocityConfig, motorType);
+        } else if (positionImportant) {
+            return buildSparkMAX(deviceID, defaultPositionConfig, motorType);
+        } else {
+            return buildSparkMAX(deviceID, defaultLowUpdateRateConfig, motorType);
+        }
+
     }
 
     public static SparkMAXLite setPermanentFollower(int deviceID, SparkMAXLite leader) {
@@ -91,9 +111,30 @@ public class SparkMAXFactory {
      * @return motorPair a pair of motors with the first one as its leader and
      *         second one as the follower
      */
-    public static List<SparkMAXLite> buildFactorySparkMAXPair(int motor1DeviceID, int motor2DeviceID,
-            boolean invertFollower, MotorConfig.Motor_Type motorType) {
+    public static List<SparkMAXLite> buildFactorySparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, MotorConfig.Motor_Type motorType) {
         return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultConfig, defaultConfig, motorType);
+    }
+       /**
+     * Used to build a pair of spark max controllers to control motors. Creates a
+     * leader on the port which is working and makes other controller follow it
+     * 
+     * @param motor1DeviceID The CAN ID of spark max controller 1
+     * @param motor2DeviceID The CAN ID of spark max controller 2
+     * @return motorPair a pair of motors with the first one as its leader and
+     *         second one as the follower
+     */
+    public static List<SparkMAXLite> buildFactorySparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, MotorConfig.Motor_Type motorType,boolean velocityImportant,boolean positionImportant) {
+        if (velocityImportant && positionImportant) {
+            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultConfig, defaultConfig, motorType);
+        } else if (velocityImportant) {
+            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultVelocityConfig, defaultVelocityConfig, motorType);
+    
+        } else if (positionImportant) {
+            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultPositionConfig, defaultPositionConfig, motorType);
+    
+        } else {
+            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultLowUpdateRateConfig, defaultLowUpdateRateConfig, motorType);
+        }
     }
 
     /**
@@ -106,8 +147,7 @@ public class SparkMAXFactory {
      * @return motorPair a pair of motors with the first one as its leader and
      *         second one as the follower
      */
-    public static List<SparkMAXLite> buildSparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, Config config,
-            MotorConfig.Motor_Type motorType) {
+    public static List<SparkMAXLite> buildSparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, Config config, MotorConfig.Motor_Type motorType) {
         return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, config, config, motorType);
     }
 
@@ -124,8 +164,7 @@ public class SparkMAXFactory {
      * @return motorPair a pair of motors with the first one as its leader and
      *         second one as the follower
      */
-    public static List<SparkMAXLite> buildSparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, Config leaderConfig,
-            Config followerConfig,MotorConfig.Motor_Type motorType) {
+    public static List<SparkMAXLite> buildSparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, Config leaderConfig, Config followerConfig, MotorConfig.Motor_Type motorType) {
         SparkMAXLite sparkMaxLeader = buildSparkMAX(motor1DeviceID, leaderConfig, motorType);
         SparkMAXLite sparkMaxFollower = buildSparkMAX(motor2DeviceID, leaderConfig, motorType);
 
@@ -136,24 +175,23 @@ public class SparkMAXFactory {
         boolean isMotor2Error = sparkMaxFollowerError != REVLibError.kOk && sparkMaxFollowerError != null;
 
         if (isMotor1Error && isMotor2Error) {
-            MustangNotifications.reportError("SparkMaxControllerID %s and SparkMaxControllerID %s are broken",
-                    sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
+            MustangNotifications.reportError("SparkMaxControllerID %s and SparkMaxControllerID %s are broken", sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
         } else if (isMotor2Error) {
             MustangNotifications.reportWarning("SparkMaxControllerID %s is broken.", sparkMaxFollower.getDeviceId());
         } else if (isMotor1Error) {
-            MustangNotifications.reportWarning("SparkMaxControllerID %s is broken. Switching to SparkMaxControllerID %s",
-                    sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
+            MustangNotifications.reportWarning("SparkMaxControllerID %s is broken. Switching to SparkMaxControllerID %s", sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
             SparkMAXLite sparkMaxTemp = sparkMaxLeader;
             sparkMaxLeader = sparkMaxFollower;
             sparkMaxFollower = sparkMaxTemp;
         }
-        // Tells the leader controller explicitly to not be following any other, to avoid potential issues.
-        // Refer to: https://www.chiefdelphi.com/t/spark-max-follower-with-lower-can-id-than-leader-causes-4-stutters-sec-until-power-cycled/378716/12
+        // Tells the leader controller explicitly to not be following any other, to
+        // avoid potential issues.
+        // Refer to:
+        // https://www.chiefdelphi.com/t/spark-max-follower-with-lower-can-id-than-leader-causes-4-stutters-sec-until-power-cycled/378716/12
         sparkMaxLeader.follow(ExternalFollower.kFollowerDisabled, 0);
         sparkMaxFollower.follow(sparkMaxLeader, invertFollower);
         List<SparkMAXLite> motorPair = Arrays.asList(sparkMaxLeader, sparkMaxFollower);
-        ConsoleLogger.consoleLog("SparkMaxLeaderID %s, SparkMaxFollowerID %s", sparkMaxLeader.getDeviceId(),
-                sparkMaxFollower.getDeviceId());
+        ConsoleLogger.consoleLog("SparkMaxLeaderID %s, SparkMaxFollowerID %s", sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
         return motorPair;
     }
 
