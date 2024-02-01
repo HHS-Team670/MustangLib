@@ -1,6 +1,9 @@
 package frc.team670.mustanglib.subsystems;
 
+import java.io.Console;
+
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
@@ -41,29 +44,60 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
         this.mRotator = SparkMAXFactory.buildFactorySparkMAX(kConfig.kDeviceID, kConfig.kMotorType);
         this.mEncoder = mRotator.getEncoder();
-        this.mRotator.setIdleMode(kConfig.kIdleMode);
+
+        if(this.mRotator.setIdleMode(kConfig.kIdleMode) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set IdleMode for SparkMax" + mRotator.getDeviceId());
+        }
+
         this.mController = mRotator.getPIDController();
         this.kAllowedDeviation = kConfig.kRotatorGearRatio * 0.2 / 360;
 
         // set PID coefficients
-        mController.setP(kConfig.kP);
-        mController.setI(kConfig.kI);
-        mController.setD(kConfig.kD);
-        mController.setIZone(kConfig.kIz);
-        mController.setFF(kConfig.kFF);
-        mController.setOutputRange(kConfig.kMinOutput, kConfig.kMaxOutput);
+        if(mController.setP(kConfig.kP) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set P for SparkMax " + mRotator.getDeviceId());
+        }
+        if(mController.setI(kConfig.kI) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set I for SparkMax " + mRotator.getDeviceId());
+        }
+        if(mController.setD(kConfig.kD) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set D for SparkMax " + mRotator.getDeviceId());
+        }
+        if(mController.setIZone(kConfig.kIz) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set IZone for SparkMax " + mRotator.getDeviceId());
+        }
+        if(mController.setFF(kConfig.kFF) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set FF for SparkMax " + mRotator.getDeviceId());
+        }
 
-        mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM, kConfig.kSlot);
-        mController.setSmartMotionMinOutputVelocity(kConfig.kMinRotatorRPM, kConfig.kSlot);
-        mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration, kConfig.kSlot);
-        mController.setSmartMotionAllowedClosedLoopError(kAllowedDeviation, kConfig.kSlot);
+        if(mController.setOutputRange(kConfig.kMinOutput, kConfig.kMaxOutput)!= REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set Output Range for SparkMax " + mRotator.getDeviceId());
+        }
 
-        mRotator.setSmartCurrentLimit(kConfig.kPeakCurrent, kConfig.kContinuousCurrent);
+        if(mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM, kConfig.kSlot)!= REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set Smart Motion Max Velocity for SparkMax " + mRotator.getDeviceId());
+        }
+
+        if(mController.setSmartMotionMinOutputVelocity(kConfig.kMinRotatorRPM, kConfig.kSlot)!= REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set Smart Motion Min Output Velocity for SparkMax " + mRotator.getDeviceId());
+        }
+
+        if(mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration, kConfig.kSlot)!= REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set Smart Motion Max Accel for SparkMax " + mRotator.getDeviceId());
+        }
+
+        if(mController.setSmartMotionAllowedClosedLoopError(kAllowedDeviation, kConfig.kSlot)!= REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set Smart Motion Allowed Closed Loop for SparkMax " + mRotator.getDeviceId());
+        }
+
+        if(mRotator.setSmartCurrentLimit(kConfig.kPeakCurrent, kConfig.kContinuousCurrent)!= REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to set Smart Current Limit for SparkMax " + mRotator.getDeviceId());
+        }
 
         //sets the soft limits
         if (kConfig.kSoftLimits == null || kConfig.kSoftLimits.length > 2) {
-            mRotator.enableSoftLimit(SoftLimitDirection.kForward, false);
-            mRotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
+            if(mRotator.enableSoftLimit(SoftLimitDirection.kForward, false) != REVLibError.kOk || mRotator.enableSoftLimit(SoftLimitDirection.kReverse, false) != REVLibError.kOk){
+                ConsoleLogger.consoleLog("Failed to disable soft limits for SparkMax " + mRotator.getDeviceId());
+            }
         } else {
             mRotator.setSoftLimit(SoftLimitDirection.kForward, kConfig.kSoftLimits[0]);
             mRotator.setSoftLimit(SoftLimitDirection.kReverse, kConfig.kSoftLimits[1]);
@@ -142,12 +176,13 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     protected boolean setSystemMotionTarget(double setpoint, double arbitraryFF) {
         if (checkSoftLimits(setpoint)) {
             if (setpoint != kNoSetPoint) {
-                mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
-                        arbitraryFF);
-    
+                if(mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0, arbitraryFF) != REVLibError.kOk){
+                    ConsoleLogger.consoleLog("Failed to set System Motion Target for SparkMax " + mRotator.getDeviceId());
+                }
             } else {
                 mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
             }
+
             this.mSetpoint = setpoint;
             return true;
         }
@@ -166,7 +201,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     protected boolean setTemporaryMotionTarget(double setpoint) {
         if (checkSoftLimits(setpoint)) {
             mTempSetpoint = setpoint;
-            mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
+            if(mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion) != REVLibError.kOk){
+                ConsoleLogger.consoleLog("Failed to set Motion Target for SparkMax " + mRotator.getDeviceId());
+            }
             return true;
         }
         return false;
@@ -259,8 +296,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      */
     public void updateArbitraryFeedForward(double voltage) {
         if (mSetpoint != kNoSetPoint) {
-            mController.setReference(mSetpoint, CANSparkMax.ControlType.kSmartMotion, kConfig.kSlot,
-                    voltage);
+            if (mController.setReference(mSetpoint, CANSparkMax.ControlType.kSmartMotion, kConfig.kSlot, voltage) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to update Arbitrary Feed Forward for SparkMax " + mRotator.getDeviceId());
+        }
         }
     }
 
@@ -284,13 +322,17 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * sets idle mode to coast
      */
     protected void enableCoastMode() {
-        mRotator.setIdleMode(IdleMode.kCoast);
+        if(mRotator.setIdleMode(IdleMode.kCoast) != REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to Enable Coast Mode for SparkMax " + mRotator.getDeviceId());
+        }
     }
     /*
      * sets idle mode to brake
      */
     protected void enableBrakeMode() {
-        mRotator.setIdleMode(IdleMode.kBrake);
+        if(mRotator.setIdleMode(IdleMode.kBrake)!= REVLibError.kOk){
+            ConsoleLogger.consoleLog("Failed to Enable Brake Mode for SparkMax " + mRotator.getDeviceId());
+        }
     }
 
     /**
@@ -306,7 +348,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      */
     public boolean clearSetpoint() {
         if (checkSoftLimits(0)) {
-            mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+            if(mController.setReference(0, CANSparkMax.ControlType.kDutyCycle) != REVLibError.kOk){
+                ConsoleLogger.consoleLog("Failed to clear setpoint for SparkMax " + mRotator.getDeviceId());
+            }
             mSetpoint = kNoSetPoint;
             return true;
         }

@@ -50,8 +50,7 @@ public final class NeoSteerControllerFactoryBuilder {
         return new FactoryImplementation<>(encoderFactory);
     }
 
-    public class FactoryImplementation<T>
-            implements SteerControllerFactory<ControllerImplementation, SteerConfiguration<T>> {
+    public class FactoryImplementation<T> implements SteerControllerFactory<ControllerImplementation, SteerConfiguration<T>> {
         private final AbsoluteEncoderFactory<T> encoderFactory;
 
         public FactoryImplementation(AbsoluteEncoderFactory<T> encoderFactory) {
@@ -81,6 +80,7 @@ public final class NeoSteerControllerFactoryBuilder {
                     "Failed to set periodic status frame 2 rate");
             checkNeoError(motor.setIdleMode(CANSparkMax.IdleMode.kBrake), "Failed to set NEO idle mode");
             motor.setInverted(!moduleConfiguration.isSteerInverted());
+            
             if (hasVoltageCompensation()) {
                 checkNeoError(motor.enableVoltageCompensation(nominalVoltage), "Failed to enable voltage compensation");
             }

@@ -3,6 +3,8 @@ package frc.team670.mustanglib.utils.motorcontroller;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 
+import frc.team670.mustanglib.utils.ConsoleLogger;
+
 /**
  * Wrapper class for a SparkMAX for reducing CAN bus overhead by skipping
  * duplicate set commands.
@@ -53,7 +55,9 @@ public final class SparkMAXLite extends CANSparkMax {
      */
     public void setFollow(CANSparkMax leader) {
         this.leader = leader;
-        super.follow(leader);
+        if(super.follow(leader) != REVLibError.kOk){
+            ConsoleLogger.consoleError("Failed to set CanSparkMax follower", this);
+        }
     }
 
     /**
