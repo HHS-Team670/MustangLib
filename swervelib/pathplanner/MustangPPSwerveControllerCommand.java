@@ -32,7 +32,19 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 public class MustangPPSwerveControllerCommand extends FollowPathHolonomic implements MustangCommand {
 
     
-     public MustangPPSwerveControllerCommand(PathPlannerPath path, Supplier<Pose2d> poseSupplier,
+    
+      /**
+     * Constructor for the MustangPPSwerveControllerCommand class.
+     * @param trajectory The trajectory to follow.
+     * @param poseSupplier A supplier for the robot's current pose.
+     * @param kinematics The swerve drive kinematics.
+     * @param xController The PIDController for the x-axis.
+     * @param yController The PIDController for the y-axis.
+     * @param rotationController The PIDController for rotation.
+     * @param outputModuleStates A consumer for the output module states.
+     * @param requirements The subsystems required by this command.
+     */
+    public MustangPPSwerveControllerCommand(PathPlannerPath path, Supplier<Pose2d> poseSupplier,
             Supplier<ChassisSpeeds> currentRobotRelativeSpeeds,Consumer<ChassisSpeeds> output, HolonomicPathFollowerConfig config, BooleanSupplier shouldFlipPath,
             Subsystem[] requirements) {
 
