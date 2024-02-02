@@ -101,9 +101,7 @@ public class RamseteCommand extends Command {
     m_leftController = Objects.requireNonNull(leftController);
     m_rightController = Objects.requireNonNull(rightController);
     m_output = Objects.requireNonNull(outputVolts);
-
     m_usePID = true;
-
     addRequirements(requirements);
   }
 
