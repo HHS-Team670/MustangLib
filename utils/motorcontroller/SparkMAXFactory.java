@@ -6,7 +6,9 @@ import java.util.List;
 import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.ExternalFollower;
 import com.revrobotics.CANSparkMax.IdleMode;
+import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
 
+import edu.wpi.first.wpilibj.PWM.PeriodMultiplier;
 import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
@@ -99,6 +101,8 @@ public class SparkMAXFactory {
         sparkMax.setInverted(config.INVERTED);
         sparkMax.setSmartCurrentLimit(MotorConfig.MOTOR_MAX_CURRENT.get(motorType));
         sparkMax.enableVoltageCompensation(12);
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus1, config.STATUS_FRAME_1_RATE_MS);
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus2, config.STATUS_FRAME_2_RATE_MS);
         return sparkMax;
     }
 
