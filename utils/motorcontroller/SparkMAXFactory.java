@@ -3,16 +3,14 @@ package frc.team670.mustanglib.utils.motorcontroller;
 import java.util.Arrays;
 import java.util.List;
 
-import com.revrobotics.REVLibError;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax.ExternalFollower;
 import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.CANSparkMaxLowLevel.PeriodicFrame;
+import com.revrobotics.REVLibError;
 
-import edu.wpi.first.wpilibj.PWM.PeriodMultiplier;
 import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.MustangNotifications;
-
-import com.revrobotics.CANSparkMax.ControlType;
 
 /**
  * Utility class for configuring a SparkMAX to default settings and resetting to
@@ -29,8 +27,12 @@ public class SparkMAXFactory {
         public boolean INVERTED = false;
 
         public int STATUS_FRAME_0_RATE_MS = 10;
-        public int STATUS_FRAME_1_RATE_MS = 1000;
-        public int STATUS_FRAME_2_RATE_MS = 1000;
+        public int STATUS_FRAME_1_RATE_MS = 20;
+        public int STATUS_FRAME_2_RATE_MS = 20;
+        public int STATUS_FRAME_3_RATE_MS = 50;
+        public int STATUS_FRAME_4_RATE_MS = 20;
+        public int STATUS_FRAME_5_RATE_MS = 200;
+        public int STATUS_FRAME_6_RATE_MS = 200;
 
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
@@ -40,11 +42,11 @@ public class SparkMAXFactory {
 
     }
 
-    public static final Config defaultConfig = new Config();
-    public static final Config defaultVelocityConfig = new Config();
-    public static final Config defaultPositionConfig = new Config();
-    public static final Config defaultLowUpdateRateConfig = new Config();
-    public static final Config defaultFollowerConfig = new Config();
+    public static final Config defaultConfig = new Config(); // For motors where we care about position and velocity
+    public static final Config defaultVelocityConfig = new Config();// For motors were we only care about precise velocity and not precise position 
+    public static final Config defaultPositionConfig = new Config(); // For motors were we only care about precise position and not precise velocity 
+    public static final Config defaultLowUpdateRateConfig = new Config(); // For motors where we neither care about precise velocity or position
+    public static final Config defaultFollowerConfig = new Config(); //For follower motors
 
     static {
         defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 1000;
@@ -63,18 +65,7 @@ public class SparkMAXFactory {
         return buildSparkMAX(deviceID, defaultConfig, motorType);
     }
 
-    public static SparkMAXLite buildFactorySparkMAX(int deviceID, MotorConfig.Motor_Type motorType, boolean velocityImportant, boolean positionImportant) {
-        if (velocityImportant && positionImportant) {
-            return buildSparkMAX(deviceID, defaultConfig, motorType);
-        } else if (velocityImportant) {
-            return buildSparkMAX(deviceID, defaultVelocityConfig, motorType);
-        } else if (positionImportant) {
-            return buildSparkMAX(deviceID, defaultPositionConfig, motorType);
-        } else {
-            return buildSparkMAX(deviceID, defaultLowUpdateRateConfig, motorType);
-        }
 
-    }
 
     public static SparkMAXLite setPermanentFollower(int deviceID, SparkMAXLite leader) {
         return setPermanentFollower(deviceID, leader, false);
@@ -103,6 +94,11 @@ public class SparkMAXFactory {
         sparkMax.enableVoltageCompensation(12);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus1, config.STATUS_FRAME_1_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus2, config.STATUS_FRAME_2_RATE_MS);
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus3, config.STATUS_FRAME_3_RATE_MS);
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus4, config.STATUS_FRAME_4_RATE_MS);
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, config.STATUS_FRAME_5_RATE_MS);
+        sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus6, config.STATUS_FRAME_6_RATE_MS);
+
         return sparkMax;
     }
 
@@ -116,30 +112,9 @@ public class SparkMAXFactory {
      *         second one as the follower
      */
     public static List<SparkMAXLite> buildFactorySparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, MotorConfig.Motor_Type motorType) {
-        return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultConfig, defaultConfig, motorType);
+        return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultConfig, defaultFollowerConfig, motorType);
     }
-       /**
-     * Used to build a pair of spark max controllers to control motors. Creates a
-     * leader on the port which is working and makes other controller follow it
-     * 
-     * @param motor1DeviceID The CAN ID of spark max controller 1
-     * @param motor2DeviceID The CAN ID of spark max controller 2
-     * @return motorPair a pair of motors with the first one as its leader and
-     *         second one as the follower
-     */
-    public static List<SparkMAXLite> buildFactorySparkMAXPair(int motor1DeviceID, int motor2DeviceID, boolean invertFollower, MotorConfig.Motor_Type motorType,boolean velocityImportant,boolean positionImportant) {
-        if (velocityImportant && positionImportant) {
-            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultConfig, defaultConfig, motorType);
-        } else if (velocityImportant) {
-            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultVelocityConfig, defaultVelocityConfig, motorType);
-    
-        } else if (positionImportant) {
-            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultPositionConfig, defaultPositionConfig, motorType);
-    
-        } else {
-            return buildSparkMAXPair(motor1DeviceID, motor2DeviceID, invertFollower, defaultLowUpdateRateConfig, defaultLowUpdateRateConfig, motorType);
-        }
-    }
+
 
     /**
      * Used to build a pair of spark max controllers to control motors. Creates a
