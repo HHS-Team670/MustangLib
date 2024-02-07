@@ -52,10 +52,23 @@ public class SparkMAXFactory {
         defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 1000;
         defaultFollowerConfig.STATUS_FRAME_1_RATE_MS = 1000;
         defaultFollowerConfig.STATUS_FRAME_2_RATE_MS = 1000;
+        defaultFollowerConfig.STATUS_FRAME_3_RATE_MS = 300;
+        defaultFollowerConfig.STATUS_FRAME_4_RATE_MS = 120;
+        defaultFollowerConfig.STATUS_FRAME_5_RATE_MS = 1200;
+        defaultFollowerConfig.STATUS_FRAME_6_RATE_MS = 1200;
+
         defaultVelocityConfig.STATUS_FRAME_1_RATE_MS = 60;
+        defaultPositionConfig.STATUS_FRAME_5_RATE_MS = 600;
+
         defaultPositionConfig.STATUS_FRAME_2_RATE_MS = 60;
+        defaultPositionConfig.STATUS_FRAME_6_RATE_MS = 600;
+        
         defaultLowUpdateRateConfig.STATUS_FRAME_1_RATE_MS = 60;
         defaultLowUpdateRateConfig.STATUS_FRAME_2_RATE_MS = 60;
+        defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS = 150;
+        defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS = 60;
+        defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS = 600;
+        defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS = 600;
     }
 
     /**
