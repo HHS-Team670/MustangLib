@@ -1,16 +1,10 @@
 package frc.team670.mustanglib.utils.servo;
 
-/**
- * Represents a type of servo.
- * Each type has a {@link PWMConfig} attached to it, which should be used when setting PWM bounds.
- * 
- * @author AkshatAdsule
- */
 public enum ServoType {
     /**
      * Andymark L16 Linear Servo
      */
-    ANDYMARK_L16(new PWMConfig(2.0, 1.8, 1.5, 1.2, 1.0));
+    ANDYMARK_L16(new PWMConfig(2, 2, 1, 1, 1)); //not correct please change
 
     public final PWMConfig config;
     private ServoType(PWMConfig config){
@@ -24,9 +18,9 @@ public enum ServoType {
  * @author AkshatAdsule
  */
 final class PWMConfig {
-    protected final double max, deadbandMax, center, deadbandMin, min;
+    protected final int max, deadbandMax, center, deadbandMin, min;
 
-    protected PWMConfig(double max, double deadbandMax, double center, double deadbandMin, double min) {
+    protected PWMConfig(int max, int deadbandMax, int center, int deadbandMin, int min) {
         this.max = max;
         this.deadbandMax = deadbandMax;
         this.center = center;

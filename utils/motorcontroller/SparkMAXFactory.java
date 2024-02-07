@@ -7,7 +7,7 @@ import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkMax.ExternalFollower;
 import com.revrobotics.CANSparkMax.IdleMode;
 
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 import com.revrobotics.CANSparkMax.ControlType;
@@ -139,9 +139,9 @@ public class SparkMAXFactory {
             MustangNotifications.reportError("SparkMaxControllerID %s and SparkMaxControllerID %s are broken",
                     sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
         } else if (isMotor2Error) {
-            MustangNotifications.reportMajorWarning("SparkMaxControllerID %s is broken.", sparkMaxFollower.getDeviceId());
+            MustangNotifications.reportWarning("SparkMaxControllerID %s is broken.", sparkMaxFollower.getDeviceId());
         } else if (isMotor1Error) {
-            MustangNotifications.reportMajorWarning("SparkMaxControllerID %s is broken. Switching to SparkMaxControllerID %s",
+            MustangNotifications.reportWarning("SparkMaxControllerID %s is broken. Switching to SparkMaxControllerID %s",
                     sparkMaxLeader.getDeviceId(), sparkMaxFollower.getDeviceId());
             SparkMAXLite sparkMaxTemp = sparkMaxLeader;
             sparkMaxLeader = sparkMaxFollower;
@@ -152,7 +152,7 @@ public class SparkMAXFactory {
         sparkMaxLeader.follow(ExternalFollower.kFollowerDisabled, 0);
         sparkMaxFollower.follow(sparkMaxLeader, invertFollower);
         List<SparkMAXLite> motorPair = Arrays.asList(sparkMaxLeader, sparkMaxFollower);
-        Logger.consoleLog("SparkMaxLeaderID %s, SparkMaxFollowerID %s", sparkMaxLeader.getDeviceId(),
+        ConsoleLogger.consoleLog("SparkMaxLeaderID %s, SparkMaxFollowerID %s", sparkMaxLeader.getDeviceId(),
                 sparkMaxFollower.getDeviceId());
         return motorPair;
     }

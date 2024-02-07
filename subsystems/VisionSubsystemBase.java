@@ -19,13 +19,11 @@ import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 /**
  * Subsystem base vision. Mainly used for april tags pose estimation.
@@ -41,7 +39,6 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     private ThreadPoolExecutor mExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
     private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
     private boolean mInit = false;
-    private double averageDistance;
 
     /**
      * A vision configuration that stores important information about the field and vision subsystem on the robot
@@ -70,7 +67,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      */
     public void initalize() {
         // does nothing if DS not initialized yet
-        if (DriverStation.getAlliance() == Alliance.Invalid) {
+        if (!DriverStation.getAlliance().isPresent()) {
             mInit = false;
             return;
         }
@@ -88,11 +85,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      * Sets origin based on field side (red alliance or blue alliance)
      */
     private void setFieldOrigin() {
-        var origin = DriverStation.getAlliance() == Alliance.Blue
-            ? OriginPosition.kBlueAllianceWallRightSide
+        var origin = DriverStation.getAlliance().get() == Alliance.Blue
+                ? OriginPosition.kBlueAllianceWallRightSide
                 : OriginPosition.kRedAllianceWallRightSide;
-        var origin1 = OriginPosition.kRedAllianceWallRightSide;
-        kFieldLayout.setOrigin(origin1);
+        kFieldLayout.setOrigin(origin);
     }
     /**
      * Attempts to initalize vision and estimate robot pose after processing the vision feed
@@ -153,20 +149,11 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             return;
         CameraPoseEstimator.CameraEstimatorMeasurement measurement = optMeasurement.get();
         EstimatedRobotPose estimation = measurement.estimation;
-        Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
-                
-        SmartDashboard.putString("Estimated Vision Pose",
-        String.format("(%.2f, %.2f) %.2f degrees", estimatedPose.getX(), estimatedPose.getY(),
-        estimatedPose.getRotation().getDegrees()));
-
         double avgDistance = getAverageDistance(estimation); // TODO: figure out how vision std work
-        averageDistance = avgDistance;
-        double visionStdDev = Math.pow(avgDistance, 4.84) * 0.54;
         Vector<N3> deviation = kConfig.kVisionStdFromTagsSeen.get(MathUtil.clamp(estimation.targetsUsed.size(),
                 0,
                 kConfig.kVisionStdFromTagsSeen.keySet().size()))
                 .computeDeviation(avgDistance);
-  
         mVisionMeasurementsBuffer.add(new VisionMeasurement(estimation, deviation));
     }
     /**
@@ -179,10 +166,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         double sumDistance = 0;
         for (var target : estimation.targetsUsed) {
             var t3d = target.getBestCameraToTarget();
-
             sumDistance += Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
-
-
         }
         return sumDistance / estimation.targetsUsed.size();
     }
@@ -199,10 +183,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 counter++;
             }
         }
-        // //iff all of the cameras are null or not connected healthstate = red //TODO: Healthcheck needs work
-        // if (counter == mCameras.length && mCameras.length!=0){
-        //     state = HealthState.RED;
-        // }
+        //iff all of the cameras are null or not connected healthstate = red
+        if (counter == mCameras.length && mCameras.length!=0){
+            state = HealthState.RED;
+        }
         return state;
     }
     
@@ -222,7 +206,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         public CameraPoseEstimator(PhotonCamera photonCamera, Transform3d robotToCam,
                 AprilTagFieldLayout fieldLayout) {
             this.photonCamera = photonCamera;
-            estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP,
+            estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                     photonCamera, robotToCam);
             estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         }
@@ -239,27 +223,22 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
          *         Bad frames are ignored.
          */
         public Optional<CameraEstimatorMeasurement> update() {
-            try {
-                PhotonPipelineResult result = photonCamera.getLatestResult();
-                if (ignoreFrame(result))
-                    return Optional.empty();
+            PhotonPipelineResult result = photonCamera.getLatestResult();
+            if (ignoreFrame(result))
+                return Optional.empty();
 
-                Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
-                if (optEstimation.isEmpty())
-                    return Optional.empty();
-                EstimatedRobotPose estimation = optEstimation.get();
-                if (estimation.targetsUsed.size() == 1) {
-                    double ambiguity = estimation.targetsUsed.get(0).getPoseAmbiguity();
-                    if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
-                        return Optional.empty();
-                }
+            Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
+            if (optEstimation.isEmpty())
+                return Optional.empty();
+            EstimatedRobotPose estimation = optEstimation.get();
 
-                SmartDashboard.putString("Estimation of Camera "+photonCamera.getName(), ""+estimation.estimatedPose);
-                return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result)); 
-            }catch(java.lang.ArrayIndexOutOfBoundsException e) {
-                return Optional.ofNullable(null);
+            if (estimation.targetsUsed.size() == 1) {
+                double ambiguity = estimation.targetsUsed.get(0).getPoseAmbiguity();
+                if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
+                    return Optional.empty();
             }
-        
+
+            return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result));
         }
 
         /**
@@ -304,12 +283,11 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                     break;
             }
             if (!possible)
-                Logger.consoleLog("Impossible FIDs combination: " + ids);
+                ConsoleLogger.consoleLog("Impossible FIDs combination: " + ids);
             return possible;
         }
 
     }
-         
     /**
      * A record that stores and computes deviation of a target( a tag)
      */

@@ -11,9 +11,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.CommandBase;
-
+import edu.wpi.first.wpilibj2.command.Command;
+import org.littletonrobotics.junction.Logger;
 import frc.team670.mustanglib.commands.MustangCommand;
+import frc.team670.mustanglib.subsystems.drivebase.DriveBase;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
@@ -26,13 +27,15 @@ import frc.team670.mustanglib.utils.functions.JoystickUtils;
  * Note: This is for tank drive only
  * @author lakshbhambhani, armaan g, aditi k
  */
-public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand {
+public class XboxRocketLeagueDrive extends Command implements MustangCommand {
 
   private static boolean isReversed;
 
   private TankDrive driveBase;
   private MustangController controller;
   
+  private static final String DRIVEBASE_IS_DRIVE_REVERSED_KEY = "DriveBase/DriveReversed";
+
   private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
   /**
    * 
@@ -113,7 +116,7 @@ public class XboxRocketLeagueDrive extends CommandBase implements MustangCommand
    */
   public static void setDriveReversed(boolean reversed) {
     XboxRocketLeagueDrive.isReversed = reversed;
-    SmartDashboard.putBoolean("drive-reversed", reversed);
+    Logger.recordOutput(DRIVEBASE_IS_DRIVE_REVERSED_KEY, reversed);
   }
  
   @Override

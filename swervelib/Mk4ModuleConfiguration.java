@@ -2,6 +2,8 @@ package frc.team670.mustanglib.swervelib;
 
 import java.util.Objects;
 
+import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
+
 /**
  * Additional Mk4 module configuration parameters.
  * <p>
@@ -13,6 +15,8 @@ public class Mk4ModuleConfiguration {
     private double driveCurrentLimit = 45.0;
     private double steerCurrentLimit = 20.0;
 
+    private AbsoluteEncoderType steerEncoderType=AbsoluteEncoderType.CANCODER;
+
     private double steerKP = Double.NaN;
     private double steerKI = Double.NaN;
     private double steerKD = Double.NaN;
@@ -20,6 +24,8 @@ public class Mk4ModuleConfiguration {
     private double steerMMkV = Double.NaN;
     private double steerMMkA = Double.NaN;
     private double steerMMkS = Double.NaN;
+    
+
 
     public double getNominalVoltage() {
         return nominalVoltage;
@@ -80,6 +86,13 @@ public class Mk4ModuleConfiguration {
         this.steerMMkA = steerMMkA;
         this.steerMMkS = steerMMkS;
     }
+    public void setSteerEncoderType(AbsoluteEncoderType steerEncoderType) {
+        this.steerEncoderType = steerEncoderType;
+    }
+    public AbsoluteEncoderType getSteerEncoderType() {
+        return steerEncoderType;
+    }
+
 
     @Override
     public boolean equals(Object o) {
@@ -125,6 +138,12 @@ public class Mk4ModuleConfiguration {
                 ", steerMMkA=" + getSteerMMkA() +
                 ", steerMMkS=" + getSteerMMkS() +
                 '}';
+    }
+
+    public static Mk4ModuleConfiguration getDefaultSteerFalcon500() {
+        Mk4ModuleConfiguration config = new Mk4ModuleConfiguration();
+        config.setSteerPID(0.2, 0.0, 0.1);
+        return config;
     }
 
     public static Mk4ModuleConfiguration getDefaultSteerNEO() {

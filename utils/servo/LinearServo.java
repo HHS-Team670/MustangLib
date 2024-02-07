@@ -2,14 +2,8 @@ package frc.team670.mustanglib.utils.servo;
 
 import edu.wpi.first.wpilibj.Servo;
 
-/**
- * Interfaces with a Linear Servo through PWM
- * 
- * @author AkshatAdsule
- */
 public class LinearServo {
-    
-    private final Servo actuator;
+     private final Servo actuator;
 
     /**
      * Creates a new LinearServo
@@ -19,7 +13,7 @@ public class LinearServo {
     public LinearServo(int channel, ServoType type) {
         actuator = new Servo(channel);
         PWMConfig config = type.config;
-        actuator.setBounds(config.max, config.deadbandMax, config.center, config.deadbandMin, config.min);
+        actuator.setBoundsMicroseconds(config.max, config.deadbandMax, config.center, config.deadbandMin, config.min);
     }
 
     /**

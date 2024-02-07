@@ -20,9 +20,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 /**
  * A command that uses a RAMSETE controller ({@link RamseteController}) to follow a trajectory
@@ -38,7 +38,7 @@ import frc.team670.mustanglib.utils.Logger;
  * controller.
  */
 @SuppressWarnings("PMD.TooManyFields")
-public class RamseteCommand extends CommandBase {
+public class RamseteCommand extends Command {
   private final Timer m_timer = new Timer();
   private final boolean m_usePID;
   private final Trajectory m_trajectory;
@@ -162,9 +162,9 @@ public class RamseteCommand extends CommandBase {
       rightOutput = rightSpeedSetpoint;
     }
 
-    // Logger.consoleLog("LeftspeedSetPoint: %s, Left Speed: %s, LeftOutput: %s, rightSpeedSetPoint: %s Right Speed: %s rightOutput: %s", leftSpeedSetpoint, m_speeds.get().leftMetersPerSecond, leftOutput, rightSpeedSetpoint, m_speeds.get().rightMetersPerSecond, rightOutput);
-    // Logger.consoleLog("Trajectory %s", m_trajectory.sample(curTime));
-    // Logger.consoleLog("Pose: %s", m_pose.get().toString());
+    ConsoleLogger.consoleLog("LeftspeedSetPoint: %s, Left Speed: %s, LeftOutput: %s, rightSpeedSetPoint: %s Right Speed: %s rightOutput: %s", leftSpeedSetpoint, m_speeds.get().leftMetersPerSecond, leftOutput, rightSpeedSetpoint, m_speeds.get().rightMetersPerSecond, rightOutput);
+    ConsoleLogger.consoleLog("Trajectory %s", m_trajectory.sample(curTime));
+    ConsoleLogger.consoleLog("Pose: %s", m_pose.get().toString());
 
     m_output.accept(leftOutput, rightOutput);
 
@@ -174,7 +174,7 @@ public class RamseteCommand extends CommandBase {
 
   @Override
   public void end(boolean interrupted) {
-    Logger.consoleLog("finished running trajectory");
+    ConsoleLogger.consoleLog("finished running trajectory");
     m_timer.stop();
   }
 

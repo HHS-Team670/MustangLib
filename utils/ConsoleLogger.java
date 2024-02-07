@@ -21,7 +21,7 @@ import edu.wpi.first.wpilibj.DriverStation;
  * Implements a logging system for the robot. Code taken from
  * http://stemrobotics.cs.pdx.edu/node/7150
  */
-public class Logger {
+public class ConsoleLogger {
     /**
      * Open print stream that writes to the log file. Example of use:
      * exception.printStackTrace(Util.logPrintStream);
@@ -37,7 +37,7 @@ public class Logger {
 
     // Private constructor means this class cannot be instantiated. All access is
     // static.
-    private Logger() {
+    private ConsoleLogger() {
     }
 
     /**
@@ -264,6 +264,6 @@ public class Logger {
     public static void logException(Throwable e) {
         DriverStation.reportError(e.toString(), false);
 
-        e.printStackTrace(Logger.LOG_PRINT_STREAM);
+        e.printStackTrace(ConsoleLogger.LOG_PRINT_STREAM);
     }
 }

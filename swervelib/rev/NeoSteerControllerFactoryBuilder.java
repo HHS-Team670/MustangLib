@@ -3,7 +3,7 @@ package frc.team670.mustanglib.swervelib.rev;
 import com.revrobotics.*;
 import frc.team670.mustanglib.swervelib.*;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import static frc.team670.mustanglib.swervelib.rev.RevUtils.checkNeoError;
 
@@ -60,7 +60,7 @@ public final class NeoSteerControllerFactoryBuilder {
 
         @Override
         public void addDashboardEntries(ShuffleboardContainer container, ControllerImplementation controller) {
-            // Logger.consoleLog("Called super.addDashboardEntries");
+
             SteerControllerFactory.super.addDashboardEntries(container, controller);
             container.addNumber("Absolute Encoder Angle",
                     () -> Math.toDegrees(controller.absoluteEncoder.getAbsoluteAngle()));
@@ -158,19 +158,19 @@ public final class NeoSteerControllerFactoryBuilder {
             // fully set up, and we don't
             // end up getting a good reading. If we reset periodically this won't matter
             // anymore.
-            // if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-            // Logger.consoleLog("Reset Iteration: "+resetIteration);
-            // if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-            // Logger.consoleLog("resetIterationHit--");
-            // resetIteration = 0;
-            // double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-            // motorEncoder.setPosition(absoluteAngle);
-            // currentAngleRadians = absoluteAngle;
-            // currentAngleRadians=realign();
-            // }
-            // } else {
-            // resetIteration = 0;
-            // }
+            if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
+            // ConsoleLogger.consoleLog("Reset Iteration: "+resetIteration);
+            if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
+            // ConsoleLogger.consoleLog("resetIterationHit--");
+            resetIteration = 0;
+            double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+            motorEncoder.setPosition(absoluteAngle);
+            currentAngleRadians = absoluteAngle;
+            currentAngleRadians=realign();
+            }
+            } else {
+            resetIteration = 0;
+            }
 
             double currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI);
             if (currentAngleRadiansMod < 0.0) {
@@ -195,7 +195,6 @@ public final class NeoSteerControllerFactoryBuilder {
             resetIteration = 0;
             double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
             motorEncoder.setPosition(absoluteAngle);
-            Logger.consoleLog("called Realign method " + absoluteAngle);
             return absoluteAngle;
         }
 

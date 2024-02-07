@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
@@ -105,7 +105,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     private boolean checkSoftLimits(double setpoint){
         
         if (kConfig.kSoftLimits != null && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
-            Logger.consoleLog("In " +getName()+" Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+            ConsoleLogger.consoleLog("In " +getName()+" Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
             + " and " + kConfig.kSoftLimits[0]);
             return false;
         }
@@ -212,11 +212,9 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      *         subsystem turning through this angle
      */
     protected double getMotorRotationsFromAngle(double angle) {
-        // double rotations = (angle / 360) * kConfig.kRotatorGearRatio
-        //         + ((int) (getUnadjustedPosition() / kConfig.kRotatorGearRatio))
-        //                 * kConfig.kRotatorGearRatio;
-        double rotations = ((angle - getCurrentAngleInDegrees())/360) * kConfig.kRotatorGearRatio + getUnadjustedPosition();
-
+        double rotations = (angle / 360) * kConfig.kRotatorGearRatio
+                + ((int) (getUnadjustedPosition() / kConfig.kRotatorGearRatio))
+                        * kConfig.kRotatorGearRatio;
         // Logger.consoleLog("Indexer motor rotations from angle is %s", rotations);
         return rotations;
     }

@@ -2,18 +2,18 @@ package frc.team670.mustanglib.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.mustanglib.utils.MustangNotifications;
 import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 import java.util.Arrays;
 import java.util.Map;
 
 /**
- * Responsible for scheduling and running commands, including MustangCommandBases. 
+ * Responsible for scheduling and running commands, including MustangCommands. 
  * Based on CommandScheduler, but uses health system. 
  *
  * Note: Although it makes sense for MustangScheduler to extend CommandScheduler,
@@ -100,7 +100,7 @@ public class MustangScheduler {
 
         for (MustangCommand a_command : commands) {
 
-            CommandBase m_command = (CommandBase) a_command;
+            Command m_command = (Command) a_command;
             try {
                 Map<MustangSubsystemBase, MustangSubsystemBase.HealthState> requirements = ((MustangCommand) (m_command))
                         .getHealthRequirements();
@@ -111,7 +111,7 @@ public class MustangScheduler {
                         if (s != null && healthReq != null) {
                             HealthState currentHealth = s.getHealth(false);
                             if (currentHealth.getId() > healthReq.getId()) {
-                                MustangNotifications.reportMajorWarning(
+                                MustangNotifications.reportWarning(
                                         "%s not run because of health issue! Required health: %s, Actual health: %s",
                                         m_command.getName(), healthReq, currentHealth);
                                 RobotBase.getInstance().getRobotContainer().getDriverController().rumble(0.75, 1);
@@ -123,7 +123,7 @@ public class MustangScheduler {
                 }
                 this.currentCommand = m_command;
                 scheduler.schedule(currentCommand);
-                Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+                ConsoleLogger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
             } finally {
                 this.currentCommand = null;
             }
@@ -145,7 +145,7 @@ public class MustangScheduler {
 
         HealthState currentHealth = subsystem.getHealth(false);
         if (currentHealth.getId() > HealthState.GREEN.getId()) {
-            MustangNotifications.reportMajorWarning(
+            MustangNotifications.reportWarning(
                     "%s not run because of health issue! Required health: %s, Actual health: %s",
                     group.getName(), HealthState.GREEN, currentHealth);
             return;
@@ -153,7 +153,7 @@ public class MustangScheduler {
 
         this.currentCommand = group;
         scheduler.schedule(currentCommand);
-        Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+        ConsoleLogger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
         
     }
 
@@ -165,7 +165,7 @@ public class MustangScheduler {
      */
     public void check(Command command) throws RuntimeException {
         if (command == null) {
-            Logger.consoleLog("Command is null");
+            ConsoleLogger.consoleLog("Command is null");
             return;
         } else {
             if (!(command instanceof MustangCommand)) {
@@ -176,7 +176,7 @@ public class MustangScheduler {
     }
 
     public void setDefaultCommand(MustangSubsystemBase subsystem, MustangCommand mCommand) {
-        CommandBase m_command = (CommandBase) mCommand;
+        Command m_command = (Command) mCommand;
         try {
             Map<MustangSubsystemBase, MustangSubsystemBase.HealthState> requirements = ((MustangCommand) (m_command))
                     .getHealthRequirements();
@@ -199,7 +199,7 @@ public class MustangScheduler {
             }
             this.currentCommand = m_command;
             scheduler.setDefaultCommand(subsystem, currentCommand);
-            Logger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
+            ConsoleLogger.consoleLog("Command scheduled: %s", this.currentCommand.getName());
         } finally {
             this.currentCommand = null;
         }
@@ -213,7 +213,7 @@ public class MustangScheduler {
         scheduler.registerSubsystem(subsystems);
     }
 
-    public void scheduleOrCancel(CommandBase command) {
+    public void scheduleOrCancel(Command command) {
         if (RobotBase.getInstance().getRobotContainer().getDriverController().getRightJoystickButton() == true) {
             scheduler.schedule(command);
         }
