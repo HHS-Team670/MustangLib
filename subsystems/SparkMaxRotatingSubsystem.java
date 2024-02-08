@@ -249,7 +249,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     public double getCurrentAngleInDegrees() {
         double rotations = getRotatorEncoder().getPosition();
         double angle = 360 * ((rotations) / kConfig.kRotatorGearRatio);
-        return angle;
+        return angle%360;
     }
 
     /**
