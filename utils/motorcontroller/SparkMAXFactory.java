@@ -59,6 +59,7 @@ public class SparkMAXFactory {
         defaultFollowerConfig.STATUS_FRAME_6_RATE_MS = 1000;
 
         defaultVelocityConfig.STATUS_FRAME_2_RATE_MS = 1000;
+        defaultVelocityConfig.STATUS_FRAME_3_RATE_MS = 1000;
         defaultVelocityConfig.STATUS_FRAME_4_RATE_MS = 1000;
         defaultVelocityConfig.STATUS_FRAME_5_RATE_MS = 1000;
         defaultVelocityConfig.STATUS_FRAME_6_RATE_MS = 1000;
