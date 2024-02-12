@@ -5,6 +5,8 @@ import frc.team670.mustanglib.swervelib.*;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
 import frc.team670.mustanglib.utils.ConsoleLogger;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import static frc.team670.mustanglib.swervelib.rev.RevUtils.checkNeoError;
 
 public final class NeoSteerControllerFactoryBuilder {
@@ -162,17 +164,18 @@ public final class NeoSteerControllerFactoryBuilder {
             // ConsoleLogger.consoleLog("Reset Iteration: "+resetIteration);
             if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
             // ConsoleLogger.consoleLog("resetIterationHit--");
-            resetIteration = 0;
-            double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-            motorEncoder.setPosition(absoluteAngle);
-            currentAngleRadians = absoluteAngle;
-            currentAngleRadians=realign();
+                resetIteration = 0;
+                double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                motorEncoder.setPosition(absoluteAngle);
+                currentAngleRadians = absoluteAngle;
+                currentAngleRadians=realign();
             }
             } else {
-            resetIteration = 0;
+                resetIteration = 0;
             }
 
             double currentAngleRadiansMod = currentAngleRadians % (2.0 * Math.PI);
+
             if (currentAngleRadiansMod < 0.0) {
                 currentAngleRadiansMod += 2.0 * Math.PI;
             }
@@ -180,6 +183,7 @@ public final class NeoSteerControllerFactoryBuilder {
             // The reference angle has the range [0, 2pi) but the Neo's encoder can go above
             // that
             double adjustedReferenceAngleRadians = referenceAngleRadians + currentAngleRadians - currentAngleRadiansMod;
+            
             if (referenceAngleRadians - currentAngleRadiansMod > Math.PI) {
                 adjustedReferenceAngleRadians -= 2.0 * Math.PI;
             } else if (referenceAngleRadians - currentAngleRadiansMod < -Math.PI) {
