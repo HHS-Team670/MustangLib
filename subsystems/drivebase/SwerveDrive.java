@@ -48,7 +48,7 @@ public abstract class SwerveDrive extends DriveBase {
     private final SwerveDriveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
-    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL;
+    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL, DRIVEBASE_FL_CURRENT, DRIVEBASE_FR_CURRENT, DRIVEBASE_BL_CURRENT, DRIVEBASE_BR_CURRENT;
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfigFrontLeft = new Mk4ModuleConfiguration();
@@ -168,6 +168,11 @@ public abstract class SwerveDrive extends DriveBase {
         DRIVEBASE_HEADING_DEGREE = getName()+"/NavXHeadingDeg";
         DRIVEBASE_PITCH = getName()+"/pitch";
         DRIVEBASE_ROLL = getName()+"/roll";
+        DRIVEBASE_FL_CURRENT = getName()+"/FrontLeftCurrent";
+        DRIVEBASE_FR_CURRENT = getName()+"/FrontRightCurrent";
+        DRIVEBASE_BL_CURRENT = getName()+"/BackLeftCurrent";
+        DRIVEBASE_BR_CURRENT = getName()+"/BackRightCurrent";
+       
 
         Logger.recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
         
@@ -265,6 +270,11 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
         Logger.recordOutput(DRIVEBASE_PITCH, getPitch());
         Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
+        Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((CANSparkMax) mModules[0].getDriveMotor()).getOutputCurrent());
+        Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((CANSparkMax) mModules[1].getDriveMotor()).getOutputCurrent());
+        Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((CANSparkMax) mModules[2].getDriveMotor()).getOutputCurrent());
+        Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
+
 
 
         
