@@ -44,7 +44,7 @@ public class HeliumCanCoderFactoryBuilder {
 
         private EncoderImplementation(Canandcoder encoder) {
             this.encoder = encoder; 
-            Settings settings = encoder.getSettings();
+            Settings settings = new Settings();
             // We are inverting the encoder because we are using Mk4i modules. If we use a different module, this may change
             settings.setInvertDirection(true);
             settings.setPositionFramePeriod(0.020);
