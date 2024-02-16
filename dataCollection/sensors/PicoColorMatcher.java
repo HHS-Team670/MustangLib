@@ -1,12 +1,13 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.littletonrobotics.junction.Logger;
+
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
+
 import edu.wpi.first.wpilibj.util.Color;
 import frc.team670.mustanglib.dataCollection.sensors.PicoColorSensor.RawColor;
-
-import com.revrobotics.ColorMatchResult;
-import com.revrobotics.ColorMatch;
 
 public class PicoColorMatcher {
 
@@ -24,7 +25,7 @@ public class PicoColorMatcher {
    * with given confidence range.
    */
   private final ColorMatch m_colorMatcher = new ColorMatch();
-
+  private final String COLORMATCHER_RED, COLORMATCHER_BLUE, COLORMATCHER_GREEN, COLORMATCHER_CONFIDENCE, COLORMATCHER_SENSOR_CONNECTED;
   public enum colors {
 
     BLUE(0, new Color(0.136, 0.412, 0.450)), // 2022 blue game piece
@@ -32,6 +33,7 @@ public class PicoColorMatcher {
 
     private int colorNumber;
     private Color color;
+    
 
     private colors(int colorNumber, Color color) {
       this.colorNumber = colorNumber;
@@ -60,6 +62,11 @@ public class PicoColorMatcher {
 
   public PicoColorMatcher() {
     init();
+    COLORMATCHER_RED = "ColorMatcher/Red"; 
+    COLORMATCHER_BLUE = "ColorMatcher/Green";
+    COLORMATCHER_GREEN = "ColorMatcher/Blue";
+    COLORMATCHER_CONFIDENCE = "ColorMatcher/Confidence";
+    COLORMATCHER_SENSOR_CONNECTED = "ColorMatcher/SensorConnected";
   }
   /**
   * Initializes the Color Matcher
@@ -91,11 +98,12 @@ public class PicoColorMatcher {
     int colorNumber;
 
     ColorMatchResult match = m_colorMatcher.matchClosestColor(convertRawToColor(detectedColor));
-    SmartDashboard.putNumber("Red", detectedColor.red);
-    SmartDashboard.putNumber("Green", detectedColor.green);
-    SmartDashboard.putNumber("Blue", detectedColor.blue);
-    SmartDashboard.putNumber("Confidence", match.confidence);
-    SmartDashboard.putBoolean("CS: sensor is connected", m_colorSensor.isSensor0Connected());
+    Logger.recordOutput(COLORMATCHER_RED, detectedColor.red);
+    Logger.recordOutput(COLORMATCHER_BLUE, detectedColor.green);
+    Logger.recordOutput(COLORMATCHER_GREEN, detectedColor.blue);
+    Logger.recordOutput(COLORMATCHER_CONFIDENCE, match.confidence);
+    Logger.recordOutput(COLORMATCHER_SENSOR_CONNECTED, m_colorSensor.isSensor0Connected());
+    
     if(match.confidence >= CONFIDENCE_THRESHOLD) {
         if (match.color == colors.BLUE.getTargetColor()) {
         //   coaalorString = "Blue";

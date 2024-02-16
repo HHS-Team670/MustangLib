@@ -62,9 +62,17 @@ public final class SparkMAXLite extends CANSparkMax {
      */
     public void set(ControlType kdutycycle, double value) {
         if (value != lastSet || kdutycycle != lastControlType) {
+            if(super.getPIDController().setReference(value, kdutycycle) == REVLibError.kOk){
+                this.lastSet = value;
+                this.lastControlType = kdutycycle;
+            }
+        }
+    }
+
+    public void set(double value) {
+        if (value != lastSet) {
             this.lastSet = value;
-            this.lastControlType = kdutycycle;
-            super.getPIDController().setReference(value, kdutycycle);
+            super.set(value);
         }
     }
 

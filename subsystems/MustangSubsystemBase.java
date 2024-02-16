@@ -1,5 +1,7 @@
 package frc.team670.mustanglib.subsystems;
 
+import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -22,7 +24,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
 
     protected HealthState lastHealthState;
     private boolean failedLastTime = false;
-
+    private final String BASE_HEALTH;
     private static NetworkTableInstance instance = NetworkTableInstance.getDefault();
     private static NetworkTable table = instance.getTable("/SmartDashboard");
 
@@ -35,6 +37,7 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public MustangSubsystemBase() {
         // RobotContainer.addSubsystem(this);
         this.lastHealthState = HealthState.UNKNOWN;
+        BASE_HEALTH = this.getName()+"/Health";
     }
 
     /**
@@ -119,11 +122,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     }
 
     public void pushHealthToDashboard() {
-        NetworkTableEntry subsystem = table.getEntry(this.getName());
-        subsystem.setString(getHealth(false).toString());
-        if (getHealth(false).toString().equals("YELLOW") || getHealth(false).toString().equals("RED")) {
-            // RobotContainer.notifyDriverController(1.0, 0.3);
-        }
+        Logger.recordOutput(BASE_HEALTH, getHealth(false).toString());
+
     }
     /**
      * 

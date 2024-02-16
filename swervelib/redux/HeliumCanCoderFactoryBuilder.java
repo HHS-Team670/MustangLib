@@ -5,6 +5,7 @@ import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
 import frc.team670.mustanglib.swervelib.ctre.CtreUtils;
 
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.reduxrobotics.sensors.canandcoder.Canandcoder;
 import com.reduxrobotics.sensors.canandcoder.Canandcoder.Faults;
 import com.reduxrobotics.sensors.canandcoder.Canandcoder.Settings;
@@ -13,7 +14,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class HeliumCanCoderFactoryBuilder {
 
-    private Direction direction = Direction.COUNTER_CLOCKWISE;
+    private Direction direction = Direction.CLOCKWISE;
     private int periodMilliseconds = 10;
      
 
@@ -29,10 +30,9 @@ public class HeliumCanCoderFactoryBuilder {
 
     public AbsoluteEncoderFactory<CanandCoderAbsoluteConfiguration> build() {
         return configuration -> {
-           
-
             Canandcoder encoder = new Canandcoder(configuration.getId());
-          
+            // Settings settings = encoder.getSettings().setInvertDirection(true);
+            // encoder.setSettings(settings);
             return new EncoderImplementation(encoder);
         };
     }
@@ -50,7 +50,7 @@ public class HeliumCanCoderFactoryBuilder {
         public double getAbsoluteAngle() {
             double angle = 2*Math.PI*encoder.getAbsPosition();
             SmartDashboard.putNumber("HeliumPos", angle);
-            // CanandcoderFaults code = encoder.getActiveFaults();
+            // Faults code = encoder.getActiveFaults();
 
             // for (int i = 0; i < ATTEMPTS; i++) {
             //     if (!code.faultsValid()) break; //note disable if this breaks stuff

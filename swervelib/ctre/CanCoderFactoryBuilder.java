@@ -25,20 +25,28 @@ public class CanCoderFactoryBuilder {
     public AbsoluteEncoderFactory<CanCoderAbsoluteConfiguration> build() {
         return configuration -> {
             CANcoderConfiguration config = new CANcoderConfiguration();
-            config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-            config.MagnetSensor.MagnetOffset = configuration.getOffset();// Should be roations
-            config.MagnetSensor.SensorDirection = SensorDirectionValue.Clockwise_Positive;
-
             CANcoder encoder = new CANcoder(configuration.getId(), configuration.getCanbus());
+            
+            
+            StatusCode val = encoder.getConfigurator().refresh(config);
+
+            if(val.isOK()){
+                  val = encoder.getConfigurator().refresh(config);
+            }
+
+            
+            config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
+            // config.MagnetSensor.MagnetOffset = configuration.getOffset();// Should be roations
+            config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
+
             encoder.getConfigurator().apply(config);
             CtreUtils.checkCtreError(encoder.getConfigurator().apply(config), "Failed to configure CANCoder");
 
-            // CtreUtils.checkCtreError(
-            //         encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, periodMilliseconds, 250),
-            //         "Failed to configure CANCoder update rate");
+            // CtreUtils.checkCtreError(encoder.optimizeBusUtilization(periodMilliseconds), "Failed to configure CANCoder update rate");
 
             return new EncoderImplementation(encoder);
         };
+
     }
 
     private static class EncoderImplementation implements AbsoluteEncoder {

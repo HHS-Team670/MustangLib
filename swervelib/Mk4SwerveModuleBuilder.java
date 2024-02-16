@@ -174,7 +174,6 @@ public class Mk4SwerveModuleBuilder {
                     steerMotorPort, 
                     new CanCoderAbsoluteConfiguration(
                             steerEncoderPort, 
-                            steerOffset,
                             steerEncoderCanbus
                     )
             );

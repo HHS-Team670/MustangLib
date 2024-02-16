@@ -6,7 +6,7 @@ import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
 
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
@@ -105,7 +105,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     private boolean checkSoftLimits(double setpoint){
         
         if (kConfig.kSoftLimits != null && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
-            Logger.consoleLog("In " +getName()+" Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+            ConsoleLogger.consoleLog("In " +getName()+" Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
             + " and " + kConfig.kSoftLimits[0]);
             return false;
         }
@@ -249,7 +249,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     public double getCurrentAngleInDegrees() {
         double rotations = getRotatorEncoder().getPosition();
         double angle = 360 * ((rotations) / kConfig.kRotatorGearRatio);
-        return angle;
+        return angle%360;
     }
 
     /**

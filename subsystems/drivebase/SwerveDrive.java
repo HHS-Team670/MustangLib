@@ -4,13 +4,13 @@ import java.util.Map;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.path.PathPlannerTrajectory;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
 import com.pathplanner.lib.auto.AutoBuilder;
+import org.littletonrobotics.junction.Logger;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.IdleMode;
-
+import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.SerialPort.Port;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -19,18 +19,17 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
@@ -49,13 +48,12 @@ public abstract class SwerveDrive extends DriveBase {
     protected SwervePoseEstimatorBase mPoseEstimator;
     private final NavX mNavx;
     private VisionSubsystemBase mVision;
-    public SwerveDriveKinematics kinematics;
 
     private final SwerveModule[] mModules;
     private final SwerveDriveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
-
+    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL;
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfigFrontLeft = new Mk4ModuleConfiguration();
@@ -216,7 +214,15 @@ public abstract class SwerveDrive extends DriveBase {
         initPoseEstimator();
         kPitchOffset = mNavx.getPitch();
         kRollOffset = mNavx.getRoll();
-        SmartDashboard.putNumber("MAX VELOCITY M/S", config.kMaxVelocity);
+
+        DRIVEBASE_MAX_VELOCITY = getName()+"/MaxVelocityMps";
+        DRIVEBASE_OFFSET = getName()+"/GyroOffset";
+        DRIVEBASE_HEADING_DEGREE = getName()+"/NavXHeadingDeg";
+        DRIVEBASE_PITCH = getName()+"/pitch";
+        DRIVEBASE_ROLL = getName()+"/roll";
+
+        Logger.recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
+        
     }
     protected abstract void initPoseEstimator();
 
@@ -280,7 +286,8 @@ public abstract class SwerveDrive extends DriveBase {
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
                 Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
-                SmartDashboard.putNumber("gyro offset", mGyroOffset.getDegrees());
+                Logger.recordOutput(DRIVEBASE_OFFSET, mGyroOffset.getDegrees());
+             
                 return angle;
             } else {
                 return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
@@ -307,8 +314,12 @@ public abstract class SwerveDrive extends DriveBase {
             }
         }
         mPoseEstimator.update();
-        SmartDashboard.putNumber("navX heading", getPose().getRotation().getDegrees());
-        SmartDashboard.putNumber("pitch", getPitch());
+        Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
+        Logger.recordOutput(DRIVEBASE_PITCH, getPitch());
+        Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
+
+
+        
     }
 
     public void initVision(VisionSubsystemBase vision) {
@@ -385,7 +396,7 @@ public abstract class SwerveDrive extends DriveBase {
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
-        SwerveModuleState[] targetStates = kinematics.toSwerveModuleStates(speeds);
+        SwerveModuleState[] targetStates = kKinematics.toSwerveModuleStates(speeds);
     
         SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, kMaxVelocity);
     
@@ -458,7 +469,14 @@ public abstract class SwerveDrive extends DriveBase {
 
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
         kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
-        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, getAlliance(), (Subsystem)this);
+        BooleanSupplier alliance = new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return DriverStation.getAlliance().get() != Alliance.Blue;
+            }
+        };
+        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, alliance, (Subsystem)this);
+    
     }
  
     /**
@@ -469,6 +487,12 @@ public abstract class SwerveDrive extends DriveBase {
     public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerPath path, Subsystem[] reqSubsystems, double driveBaseRadius) {
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
         kMaxVelocity, driveBaseRadius, new ReplanningConfig());
-        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, getAlliance(), reqSubsystems);
+        BooleanSupplier alliance = new BooleanSupplier() {
+            @Override
+            public boolean getAsBoolean() {
+                return DriverStation.getAlliance().get() != Alliance.Blue;
+            }
+        };
+        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, alliance, reqSubsystems);
     }
 }

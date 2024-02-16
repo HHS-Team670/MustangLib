@@ -83,7 +83,7 @@ public final class Mk4iSwerveModuleHelper {
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 )
         );
 
@@ -156,7 +156,7 @@ public final class Mk4iSwerveModuleHelper {
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 )
         );
     }

@@ -40,7 +40,6 @@ public final class Mk4SwerveModuleHelper {
                         .build());
     }
 
-
     /**
      * Creates a Mk4 swerve module that uses NEOs for driving and steering.
      * Module information is displayed in the specified ShuffleBoard container.
@@ -72,7 +71,7 @@ public final class Mk4SwerveModuleHelper {
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 )
         );
     }
@@ -127,7 +126,7 @@ public final class Mk4SwerveModuleHelper {
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 )
         );
     }

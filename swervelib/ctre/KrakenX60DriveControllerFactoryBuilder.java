@@ -24,22 +24,22 @@ public final class KrakenX60DriveControllerFactoryBuilder {
         return this;
     }
 
-    public boolean hasVoltageCompensation() {
-        return Double.isFinite(nominalVoltage);
-    }
+//     public boolean hasVoltageCompensation() {
+//         return Double.isFinite(nominalVoltage);
+//     }
 
-    public DriveControllerFactory<ControllerImplementation, Integer> build() {
-        return new FactoryImplementation();
-    }
+//     public DriveControllerFactory<ControllerImplementation, Integer> build() {
+//         return new FactoryImplementation();
+//     }
 
     public KrakenX60DriveControllerFactoryBuilder withCurrentLimit(double currentLimit) {
         this.currentLimit = currentLimit;
         return this;
     }
 
-    public boolean hasCurrentLimit() {
-        return Double.isFinite(currentLimit);
-    }
+//     public boolean hasCurrentLimit() {
+//         return Double.isFinite(currentLimit);
+//     }
 
     private class FactoryImplementation
             implements DriveControllerFactory<ControllerImplementation, Integer> {
@@ -86,10 +86,10 @@ public final class KrakenX60DriveControllerFactoryBuilder {
             this.encoderDistancePerPulse = encoderDistancePerPulse;
         }
 
-        @Override
-        public Object getDriveMotor() {
-            return this.motor;
-        }
+//         @Override
+//         public Object getDriveMotor() {
+//             return this.motor;
+//         }
 
         @Override
         public void setReferenceVoltage(double voltage) {
