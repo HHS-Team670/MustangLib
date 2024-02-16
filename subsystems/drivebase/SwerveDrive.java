@@ -67,9 +67,9 @@ public abstract class SwerveDrive extends DriveBase {
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
+            Motor_Type kDriveMotorType, Motor_Type kSteerMotorType, 
 
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
-            Motor_Type kDriveMotorType, Motor_Type kSteerMotorType, 
             int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset, AbsoluteEncoderType kFrontLeftModuleEncoderType,
             
             int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,

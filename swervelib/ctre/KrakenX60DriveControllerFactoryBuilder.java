@@ -3,6 +3,7 @@ package frc.team670.mustanglib.swervelib.ctre;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
+import com.revrobotics.RelativeEncoder;
 
 import frc.team670.mustanglib.swervelib.DriveController;
 import frc.team670.mustanglib.swervelib.DriveControllerFactory;
@@ -66,6 +67,8 @@ public final class KrakenX60DriveControllerFactoryBuilder {
             motor.setInverted(moduleConfiguration.isDriveInverted()); // is inverted in clockwise or not? we don't know
 
             // Reduce CAN status frame rates
+            double positionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter()
+                    * moduleConfiguration.getDriveReduction();
 
             return new ControllerImplementation(motor, sensorVelocityCoefficient, encoderDistancePerPulse);
         }
@@ -102,7 +105,8 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
         @Override
         public double getDistanceMoved() {
-            return motor.getSelectedSensorPosition() * encoderDistancePerPulse;
+            var rotorPosSignal = motor.getRotorPosition();
+            return rotorPosSignal.getValueAsDouble() * positionConversionFactor;
         }
     }
 }
