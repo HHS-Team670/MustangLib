@@ -25,6 +25,7 @@ public final class SparkMAXLite extends CANSparkMax {
     protected SparkMAXLite(int id, MotorConfig.Motor_Type type) {
         super(id, MotorConfig.MOTOR_TYPE.get(type));
         this.motorType = type;
+        burnFlash();
     }
 
     public double getLastSet() {
