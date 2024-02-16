@@ -172,8 +172,8 @@ public final class Mk4SwerveModuleHelper {
             int driveMotorPort,
             String driveCanbus,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
+            
     ) {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
@@ -185,7 +185,7 @@ public final class Mk4SwerveModuleHelper {
                 driveCanbus,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 ),
                 ""
         );
@@ -210,8 +210,8 @@ public final class Mk4SwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
+            
     ) {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
@@ -222,7 +222,7 @@ public final class Mk4SwerveModuleHelper {
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 )
         );
     }
@@ -246,10 +246,9 @@ public final class Mk4SwerveModuleHelper {
             int driveMotorPort,
             String driveCanbus,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
     ) {
-        return createKrakenX60Neo(container, Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, driveCanbus, steerMotorPort, steerEncoderPort, steerOffset);
+        return createKrakenX60Neo(container, Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, driveCanbus, steerMotorPort, steerEncoderPort);
     }
 
     /**
@@ -269,10 +268,9 @@ public final class Mk4SwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
     ) {
-        return createKrakenX60Neo(container, Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createKrakenX60Neo(container, Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort);
     }
 
 
@@ -294,8 +292,7 @@ public final class Mk4SwerveModuleHelper {
             int driveMotorPort,
             String driveCanbus,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
     ) {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
@@ -306,7 +303,7 @@ public final class Mk4SwerveModuleHelper {
                 driveCanbus,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 ),
                 ""
         );
@@ -330,8 +327,8 @@ public final class Mk4SwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
+            
     ) {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
@@ -341,7 +338,7 @@ public final class Mk4SwerveModuleHelper {
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort, steerOffset)
+                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
                 )
         );
     }
@@ -363,10 +360,9 @@ public final class Mk4SwerveModuleHelper {
             int driveMotorPort,
             String driveCanbus,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
     ) {
-        return createKrakenX60Neo(Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, driveCanbus, steerMotorPort, steerEncoderPort, steerOffset);
+        return createKrakenX60Neo(Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, driveCanbus, steerMotorPort, steerEncoderPort);
     }
 
     /**
@@ -383,10 +379,9 @@ public final class Mk4SwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
     ) {
-        return createKrakenX60Neo(Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createKrakenX60Neo(Mk4ModuleConfiguration.getDefaultSteerNEO(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort);
     }
 
     public enum GearRatio {

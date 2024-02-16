@@ -1,6 +1,5 @@
 package frc.team670.mustanglib.swervelib.ctre;
 
-import com.ctre.phoenix.motorcontrol.*;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
@@ -19,27 +18,27 @@ public final class KrakenX60DriveControllerFactoryBuilder {
     private double nominalVoltage = Double.NaN; 
     private double currentLimit = Double.NaN;
 
-    public KrakenX60DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage, int wheelDiameter) {
+    public KrakenX60DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
         this.nominalVoltage = nominalVoltage;
         return this;
     }
 
-//     public boolean hasVoltageCompensation() {
-//         return Double.isFinite(nominalVoltage);
-//     }
+    public boolean hasVoltageCompensation() {
+        return Double.isFinite(nominalVoltage);
+    }
 
-//     public DriveControllerFactory<ControllerImplementation, Integer> build() {
-//         return new FactoryImplementation();
-//     }
+    public DriveControllerFactory<ControllerImplementation, Integer> build() {
+        return new FactoryImplementation();
+    }
 
     public KrakenX60DriveControllerFactoryBuilder withCurrentLimit(double currentLimit) {
         this.currentLimit = currentLimit;
         return this;
     }
 
-//     public boolean hasCurrentLimit() {
-//         return Double.isFinite(currentLimit);
-//     }
+    public boolean hasCurrentLimit() {
+        return Double.isFinite(currentLimit);
+    }
 
     private class FactoryImplementation
             implements DriveControllerFactory<ControllerImplementation, Integer> {
@@ -86,10 +85,10 @@ public final class KrakenX60DriveControllerFactoryBuilder {
             this.encoderDistancePerPulse = encoderDistancePerPulse;
         }
 
-//         @Override
-//         public Object getDriveMotor() {
-//             return this.motor;
-//         }
+        @Override
+        public Object getDriveMotor() {
+            return this.motor;
+        }
 
         @Override
         public void setReferenceVoltage(double voltage) {

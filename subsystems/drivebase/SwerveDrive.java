@@ -129,8 +129,7 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                     .withPosition(0, 0),
                 kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
-                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
-                config.kFrontLeftModuleSteerOffset);
+                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder);
         } else {
             throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
@@ -148,8 +147,7 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
                 kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
-                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
-                config.kFrontRightModuleSteerOffset);
+                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder);
         } else {
             throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
@@ -160,15 +158,13 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
                 kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
-                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
-                config.kBackLeftModuleSteerOffset);
+                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,config.kBackLeftModuleSteerOffset);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[2] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
                 kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
-                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,
-                config.kBackLeftModuleSteerOffset);
+                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder);
         } else {
             throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
@@ -179,15 +175,13 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                     .withPosition(6, 0),
             kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
-            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
-            config.kBackRightModuleSteerOffset);
+            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,config.kBackLeftModuleSteerOffset);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[3] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                     .withPosition(6, 0),
             kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
-            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,
-            config.kBackRightModuleSteerOffset);
+            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder);
         } else {
             throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
