@@ -403,12 +403,12 @@ public abstract class SwerveDrive extends DriveBase {
         setModuleStates(states);
     }
 
-    public void configureHolonomic(double driveBaseRadius) {
+    public void configureHolonomic() {
 
-        double newDriveBaseRadius = Math.sqrt(Math.pow(kConfig.kDriveBaseTrackWidth/2, 2) + Math.pow(kConfig.kDriveBaseWheelBase/2, 2));
+        double driveBaseRadius = Math.sqrt(Math.pow(kConfig.kDriveBaseTrackWidth/2, 2) + Math.pow(kConfig.kDriveBaseWheelBase/2, 2));
 
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
-        kMaxVelocity, newDriveBaseRadius, new ReplanningConfig()); 
+        kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
         BooleanSupplier alliance = new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
