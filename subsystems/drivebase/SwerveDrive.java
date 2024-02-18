@@ -61,7 +61,8 @@ public abstract class SwerveDrive extends DriveBase {
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
-            double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
+            double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio, double headingOffsetRadians,
+
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
             int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset, AbsoluteEncoderType kFrontLeftModuleEncoderType,
             
@@ -153,6 +154,8 @@ public abstract class SwerveDrive extends DriveBase {
                 // Back right
                 new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
                         -config.kDriveBaseWheelBase / 2.0));
+
+        kKinematics.resetHeadings(new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians));
 
         mNavx = new NavX(config.kNavXPort);
         // mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);

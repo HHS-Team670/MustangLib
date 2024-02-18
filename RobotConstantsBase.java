@@ -61,7 +61,7 @@ public class RobotConstantsBase {
         
         // Good defaults
         public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
-        public static final PIDConstants kAutonThetaPID = new PIDConstants(0.5, 0, 0);
+        public static final PIDConstants kAutonThetaPID = new PIDConstants(.5, 0, 0);
 
         // PID controllers
         public static final PIDController xController = new PIDController(3, 0, 0);
