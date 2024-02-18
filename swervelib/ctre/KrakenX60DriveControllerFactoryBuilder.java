@@ -91,7 +91,7 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
         @Override
         public void setReferenceVoltage(double voltage) {
-            motor.setVoltage(voltage / nominalVoltage); // not in percentage
+            motor.setVoltage(voltage ); // not in percentage
         }
 
         @Override

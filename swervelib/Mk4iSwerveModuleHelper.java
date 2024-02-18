@@ -208,15 +208,13 @@ public final class Mk4iSwerveModuleHelper {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getKrakenX60DriveFactory(configuration),
-                getNeoCanCoderSteerFactory(configuration) 
-        ).create(
-                container,
-                driveMotorPort,
-                new SteerConfiguration<>(
-                        steerMotorPort,
-                        new CanCoderAbsoluteConfiguration(steerEncoderPort)
-                )
-        );
+                getNeoHeliumSteerFactory(configuration)).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );
     }
 
 

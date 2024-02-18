@@ -25,6 +25,7 @@ import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -330,7 +331,6 @@ public abstract class SwerveDrive extends DriveBase {
         double frontRightSpeed = states[1].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
         double backLeftSpeed = states[2].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
         double backRightSpeed = states[3].speedMetersPerSecond / kMaxVelocity * kMaxVoltage;
-
         double frontLeftAngle = states[0].angle.getRadians();
         double frontRightAngle = states[1].angle.getRadians();
         double backLeftAngle = states[2].angle.getRadians();
