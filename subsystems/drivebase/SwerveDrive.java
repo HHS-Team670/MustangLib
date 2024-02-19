@@ -68,7 +68,7 @@ public abstract class SwerveDrive extends DriveBase {
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
             double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
             double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
-            Motor_Type kDriveMotorType, Motor_Type kSteerMotorType, 
+            Motor_Type kDriveMotorType, Motor_Type kSteerMotorType,  double headingOffsetRadians,
 
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
             int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset, AbsoluteEncoderType kFrontLeftModuleEncoderType,
@@ -200,6 +200,8 @@ public abstract class SwerveDrive extends DriveBase {
                 // Back right
                 new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
                         -config.kDriveBaseWheelBase / 2.0));
+
+        kKinematics.resetHeadings(new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians));
 
         mNavx = new NavX(config.kNavXPort);
         // mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -449,17 +451,9 @@ public abstract class SwerveDrive extends DriveBase {
         setModuleStates(states);
     }
 
-    private BooleanSupplier getAlliance() {
-        BooleanSupplier alliance = new BooleanSupplier() {
-            @Override
-            public boolean getAsBoolean() {
-                return DriverStation.getAlliance().get() != Alliance.Blue;
-            }
-        };
-        return alliance;
-    }
+    public void configureHolonomic() {
 
-    public void configureHolonomic(double driveBaseRadius) {
+        double driveBaseRadius = Math.sqrt(Math.pow(kConfig.kDriveBaseTrackWidth/2, 2) + Math.pow(kConfig.kDriveBaseWheelBase/2, 2));
 
         HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
         kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
