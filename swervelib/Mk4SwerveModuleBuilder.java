@@ -24,6 +24,13 @@ public class Mk4SwerveModuleBuilder {
         }
     }
 
+    private static DriveControllerFactory<?, Integer> getKrakenX60DriveFactory(Mk4ModuleConfiguration configuration) {
+        return new KrakenX60DriveControllerFactoryBuilder()
+                .withVoltageCompensation(configuration.getNominalVoltage())
+                .withCurrentLimit(configuration.getDriveCurrentLimit())
+                .build();
+    }
+
     private static DriveControllerFactory<?, Integer> getNeoDriveFactory(Mk4ModuleConfiguration configuration) {
         return new NeoDriveControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
@@ -80,6 +87,9 @@ public class Mk4SwerveModuleBuilder {
         switch (motorType) {
             case NEO:
                 this.driveFactory = getNeoDriveFactory(this.configuration);
+                break;
+            case KRAKEN_X60:
+                this.driveFactory = getKrakenX60DriveFactory(this.configuration);
                 break;
             default:
                 break;
@@ -159,15 +169,7 @@ public class Mk4SwerveModuleBuilder {
 
         SteerConfiguration<CanCoderAbsoluteConfiguration> steerConfig;
 
-        if (steerMotorType == MotorType.FALCON) {
-            steerConfig = new SteerConfiguration<>(
-                    steerMotorPort, 
-                    new CanCoderAbsoluteConfiguration(
-                            steerEncoderPort, 
-                            steerEncoderCanbus
-                    )
-            );
-        } else if (steerMotorType == MotorType.NEO) {
+        if (steerMotorType == MotorType.KRAKEN_X60) {
             steerConfig = new SteerConfiguration<>(
                     steerMotorPort, 
                     new CanCoderAbsoluteConfiguration(
