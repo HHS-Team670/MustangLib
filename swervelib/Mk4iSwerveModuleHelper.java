@@ -74,12 +74,24 @@ public final class Mk4iSwerveModuleHelper {
             int steerEncoderPort,
             double steerOffset
     ) {
+        if(configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER){
+                return new SwerveModuleFactory<>(
+                        gearRatio.getConfiguration(),
+                        getNeoDriveFactory(configuration),
+                        getNeoHeliumSteerFactory(configuration)
+                ).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );
+        }
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
                 getNeoDriveFactory(configuration),
                 getNeoCanCoderSteerFactory(configuration)
         ).create(
-                container,
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
