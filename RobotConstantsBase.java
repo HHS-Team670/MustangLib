@@ -60,8 +60,8 @@ public class RobotConstantsBase {
         // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
         
         // Good defaults
-        public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
-        public static final PIDConstants kAutonThetaPID = new PIDConstants(.5, 0, 0);
+        public static final PIDConstants kAutonTranslationPID = new PIDConstants(5, 0, 0.5);
+        public static final PIDConstants kAutonThetaPID = new PIDConstants(1.75, 0, 0);
 
         // PID controllers
         public static final PIDController xController = new PIDController(3, 0, 0);
