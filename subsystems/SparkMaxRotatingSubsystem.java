@@ -1,10 +1,10 @@
 package frc.team670.mustanglib.subsystems;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
-import com.revrobotics.CANSparkMax.SoftLimitDirection;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
 import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
