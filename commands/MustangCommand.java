@@ -2,7 +2,6 @@ package frc.team670.mustanglib.commands;
 
 import java.util.Map;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 
 /**

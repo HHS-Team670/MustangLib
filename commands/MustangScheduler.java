@@ -2,7 +2,6 @@ package frc.team670.mustanglib.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.mustanglib.utils.MustangNotifications;
 import frc.team670.mustanglib.RobotBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;

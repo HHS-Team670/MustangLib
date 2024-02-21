@@ -4,7 +4,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
-import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.REVLibError;
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.ExternalFollower;

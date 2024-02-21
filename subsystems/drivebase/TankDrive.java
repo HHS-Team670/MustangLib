@@ -36,7 +36,6 @@ import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 import frc.team670.robot.constants.OI;
-import frc.team670.robot.constants.RobotConstants;
 
 /**
  * 

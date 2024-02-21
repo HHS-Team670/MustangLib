@@ -2,7 +2,7 @@ package frc.team670.mustanglib.subsystems;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkBase.SoftLimitDirection;
 
@@ -20,7 +20,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
     protected SparkMAXLite mRotator;
     protected RelativeEncoder mEncoder;
-    protected SparkMaxPIDController mController;
+    protected SparkPIDController mController;
     protected double mSetpoint;
     protected double mTempSetpoint;
 
@@ -334,7 +334,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * 
      * @return The method is returning a SparkMaxPIDController object.
      */
-    public SparkMaxPIDController getRotatorController() {
+    public SparkPIDController getRotatorController() {
         return this.mController;
     }
    /**

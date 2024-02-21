@@ -2,7 +2,8 @@ package frc.team670.mustanglib.utils.motorcontroller;
 
 import java.util.HashMap;
 import java.util.Map;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
+import com.revrobotics.CANSparkLowLevel.MotorType;
 
 /**
  * Settings and properties for specific kinds of motors.

@@ -3,8 +3,6 @@ package frc.team670.mustanglib.swervelib.ctre;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.NeutralModeValue;
-import com.revrobotics.RelativeEncoder;
-
 import frc.team670.mustanglib.swervelib.DriveController;
 import frc.team670.mustanglib.swervelib.DriveControllerFactory;
 import frc.team670.mustanglib.swervelib.ModuleConfiguration;

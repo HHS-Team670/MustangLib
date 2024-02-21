@@ -1,7 +1,7 @@
 package frc.team670.mustanglib.swervelib.rev;
 
+import com.revrobotics.CANSparkLowLevel;
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.RelativeEncoder;
 import frc.team670.mustanglib.swervelib.DriveController;
 import frc.team670.mustanglib.swervelib.DriveControllerFactory;
@@ -41,7 +41,7 @@ public final class NeoDriveControllerFactoryBuilder {
         @Override
         public ControllerImplementation create(Integer id, String _canbus,
                 ModuleConfiguration moduleConfiguration) {
-            CANSparkMax motor = new CANSparkMax(id, CANSparkMaxLowLevel.MotorType.kBrushless);
+            CANSparkMax motor = new CANSparkMax(id, CANSparkLowLevel.MotorType.kBrushless);
             motor.setInverted(moduleConfiguration.isDriveInverted());
 
             // Setup voltage compensation
@@ -56,25 +56,25 @@ public final class NeoDriveControllerFactoryBuilder {
             }
 
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus0, 100),
                     "Failed to set periodic status frame 0 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1, 20),
                     "Failed to set periodic status frame 1 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 20),
                     "Failed to set periodic status frame 2 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS),
                     "Failed to set periodic status frame 3 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS),
                     "Failed to set periodic status frame 4 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS),
                     "Failed to set periodic status frame 5 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS),
                     "Failed to set periodic status frame 6 rate");
             // Set neutral mode to brake
             motor.setIdleMode(CANSparkMax.IdleMode.kBrake);
