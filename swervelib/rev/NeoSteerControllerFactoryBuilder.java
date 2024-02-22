@@ -3,11 +3,8 @@ package frc.team670.mustanglib.swervelib.rev;
 import com.revrobotics.*;
 import frc.team670.mustanglib.swervelib.*;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
-import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import static frc.team670.mustanglib.swervelib.rev.RevUtils.checkNeoError;
 
 public final class NeoSteerControllerFactoryBuilder {
@@ -75,24 +72,24 @@ public final class NeoSteerControllerFactoryBuilder {
             AbsoluteEncoder absoluteEncoder = encoderFactory.create(steerConfiguration.getEncoderConfiguration());
 
             CANSparkMax motor = new CANSparkMax(steerConfiguration.getMotorPort(),
-                    CANSparkMaxLowLevel.MotorType.kBrushless);
-            checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus0, 100),
+                    CANSparkLowLevel.MotorType.kBrushless);
+            checkNeoError(motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus0, 100),
                     "Failed to set periodic status frame 0 rate");
-            checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus1, 20),
+            checkNeoError(motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1, 20),
                     "Failed to set periodic status frame 1 rate");
-            checkNeoError(motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus2, 20),
+            checkNeoError(motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 20),
                     "Failed to set periodic status frame 2 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus3,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS),
                     "Failed to set periodic status frame 3 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus4,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS),
                     "Failed to set periodic status frame 4 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus5,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS),
                     "Failed to set periodic status frame 5 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkMaxLowLevel.PeriodicFrame.kStatus6,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS),
                     "Failed to set periodic status frame 6 rate");    
                     
             checkNeoError(motor.setIdleMode(CANSparkMax.IdleMode.kBrake), "Failed to set NEO idle mode");
@@ -117,7 +114,7 @@ public final class NeoSteerControllerFactoryBuilder {
             checkNeoError(integratedEncoder.setPosition(absoluteEncoder.getAbsoluteAngle()),
                     "Failed to set NEO encoder position");
 
-            SparkMaxPIDController controller = motor.getPIDController();
+            SparkPIDController controller = motor.getPIDController();
             if (hasPidConstants()) {
                 checkNeoError(controller.setP(pidProportional), "Failed to set NEO PID proportional constant");
                 checkNeoError(controller.setI(pidIntegral), "Failed to set NEO PID integral constant");
@@ -135,7 +132,7 @@ public final class NeoSteerControllerFactoryBuilder {
 
         @SuppressWarnings("FieldCanBeLocal")
         private final CANSparkMax motor;
-        private final SparkMaxPIDController controller;
+        private final SparkPIDController controller;
         private final RelativeEncoder motorEncoder;
         private final AbsoluteEncoder absoluteEncoder;
 
