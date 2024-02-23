@@ -310,6 +310,7 @@ public final class Mk4iSwerveModuleHelper {
     public enum GearRatio {
         L1(SdsModuleConfigurations.MK4I_L1),
         L2(SdsModuleConfigurations.MK4I_L2),
+        L2K(SdsModuleConfigurations.MK4I_L2K),
         L3(SdsModuleConfigurations.MK4I_L3);
 
         public final ModuleConfiguration configuration;
