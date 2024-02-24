@@ -24,6 +24,7 @@ import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import frc.team670.mustanglib.utils.ConsoleLogger;
+import frc.team670.robot.subsystems.LED;
 
 /**
  * Subsystem base vision. Mainly used for april tags pose estimation.
@@ -39,6 +40,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     private ThreadPoolExecutor mExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
     private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
     private boolean mInit = false;
+    private LED led;
 
     /**
      * A vision configuration that stores important information about the field and vision subsystem on the robot
@@ -56,6 +58,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         for (int i = 0; i < mCameras.length; i++) {
             mCameras[i] = new PhotonCamera(config.kCameraIDs[i]);
         }
+        led = LED.getInstance();
     }
 
     /**
@@ -224,9 +227,18 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
          */
         public Optional<CameraEstimatorMeasurement> update() {
             PhotonPipelineResult result = photonCamera.getLatestResult();
-            if (ignoreFrame(result))
+            if (ignoreFrame(result)){
                 return Optional.empty();
-
+            }
+            for(int i = 1; i < result.getTargets().size(); i++){
+                if(led.getAllianceColor() == LED.LEDColor.RED && photonCamera.getName().equals("Arducam_B") && result.getTargets().get(i - 1).getFiducialId() == 3 ||  result.getTargets().get(i - 1).getFiducialId() == 4){
+                    led.setLedMode(LED.Mode.VISIONON);
+                    break;
+                } else if(led.getAllianceColor() == LED.LEDColor.BLUE && photonCamera.getName().equals("Arducam_B") && result.getTargets().get(i - 1).getFiducialId() == 7 ||  result.getTargets().get(i - 1).getFiducialId() == 8){
+                    led.setLedMode(LED.Mode.VISIONON);
+                    break;
+                }
+            }
             Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
             if (optEstimation.isEmpty())
                 return Optional.empty();
