@@ -37,8 +37,26 @@ public class SparkMAXFactory {
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
 
-        public boolean ENABLE_VOLTAGE_COMPENSATION = false;
         public double NOMINAL_VOLTAGE = 12.0;
+
+        public static SparkMAXFactory.Config copy(SparkMAXFactory.Config config){
+            Config copy=new Config();
+            copy.BURN_FACTORY_DEFAULT_FLASH=config.BURN_FACTORY_DEFAULT_FLASH;
+            copy.DEFAULT_MODE=config.DEFAULT_MODE;
+            copy.INVERTED=config.INVERTED;
+            copy.STATUS_FRAME_0_RATE_MS=config.STATUS_FRAME_0_RATE_MS;
+            copy.STATUS_FRAME_1_RATE_MS=config.STATUS_FRAME_1_RATE_MS;
+            copy.STATUS_FRAME_2_RATE_MS=config.STATUS_FRAME_2_RATE_MS;
+            copy.STATUS_FRAME_3_RATE_MS=config.STATUS_FRAME_3_RATE_MS;
+            copy.STATUS_FRAME_4_RATE_MS=config.STATUS_FRAME_4_RATE_MS;
+            copy.STATUS_FRAME_5_RATE_MS=config.STATUS_FRAME_5_RATE_MS;
+            copy.STATUS_FRAME_6_RATE_MS=config.STATUS_FRAME_6_RATE_MS;
+            copy.OPEN_LOOP_RAMP_RATE=config.OPEN_LOOP_RAMP_RATE;
+            copy.CLOSED_LOOP_RAMP_RATE=config.CLOSED_LOOP_RAMP_RATE;
+            copy.NOMINAL_VOLTAGE=config.NOMINAL_VOLTAGE;
+            return copy;            
+
+        }
 
     }
 
