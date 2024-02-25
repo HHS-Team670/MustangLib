@@ -4,12 +4,13 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
+
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.Vector;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.math.trajectory.Trajectory;
@@ -19,8 +20,8 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+// import frc.team670.mustanglib.subsystems.VisionfSubsystemBase;
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase.VisionMeasurement;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 
@@ -34,7 +35,10 @@ public abstract class SwervePoseEstimatorBase {
 
     private final SwerveDrive driveBase;
     private VisionSubsystemBase vision;
+    private final String DRIVEBASE_ESTIMATED_POSE;
+    private final String VISION_ESTIMATED_POSE = "Camera Estimated Pose";
 
+    private static DriverStation.Alliance alliance = null;
     /**
      * Standard deviations of model states. Increase these numbers to trust your
      * model's state
@@ -59,7 +63,15 @@ public abstract class SwervePoseEstimatorBase {
 
     private final Field2d field2d = new Field2d();
 
+    public static DriverStation.Alliance getAlliance(){
+        if(DriverStation.getAlliance().isPresent()){
+                alliance = DriverStation.getAlliance().get();
+        }
+        return alliance;
+    }
+
     public SwervePoseEstimatorBase(SwerveDrive swerve) {
+        DRIVEBASE_ESTIMATED_POSE = swerve.getName()+"/Estimated Pose";
         this.driveBase = swerve;
         this.vision = null;
         poseEstimator = new SwerveDrivePoseEstimator(swerve.getSwerveKinematics(),
@@ -105,15 +117,16 @@ public abstract class SwervePoseEstimatorBase {
                 Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
 
                 poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
-
-                field2d.getObject("camera pose").setPose(estimatedPose);
+                Logger.recordOutput(VISION_ESTIMATED_POSE,
+                estimatedPose);
+                // field2d.getObject("camera pose").setPose(estimatedPose);
             }
         }
 
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
-        SmartDashboard.putString("Estimated Pose",
-                getFormattedPose(getAbsoluteFieldOrientedPoseFromAllianceOriented()));
+        Logger.recordOutput(DRIVEBASE_ESTIMATED_POSE,
+                getAbsoluteFieldOrientedPoseFromAllianceOriented());
     }
 
     private String getFormattedPose() {
@@ -159,7 +172,7 @@ public abstract class SwervePoseEstimatorBase {
         List<State> states = traj.getStates();
         List<State> adjusted = new ArrayList<>(states.size());
         states.forEach(s -> {
-            if (DriverStation.getAlliance() == Alliance.Red) {
+            if (getAlliance() == Alliance.Red) {
                 adjusted.add(new State(s.timeSeconds, s.velocityMetersPerSecond,
                         s.accelerationMetersPerSecondSq, getAbsoluteFieldOrientedPoseFromAllianceOriented(s.poseMeters),
                         -s.curvatureRadPerMeter));
@@ -210,10 +223,7 @@ public abstract class SwervePoseEstimatorBase {
     public List<Pose2d> getSortedTargetTranslations() {
         List<Pose2d> targets = getTargets();
 
-        // for (Translation2d p : FieldConstants.Grids.complexLowTranslations)
-        //     targets.add(FieldConstants.allianceFlip(new Pose2d(p, new Rotation2d())));
-        // for (Pose2d p : FieldConstants.LoadingZone.IntakePoses)
-        //     targets.add(FieldConstants.allianceFlip(p));
+     
 
         Translation2d robotTranslation = getCurrentPose().getTranslation();
         targets.sort(new Comparator<Pose2d>() {
