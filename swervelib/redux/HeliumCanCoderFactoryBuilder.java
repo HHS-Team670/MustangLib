@@ -31,8 +31,12 @@ public class HeliumCanCoderFactoryBuilder {
     public AbsoluteEncoderFactory<CanandCoderAbsoluteConfiguration> build() {
         return configuration -> {
             Canandcoder encoder = new Canandcoder(configuration.getId());
-            // Settings settings = encoder.getSettings().setInvertDirection(true);
-            // encoder.setSettings(settings);
+            
+             Settings settings = encoder.getSettings();
+             if (!settings.getInvertDirection()) { // Needed because setInvertDirection only toggles inversion
+                settings = settings.setInvertDirection(true);
+             }
+             encoder.setSettings(settings);
             return new EncoderImplementation(encoder);
         };
     }
