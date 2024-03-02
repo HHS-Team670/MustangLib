@@ -161,6 +161,11 @@ public class RobotBase extends LoggedRobot {
 
   }
 
+  @Override
+  public void autonomousExit() {
+    robotContainer.autonomousExit();
+  }
+
   /**
    * This function is called periodically during autonomous.
    */

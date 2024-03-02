@@ -235,6 +235,11 @@ public abstract class SwerveDrive extends DriveBase {
     public void zeroHeading() {
         mGyroOffset = getGyroscopeRotation(false);
     }
+
+    public void rotateOffset180(){
+        mGyroOffset = mGyroOffset.plus(new Rotation2d(Math.PI));
+    }
+
     public GearRatio getGearRatio(){
         return kConfig.kSwerveModuleGearRatio();
     }
