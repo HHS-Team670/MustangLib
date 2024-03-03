@@ -320,13 +320,6 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
         Logger.recordOutput(DRIVEBASE_PITCH, getPitch());
         Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
-        TalonFXConfiguration moduleConfig=new TalonFXConfiguration();
-        ((TalonFX)mModules[0].getDriveMotor()).getConfigurator().refresh(moduleConfig);
-        
-        Logger.recordOutput(DRIVEBASE_SUPPLY_CURR_LIMITS, ""+moduleConfig.CurrentLimits.SupplyCurrentLimit);
-        Logger.recordOutput(DRIVEBASE_STATOR_CURR_LIMITS, ""+moduleConfig.CurrentLimits.StatorCurrentLimit);
-
-        
     }
 
     public void initVision(VisionSubsystemBase vision) {
