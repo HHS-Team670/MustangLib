@@ -107,18 +107,18 @@ public abstract class SwervePoseEstimatorBase {
      */
     public void update() {
         // if (vision != null && !DriverStation.isAutonomous()) {
-        if (vision != null){
+        // if (vision != null){
 
-            while (!vision.isMeasurementBufferEmpty()) {
-                VisionMeasurement m = vision.getVisionMeasurement();
-                EstimatedRobotPose estimation = m.estimation();
-                Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
+        //     while (!vision.isMeasurementBufferEmpty()) {
+        //         VisionMeasurement m = vision.getVisionMeasurement();
+        //         EstimatedRobotPose estimation = m.estimation();
+        //         Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
 
-                poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
+        //         poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
 
-                field2d.getObject("camera pose").setPose(estimatedPose);
-            }
-        }
+        //         field2d.getObject("camera pose").setPose(estimatedPose);
+        //     }
+        // }
 
         poseEstimator.update(driveBase.getGyroscopeRotation(), driveBase.getModulePositions());
         field2d.setRobotPose(getAbsoluteFieldOrientedPoseFromAllianceOriented());
