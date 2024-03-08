@@ -1,5 +1,6 @@
 package frc.team670.mustanglib.subsystems;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -8,11 +9,13 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
 import org.photonvision.PhotonPoseEstimator.PoseStrategy;
 import org.photonvision.targeting.PhotonPipelineResult;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFieldLayout.OriginPosition;
@@ -38,6 +41,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     protected CameraPoseEstimator[] mCameraEstimators;
     private ThreadPoolExecutor mExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
     private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
+    private HashMap<String, PhotonPipelineResult> latestResults;
     private boolean mInit = false;
 
     /**
@@ -56,6 +60,11 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         for (int i = 0; i < mCameras.length; i++) {
             mCameras[i] = new PhotonCamera(config.kCameraIDs[i]);
         }
+<<<<<<< Updated upstream
+=======
+        this.latestResults = new HashMap<>();
+        led = LED.getInstance();
+>>>>>>> Stashed changes
     }
 
     /**
@@ -80,7 +89,16 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         this.mCameraEstimators = c;
         mInit = true;
     }
-
+    public void debugSubsystem() {
+        for(String s : kConfig.kCameraIDs){
+            PhotonPipelineResult r = latestResults.get(s);
+            for(PhotonTrackedTarget target : r.getTargets()){
+                var transform = target.getBestCameraToTarget();
+                Logger.recordOutput("Camera: " + s + " distance to"  + target.getFiducialId() + "is: " ,Math.sqrt(Math.pow(transform.getX(), 2) + Math.pow(transform.getY(), 2)));
+                Logger.recordOutput("Camera: " + s + " angle to"  + target.getFiducialId() + "is: " , target.getYaw());
+            }
+        }     
+    }
     /**
      * Sets origin based on field side (red alliance or blue alliance)
      */
@@ -224,7 +242,12 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
          */
         public Optional<CameraEstimatorMeasurement> update() {
             PhotonPipelineResult result = photonCamera.getLatestResult();
+<<<<<<< Updated upstream
             if (ignoreFrame(result))
+=======
+            latestResults.put(photonCamera.getName(), result);
+            if (ignoreFrame(result)){
+>>>>>>> Stashed changes
                 return Optional.empty();
 
             Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
