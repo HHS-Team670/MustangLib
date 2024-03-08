@@ -484,9 +484,16 @@ public abstract class SwerveDrive extends DriveBase {
 
     @Override
     public void debugSubsystem() {
-        Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((CANSparkMax) mModules[0].getDriveMotor()).getOutputCurrent());
-        Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((CANSparkMax) mModules[1].getDriveMotor()).getOutputCurrent());
-        Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((CANSparkMax) mModules[2].getDriveMotor()).getOutputCurrent());
-        Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
+        if (kConfig.kDriveMotorType.equals(Motor_Type.NEO)) {
+            Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((CANSparkMax) mModules[0].getDriveMotor()).getOutputCurrent());
+            Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((CANSparkMax) mModules[1].getDriveMotor()).getOutputCurrent());
+            Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((CANSparkMax) mModules[2].getDriveMotor()).getOutputCurrent());
+            Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
+        } else if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)){
+            Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((TalonFX) mModules[0].getDriveMotor()).getStatorCurrent());
+            Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((TalonFX) mModules[1].getDriveMotor()).getStatorCurrent());
+            Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((TalonFX) mModules[2].getDriveMotor()).getStatorCurrent());
+            Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((TalonFX) mModules[3].getDriveMotor()).getStatorCurrent());
+        }
     }
 }

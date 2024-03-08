@@ -14,7 +14,7 @@ public class MotorConfig {
 
     public enum Motor_Type {
 
-        NEO, NEO_550, REDLINE_775PRO, BAG, CIM, KRAKEN_X60;
+        NEO, NEO_550, REDLINE_775PRO, BAG, CIM, KRAKEN_X60; 
 
     }
 
