@@ -60,11 +60,9 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         for (int i = 0; i < mCameras.length; i++) {
             mCameras[i] = new PhotonCamera(config.kCameraIDs[i]);
         }
-<<<<<<< Updated upstream
-=======
+
         this.latestResults = new HashMap<>();
         led = LED.getInstance();
->>>>>>> Stashed changes
     }
 
     /**
@@ -242,12 +240,8 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
          */
         public Optional<CameraEstimatorMeasurement> update() {
             PhotonPipelineResult result = photonCamera.getLatestResult();
-<<<<<<< Updated upstream
-            if (ignoreFrame(result))
-=======
             latestResults.put(photonCamera.getName(), result);
             if (ignoreFrame(result)){
->>>>>>> Stashed changes
                 return Optional.empty();
 
             Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
