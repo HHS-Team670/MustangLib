@@ -43,24 +43,20 @@ public class HeliumCanCoderFactoryBuilder {
         private final Canandcoder encoder;
 
         private EncoderImplementation(Canandcoder encoder) {
-            this.encoder = encoder;
+            this.encoder = encoder; 
+            // Settings settings = new Settings();
+            // // We are inverting the encoder because we are using Mk4i modules. If we use a different module, this may change
+            // settings.setInvertDirection(true);
+            // settings.setPositionFramePeriod(0.020);
+            // settings.setVelocityFramePeriod(0);
+            // encoder.setSettings(settings);
         }  
 
         @Override
         public double getAbsoluteAngle() {
             double angle = 2*Math.PI*encoder.getAbsPosition();
             SmartDashboard.putNumber("HeliumPos", angle);
-            // Faults code = encoder.getActiveFaults();
-
-            // for (int i = 0; i < ATTEMPTS; i++) {
-            //     if (!code.faultsValid()) break; //note disable if this breaks stuff
-            //     try {
-            //         Thread.sleep(10);
-            //     } catch (InterruptedException e) { }
-            //     angle = Math.toRadians(encoder.getPosition());
-            //     code = encoder.getActiveFaults();
-            // }
-
+   
             angle %= 2.0 * Math.PI;
             if (angle < 0.0) {
                 angle += 2.0 * Math.PI;

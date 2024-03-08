@@ -140,12 +140,6 @@ public class Mk4ModuleConfiguration {
                 '}';
     }
 
-    public static Mk4ModuleConfiguration getDefaultSteerFalcon500() {
-        Mk4ModuleConfiguration config = new Mk4ModuleConfiguration();
-        config.setSteerPID(0.2, 0.0, 0.1);
-        return config;
-    }
-
     public static Mk4ModuleConfiguration getDefaultSteerNEO() {
         Mk4ModuleConfiguration config = new Mk4ModuleConfiguration();
         config.setSteerPID(1.0, 0.0, 0.1);

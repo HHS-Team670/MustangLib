@@ -1,23 +1,11 @@
 package frc.team670.mustanglib;
 
-import static java.util.Map.entry;
-
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.Map;
-
 import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConstraint;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.SerialPort;
-import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
-import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
-import frc.team670.mustanglib.swervelib.ModuleConfiguration;
-import frc.team670.mustanglib.swervelib.SdsModuleConfigurations;
 /**
  * A place for storing constants required in mustanglib. 
  * This includes most drivebase constants. For every robot, add mac address like below as well as relevant constants
@@ -60,8 +48,8 @@ public class RobotConstantsBase {
         // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
         
         // Good defaults
-        public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
-        public static final PIDConstants kAutonThetaPID = new PIDConstants(0.5, 0, 0);
+        public static final PIDConstants kAutonTranslationPID = new PIDConstants(5, 0, 0.5);
+        public static final PIDConstants kAutonThetaPID = new PIDConstants(1.75, 0, 0);
 
         // PID controllers
         public static final PIDController xController = new PIDController(3, 0, 0);

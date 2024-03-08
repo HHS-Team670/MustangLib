@@ -12,6 +12,15 @@ public final class Mk4iSwerveModuleHelper {
     }
 
 
+
+    private static DriveControllerFactory<?, Integer> getKrakenX60DriveFactory(Mk4ModuleConfiguration configuration) {
+        return new KrakenX60DriveControllerFactoryBuilder()
+                .withVoltageCompensation(configuration.getNominalVoltage())
+                .withCurrentLimit(configuration.getDriveCurrentLimit())
+                .build();
+    }
+
+
     private static DriveControllerFactory<?, Integer> getNeoDriveFactory(Mk4ModuleConfiguration configuration) {
         return new NeoDriveControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
@@ -39,7 +48,9 @@ public final class Mk4iSwerveModuleHelper {
                         .build());
     }
   
+   
 
+    
     /**
      * Creates a Mk4i swerve module that uses NEOs for driving and steering.
      * Module information is displayed in the specified ShuffleBoard container.
@@ -69,7 +80,6 @@ public final class Mk4iSwerveModuleHelper {
                         getNeoDriveFactory(configuration),
                         getNeoHeliumSteerFactory(configuration)
                 ).create(
-                        container,
                         driveMotorPort,
                         new SteerConfiguration<>(
                                 steerMotorPort,
@@ -82,7 +92,6 @@ public final class Mk4iSwerveModuleHelper {
                 getNeoDriveFactory(configuration),
                 getNeoCanCoderSteerFactory(configuration)
         ).create(
-                container,
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
@@ -187,9 +196,121 @@ public final class Mk4iSwerveModuleHelper {
     }
 
 
+    /**
+     * Creates a Mk4i swerve module that uses a KrakenX60 for driving and a NEO for steering.
+     * Module information is displayed in the specified ShuffleBoard container.
+     *
+     * @param container        The container to display module information in.
+     * @param configuration    Module configuration parameters to use.
+     * @param gearRatio        The gearing configuration the module is in.
+     * @param driveMotorPort   The CAN ID of the drive KrakenX60.
+     * @param steerMotorPort   The CAN ID of the steer NEO.
+     * @param steerEncoderPort The CAN ID of the steer CANCoder.
+     * @param steerOffset      The offset of the CANCoder in radians.
+     * @return The configured swerve module.
+     */
+    public static SwerveModule createKrakenX60Neo(
+            ShuffleboardLayout container,
+            Mk4ModuleConfiguration configuration,
+            GearRatio gearRatio,
+            int driveMotorPort,
+            int steerMotorPort,
+            int steerEncoderPort
+    ) {
+        return new SwerveModuleFactory<>(
+                gearRatio.getConfiguration(),
+                getKrakenX60DriveFactory(configuration),
+                getNeoHeliumSteerFactory(configuration)).create(
+                        driveMotorPort,
+                        new SteerConfiguration<>(
+                                steerMotorPort,
+                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        )
+                );
+    }
+
+
+    /**
+     * Creates a Mk4i swerve module that uses a Kraken X60 for driving and a NEO for steering.
+     * Module information is displayed in the specified ShuffleBoard container.
+     *
+     * @param container        The container to display module information in.
+     * @param gearRatio        The gearing configuration the module is in.
+     * @param driveMotorPort   The CAN ID of the drive Kraken X60.
+     * @param steerMotorPort   The CAN ID of the steer NEO.
+     * @param steerEncoderPort The CAN ID of the steer CANCoder.
+     * @param steerOffset      The offset of the CANCoder in radians.
+     * @return The configured swerve module.
+     */
+    public static SwerveModule createKrakenX60Neo(
+            ShuffleboardLayout container,
+            GearRatio gearRatio,
+            int driveMotorPort,
+            int steerMotorPort,
+            int steerEncoderPort
+    ) {
+        return createKrakenX60Neo(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort);
+    }
+
+    /**
+     * Creates a Mk4i swerve module that uses a Kraken X60 for driving and a NEO for steering.
+     *
+     * @param configuration    Module configuration parameters to use.
+     * @param gearRatio        The gearing configuration the module is in.
+     * @param driveMotorPort   The CAN ID of the drive Kraken X60.
+     * @param steerMotorPort   The CAN ID of the steer NEO.
+     * @param steerEncoderPort The CAN ID of the steer CANCoder.
+     * @param steerOffset      The offset of the CANCoder in radians.
+     * @return The configured swerve module.
+     */
+    public static SwerveModule createKrakenX60Neo(
+            Mk4ModuleConfiguration configuration,
+            GearRatio gearRatio,
+            int driveMotorPort,
+            int steerMotorPort,
+            int steerEncoderPort,
+            double steerOffset
+    ) {
+        return new SwerveModuleFactory<>(
+                gearRatio.getConfiguration(),
+                getKrakenX60DriveFactory(configuration),
+                getNeoHeliumSteerFactory(configuration)
+        ).create(
+                driveMotorPort,
+                new SteerConfiguration<>(
+                        steerMotorPort,
+                        new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                )
+        );
+    }
+
+
+    /**
+     * Creates a Mk4i swerve module that uses a Kraken X60 for driving and a NEO for steering.
+     *
+     * @param gearRatio        The gearing configuration the module is in.
+     * @param driveMotorPort   The CAN ID of the drive Kraken X60.
+     * @param steerMotorPort   The CAN ID of the steer NEO.
+     * @param steerEncoderPort The CAN ID of the steer CANCoder.
+     * @param steerOffset      The offset of the CANCoder in radians.
+     * @return The configured swerve module.
+     */
+    public static SwerveModule createKrakenX60Neo(
+            GearRatio gearRatio,
+            int driveMotorPort,
+            int steerMotorPort,
+            int steerEncoderPort,
+            double steerOffset
+    ) {
+        return createKrakenX60Neo(new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+    }
+
+
+
     public enum GearRatio {
         L1(SdsModuleConfigurations.MK4I_L1),
         L2(SdsModuleConfigurations.MK4I_L2),
+        L2K(SdsModuleConfigurations.MK4I_L2K),
         L3(SdsModuleConfigurations.MK4I_L3);
 
         public final ModuleConfiguration configuration;

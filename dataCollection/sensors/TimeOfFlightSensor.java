@@ -4,7 +4,6 @@ package frc.team670.mustanglib.dataCollection.sensors;
 import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.I2C;
-import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
 /**

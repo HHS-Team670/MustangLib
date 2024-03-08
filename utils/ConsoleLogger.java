@@ -106,7 +106,7 @@ public class ConsoleLogger {
         public String format(LogRecord rec) {
             StringBuffer buf = new StringBuffer(1024);
 
-            buf.append(String.format("<%d>", rec.getThreadID()));
+            buf.append(String.format("<%d>", rec.getLongThreadID()));
             buf.append(dateFormat.format(new Date(rec.getMillis())));
             buf.append(" ");
             buf.append(formatMessage(rec));

@@ -11,10 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMax.IdleMode;
 import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkMaxPIDController;
+import com.revrobotics.SparkPIDController;
+import com.revrobotics.CANSparkBase.IdleMode;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
@@ -36,7 +36,6 @@ import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 import frc.team670.robot.constants.OI;
-import frc.team670.robot.constants.RobotConstants;
 
 /**
  * 
@@ -60,8 +59,8 @@ public abstract class TankDrive extends DriveBase {
   
     private MustangCommand defaultCommand;
   
-    private SparkMaxPIDController leftPIDController;
-    private SparkMaxPIDController rightPIDController;
+    private SparkPIDController leftPIDController;
+    private SparkPIDController rightPIDController;
     
     private double prevHeading;
     
@@ -648,7 +647,7 @@ public abstract class TankDrive extends DriveBase {
     return kConfig.autonConfig.kLeftController;
   }
 
-  public SparkMaxPIDController getLeftSparkMaxPIDController(){
+  public SparkPIDController getLeftSparkPIDController(){
     return leftPIDController;
   }
 
@@ -663,7 +662,7 @@ public abstract class TankDrive extends DriveBase {
     return kConfig.autonConfig.kRightController;
   }
 
-  public SparkMaxPIDController getRightSparkMaxPIDController(){
+  public SparkPIDController getRightSparkPIDController(){
     return rightPIDController;
   }
 
@@ -688,13 +687,13 @@ public abstract class TankDrive extends DriveBase {
   }
 
   public void holdPosition() {
-    getLeftSparkMaxPIDController().setReference(left1Encoder.getPosition(), CANSparkMax.ControlType.kPosition);
-    getRightSparkMaxPIDController().setReference(right1Encoder.getPosition(), CANSparkMax.ControlType.kPosition);
+    getLeftSparkPIDController().setReference(left1Encoder.getPosition(), CANSparkMax.ControlType.kPosition);
+    getRightSparkPIDController().setReference(right1Encoder.getPosition(), CANSparkMax.ControlType.kPosition);
   }
 
   public void releasePosition() {
-    getLeftSparkMaxPIDController().setReference(0, CANSparkMax.ControlType.kDutyCycle);
-    getRightSparkMaxPIDController().setReference(0, CANSparkMax.ControlType.kDutyCycle);
+    getLeftSparkPIDController().setReference(0, CANSparkMax.ControlType.kDutyCycle);
+    getRightSparkPIDController().setReference(0, CANSparkMax.ControlType.kDutyCycle);
   }
 
    
