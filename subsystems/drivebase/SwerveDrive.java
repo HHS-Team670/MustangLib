@@ -270,14 +270,6 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
         Logger.recordOutput(DRIVEBASE_PITCH, getPitch());
         Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
-        Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((CANSparkMax) mModules[0].getDriveMotor()).getOutputCurrent());
-        Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((CANSparkMax) mModules[1].getDriveMotor()).getOutputCurrent());
-        Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((CANSparkMax) mModules[2].getDriveMotor()).getOutputCurrent());
-        Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
-
-
-
-        
     }
 
     public void initVision(VisionSubsystemBase vision) {
@@ -442,5 +434,13 @@ public abstract class SwerveDrive extends DriveBase {
             }
         };
         return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, alliance, reqSubsystems);
+    }
+
+    @Override
+    public void debugSubsystem() {
+        Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((CANSparkMax) mModules[0].getDriveMotor()).getOutputCurrent());
+        Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((CANSparkMax) mModules[1].getDriveMotor()).getOutputCurrent());
+        Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((CANSparkMax) mModules[2].getDriveMotor()).getOutputCurrent());
+        Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
     }
 }
