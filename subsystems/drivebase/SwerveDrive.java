@@ -57,8 +57,13 @@ public abstract class SwerveDrive extends DriveBase {
     private final Mk4ModuleConfiguration kModuleConfigFrontRight = new Mk4ModuleConfiguration();
     private final Mk4ModuleConfiguration kModuleConfigBackLeft = new Mk4ModuleConfiguration();
     private final Mk4ModuleConfiguration kModuleConfigBackRight = new Mk4ModuleConfiguration();
+    private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
+    private CurrentLimitsConfigs currentLimitConfigs = driveMotorConfig.CurrentLimits;
     private final double kPitchOffset;
     private final double kRollOffset;
+    private final double currentAlpha; // TODO tune, closer to 1 gives recent readings more weight, closer to 0 gives older readings more weight
+    private double emaCurrent; // updating weighted average of drive motor current
+    private double currentSupplyCurrentLimit;
 
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
@@ -86,6 +91,12 @@ public abstract class SwerveDrive extends DriveBase {
         
         kMaxVelocity = config.kMaxVelocity;
         kMaxVoltage = config.kMaxVoltage;
+
+        currentAlpha = 0.6; 
+        
+        emaCurrent = 0;
+        currentSupplyCurrentLimit = config.kMaxDriveCurrent;
+        currentLimitConfigs.SupplyTimeThreshold = 0.5; // TODO 
 
         kModuleConfigFrontLeft.setNominalVoltage(kMaxVoltage);
         kModuleConfigFrontLeft.setDriveCurrentLimit(config.kMaxDriveCurrent);
@@ -315,6 +326,25 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
         Logger.recordOutput(DRIVEBASE_PITCH, getPitch());
         Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
+
+       
+
+        if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)) {
+            emaCurrent = currentAlpha * ((TalonFX) mModules[0].getDriveMotor()).getSupplyCurrent() + (1 - currentAlpha) * emaCurrent; // weighted current average of front-right drive motor
+            if (emaCurrent > 30) { // TODO tune this? what should be the threshold?
+                currentLimitConfigs.SupplyCurrentLimit = currentSupplyCurrentLimit - 0.25; // TODO what increment to decrease/increase limit? how frequently current readings update?
+            } else {
+                currentLimitConfigs.SupplyCurrentLimit = currentSupplyCurrentLimit + 0.25;
+            }
+            currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit + 5; // if the current goes at or above supply current threshold for more than 0.5 sec (time threshold), limited to supply current limit
+            driveMotorConfig.withCurrentLimits(currentLimitConfigs);
+    
+            ((TalonFX) mModules[0].getDriveMotor()).getConfigurator().apply(driveMotorConfig); // apply new current limit to all, assuming they're correlated
+            ((TalonFX) mModules[1].getDriveMotor()).getConfigurator().apply(driveMotorConfig);
+            ((TalonFX) mModules[2].getDriveMotor()).getConfigurator().apply(driveMotorConfig);
+            ((TalonFX) mModules[3].getDriveMotor()).getConfigurator().apply(driveMotorConfig);
+        }
+
     }
 
     public void initVision(VisionSubsystemBase vision) {
