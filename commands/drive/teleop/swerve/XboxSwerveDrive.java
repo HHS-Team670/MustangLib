@@ -44,14 +44,14 @@ public class XboxSwerveDrive extends Command implements MustangCommand {
         double thetaVel;
         thetaVel = MAX_ANGULAR_VELOCITY * modifyAxis(-controller.getRightX());
 
-        driveBase.driveDesiredHeading(xVel, yVel, thetaVel);
+        driveBase.drive(xVel, yVel, thetaVel);
 
     }
 
 
     @Override
     public void end(boolean interrupted) {
-        driveBase.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+        driveBase.drive(0.0, 0.0, 0.0);
     }
 
     @Override

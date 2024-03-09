@@ -229,12 +229,10 @@ public abstract class SwerveDrive extends DriveBase {
     }
     protected abstract void initPoseEstimator();
 
-    public void drive(ChassisSpeeds chassisSpeeds) {
-        setModuleStates(kKinematics.toSwerveModuleStates(chassisSpeeds));
-    }
+   
 
     public void stop() {
-        drive(new ChassisSpeeds());
+        drive(0,0,0);
     }
 
     /**
@@ -279,23 +277,22 @@ public abstract class SwerveDrive extends DriveBase {
     public Rotation2d getDesiredHeading() {
         return this.mDesiredHeading;
     }
-    public void driveDesiredHeading(double xVel, double yVel, double thetaVel){
-        if (this.getDesiredHeading() != null) {
-            if (rotPIDController.atReference())
-                this.setmDesiredHeading(null);
-        }
-
+    public void drive(double xVel, double yVel, double thetaVel){
         
-
-        Rotation2d desiredHeading = this.getDesiredHeading();
-        if (desiredHeading != null) {
+        if (this.mDesiredHeading != null) {
+            if (rotPIDController.atReference()){
+                this.setmDesiredHeading(null);
+            }
+        }
+        if (this.mDesiredHeading != null) {
             thetaVel = rotPIDController.calculateRotationSpeed(this.getGyroscopeRotation(),
-                    desiredHeading);
+            this.mDesiredHeading);
         } 
         
-        this.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
-                this.getGyroscopeRotation()));
+        setModuleStates(kKinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
+        this.getGyroscopeRotation())));
     }
+
     // public double getMaxVelocityMetersPerSecond(){
     //     return  5676.0 / 60.0
     //     * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
