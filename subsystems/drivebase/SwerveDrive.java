@@ -12,6 +12,7 @@ import com.revrobotics.CANSparkBase.IdleMode;
 
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -210,10 +211,10 @@ public abstract class SwerveDrive extends DriveBase {
         // getModulePositions());
         // mPoseEstimator = new SwervePoseEstimatorBase(this);
 
-        this.rotPIDController = new RotationController(new ProfiledPIDController(3.5, 0, 0,
+        this.rotPIDController = new RotationController(new ProfiledPIDController(8, 0, 0,
                 new Constraints(RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecond,
                         RobotConstantsBase.SwerveDriveBase.kMaxAngularAccelerationRadiansPerSecondSquared)));
-        this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
+        this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(.5)));
         initPoseEstimator();
         kPitchOffset = mNavx.getPitch();
         kRollOffset = mNavx.getRoll();
@@ -290,7 +291,7 @@ public abstract class SwerveDrive extends DriveBase {
         } 
         
         setModuleStates(kKinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
-        this.getGyroscopeRotation())));
+                        this.getGyroscopeRotation())));
     }
 
     // public double getMaxVelocityMetersPerSecond(){
@@ -527,8 +528,11 @@ public abstract class SwerveDrive extends DriveBase {
 
 
         public double calculateRotationSpeed(Rotation2d currentHeading, Rotation2d desiredHeading) {
-            double thetaFF = m_thetaController.calculate(currentHeading.getRadians(),
+            double thetaFF =  m_thetaController.calculate(currentHeading.getRadians(),
                     desiredHeading.getRadians());
+            if(DriverStation.isAutonomousEnabled() && SwervePoseEstimatorBase.getAlliance() == Alliance.Blue)
+                thetaFF *= -1;
+            //TO DO: Fix this abombination because desired heading goes the wrong way for blue
 
             m_rotationError = desiredHeading.minus(currentHeading);
 
