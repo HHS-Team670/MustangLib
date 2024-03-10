@@ -54,11 +54,15 @@ public abstract class RobotContainerBase {
     }
   }
 
+  
+
   public abstract void robotInit();
 
   public abstract MustangCommand getAutonomousCommand();
 
   public abstract void autonomousInit();
+
+  public abstract void autonomousExit();
 
   public abstract void teleopInit();
 
