@@ -213,7 +213,7 @@ public abstract class SwerveDrive extends DriveBase {
         // getModulePositions());
         // mPoseEstimator = new SwervePoseEstimatorBase(this);
 
-        this.rotPIDController = new RotationController(new ProfiledPIDController(8, 0, 0,
+        this.rotPIDController = new RotationController(new ProfiledPIDController(4, 0, 0,
                 new Constraints(RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecond,
                         RobotConstantsBase.SwerveDriveBase.kMaxAngularAccelerationRadiansPerSecondSquared)));
         this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(.5)));
@@ -537,8 +537,8 @@ public abstract class SwerveDrive extends DriveBase {
         public double calculateRotationSpeed(Rotation2d currentHeading, Rotation2d desiredHeading) {
             double thetaFF =  m_thetaController.calculate(currentHeading.getRadians(),
                     desiredHeading.getRadians());
-            if(DriverStation.isAutonomousEnabled() && SwervePoseEstimatorBase.getAlliance() == Alliance.Blue)
-                thetaFF *= -1;
+            // if(DriverStation.isAutonomousEnabled() && SwervePoseEstimatorBase.getAlliance() == Alliance.Blue)
+            //     thetaFF *= -1;
             //TO DO: Fix this abombination because desired heading goes the wrong way for blue
 
             m_rotationError = desiredHeading.minus(currentHeading);

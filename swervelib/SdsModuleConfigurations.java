@@ -62,6 +62,9 @@ public final class SdsModuleConfigurations {
     // For 2024 kraken neo swerve 
     public static final ModuleConfiguration MK4I_L2K = new ModuleConfiguration(
         0.0958,
+        //.098674 too short on each note
+        //.0958 goes too far
+        //0.097237 not much better than 
          (16.0 / 50.0) * (27.0 / 17.0) * (15.0 / 45.0),
          false,
          (14.0 / 50.0) * (10.0 / 60.0),
