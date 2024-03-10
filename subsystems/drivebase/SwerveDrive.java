@@ -5,6 +5,9 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import org.littletonrobotics.junction.Logger;
 import com.revrobotics.CANSparkMax;
@@ -20,6 +23,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -50,7 +54,7 @@ public abstract class SwerveDrive extends DriveBase {
     private final SwerveDriveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
-    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL;
+    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL,DRIVEBASE_STATOR_CURR_LIMITS,DRIVEBASE_SUPPLY_CURR_LIMITS;
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfigFrontLeft = new Mk4ModuleConfiguration();
@@ -145,6 +149,7 @@ public abstract class SwerveDrive extends DriveBase {
                         .withPosition(2, 0),
                 kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
                 config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder);
+            // ((TalonFX)mModules[1].getDriveMotor()).setNeutralMode(NeutralModeValue.Coast);
         } else {
             throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
@@ -213,6 +218,9 @@ public abstract class SwerveDrive extends DriveBase {
         DRIVEBASE_HEADING_DEGREE = getName()+"/NavXHeadingDeg";
         DRIVEBASE_PITCH = getName()+"/pitch";
         DRIVEBASE_ROLL = getName()+"/roll";
+        DRIVEBASE_SUPPLY_CURR_LIMITS=getName()+"/SupplyCurrLimitFaults";
+        DRIVEBASE_STATOR_CURR_LIMITS=getName()+"/StatorCurrLimitFaults";
+
 
         Logger.recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
         
@@ -235,6 +243,11 @@ public abstract class SwerveDrive extends DriveBase {
     public void zeroHeading() {
         mGyroOffset = getGyroscopeRotation(false);
     }
+
+    public void rotateOffset180(){
+        mGyroOffset = mGyroOffset.plus(new Rotation2d(Math.PI));
+    }
+
     public GearRatio getGearRatio(){
         return kConfig.kSwerveModuleGearRatio();
     }
@@ -310,9 +323,6 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.recordOutput(DRIVEBASE_HEADING_DEGREE, getPose().getRotation().getDegrees());
         Logger.recordOutput(DRIVEBASE_PITCH, getPitch());
         Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
-
-
-        
     }
 
     public void initVision(VisionSubsystemBase vision) {
