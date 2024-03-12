@@ -22,9 +22,10 @@ public final class SparkMAXLite extends CANSparkMax {
      * @param type type Which specific motor this controller will
      *                               be using. For example, NEO or BAG
      */
-    public SparkMAXLite(int id, MotorConfig.Motor_Type type) {
+    protected SparkMAXLite(int id, MotorConfig.Motor_Type type) {
         super(id, MotorConfig.MOTOR_TYPE.get(type));
         this.motorType = type;
+        burnFlash();
     }
 
     public double getLastSet() {
