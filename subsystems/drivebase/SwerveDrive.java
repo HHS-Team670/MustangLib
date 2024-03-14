@@ -55,7 +55,7 @@ public abstract class SwerveDrive extends DriveBase {
     private final SwerveDriveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
-    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL, DRIVEBASE_FL_CURRENT, DRIVEBASE_FR_CURRENT, DRIVEBASE_BL_CURRENT, DRIVEBASE_BR_CURRENT, DRIVEBASE_SUPPLY_CURRENT_LIMIT;
+    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL, DRIVEBASE_FL_CURRENT, DRIVEBASE_FR_CURRENT, DRIVEBASE_BL_CURRENT, DRIVEBASE_BR_CURRENT, DRIVEBASE_SUPPLY_CURRENT_LIMIT, DRIVEBASE_AVG_CURRENT_DRAW, DRIVEBASE_LATEST_DRAW;
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfigFrontLeft = new Mk4ModuleConfiguration();
@@ -70,6 +70,7 @@ public abstract class SwerveDrive extends DriveBase {
     private int index = 0;
     private double averageCurrent;
     private boolean bufferFull = false;
+    private double latestDriveCurrentDraw = 0;
 
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
@@ -232,6 +233,8 @@ public abstract class SwerveDrive extends DriveBase {
         DRIVEBASE_BL_CURRENT = getName()+"/BackLeftCurrent";
         DRIVEBASE_BR_CURRENT = getName()+"/BackRightCurrent";
         DRIVEBASE_SUPPLY_CURRENT_LIMIT = getName()+"/SupplyCurrentLimit";
+        DRIVEBASE_AVG_CURRENT_DRAW = getName()+"/AvgCurrent";
+        DRIVEBASE_LATEST_DRAW = getName()+"/LatestCurrent";
        
 
         Logger.recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
@@ -332,7 +335,6 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
 
         if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)) {
-            double latestDriveCurrentDraw = 0;
             for (int i = 0; i < mModules.length; i++) {
                 latestDriveCurrentDraw += ((TalonFX) mModules[i].getDriveMotor()).getSupplyCurrent().getValueAsDouble();
             }
@@ -537,6 +539,8 @@ public abstract class SwerveDrive extends DriveBase {
             Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
         } else if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)){
             Logger.recordOutput(DRIVEBASE_SUPPLY_CURRENT_LIMIT, currentLimitConfigs.SupplyCurrentLimit);
+            Logger.recordOutput(DRIVEBASE_AVG_CURRENT_DRAW, averageCurrent);
+            Logger.recordOutput(DRIVEBASE_LATEST_DRAW, latestDriveCurrentDraw);
             Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((TalonFX) mModules[0].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
             Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((TalonFX) mModules[1].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
             Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((TalonFX) mModules[2].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
