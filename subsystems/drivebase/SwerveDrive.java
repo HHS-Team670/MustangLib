@@ -336,16 +336,17 @@ public abstract class SwerveDrive extends DriveBase {
             for (int i = 0; i < mModules.length; i++) {
                 latestDriveCurrentDraw += ((TalonFX) mModules[i].getDriveMotor()).getSupplyCurrent().getValueAsDouble();
             }
-
+            if (!bufferFull) {
+                averageCurrent = ((averageCurrent * index) + latestDriveCurrentDraw) / (index + 1);
+            } else {
+                averageCurrent += (latestDriveCurrentDraw - driveCurrentBuffer[index]) / RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
+            }
+            
             index = (index + 1) % RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize; // 0-249
             if (index == 0) {
                 bufferFull = true;
             }
-            if (!bufferFull) {
-                averageCurrent = ((averageCurrent * index) + latestDriveCurrentDraw) / (index + 1);
-            } else {
-                averageCurrent = ((averageCurrent * RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize) - driveCurrentBuffer[index] + latestDriveCurrentDraw) / RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
-            }
+
             driveCurrentBuffer[index] = latestDriveCurrentDraw;
             
             // Check if average current exceeds the threshold
