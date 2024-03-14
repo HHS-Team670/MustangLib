@@ -7,6 +7,9 @@ import java.util.function.BooleanSupplier;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.ReplanningConfig;
+import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.hardware.TalonFX;
 import com.pathplanner.lib.auto.AutoBuilder;
 import org.littletonrobotics.junction.Logger;
 import com.revrobotics.CANSparkMax;
@@ -63,8 +66,10 @@ public abstract class SwerveDrive extends DriveBase {
     private final double kRollOffset;
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private CurrentLimitsConfigs currentLimitConfigs = driveMotorConfig.CurrentLimits;
-    private final Queue<Double> driveCurrentBuffer;
+    private final double[] driveCurrentBuffer = new double[250];
+    private int index = 0;
     private double averageCurrent;
+    private boolean bufferFull = false;
 
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
@@ -95,7 +100,6 @@ public abstract class SwerveDrive extends DriveBase {
         
         averageCurrent = 0;
         currentLimitConfigs.SupplyTimeThreshold = 0.5; // TODO 
-        driveCurrentBuffer = new ArrayDeque<>();
 
         kModuleConfigFrontLeft.setNominalVoltage(kMaxVoltage);
         kModuleConfigFrontLeft.setDriveCurrentLimit(config.kMaxDriveCurrent);
@@ -330,17 +334,19 @@ public abstract class SwerveDrive extends DriveBase {
         if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)) {
             double latestDriveCurrentDraw = 0;
             for (int i = 0; i < mModules.length; i++) {
-                latestDriveCurrentDraw += ((TalonFX) mModules[i].getDriveMotor()).getSupplyCurrent();
+                latestDriveCurrentDraw += ((TalonFX) mModules[i].getDriveMotor()).getSupplyCurrent().getValueAsDouble();
             }
 
-            driveCurrentBuffer.add(new Double(latestDriveCurrentDraw));
-            // Remove old measurement from the buffer.
-            if (!driveCurrentBuffer.isEmpty() && driveCurrentBuffer.size() > RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize) {
-                averageCurrent = (averageCurrent * RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize + latestDriveCurrentDraw - driveCurrentBuffer.peek()) / RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
-                driveCurrentBuffer.remove();
-            } else {
-                averageCurrent = (averageCurrent * (driveCurrentBuffer.size() - 1) + latestDriveCurrentDraw) / driveCurrentBuffer.size();
+            index = (index + 1) % RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize; // 0-249
+            if (index == 0) {
+                bufferFull = true;
             }
+            if (!bufferFull) {
+                averageCurrent = ((averageCurrent * index) + latestDriveCurrentDraw) / (index + 1);
+            } else {
+                averageCurrent = ((averageCurrent * RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize) - driveCurrentBuffer[index] + latestDriveCurrentDraw) / RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
+            }
+            driveCurrentBuffer[index] = latestDriveCurrentDraw;
             
             // Check if average current exceeds the threshold
             if ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent)) {
@@ -530,10 +536,10 @@ public abstract class SwerveDrive extends DriveBase {
             Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
         } else if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)){
             Logger.recordOutput(DRIVEBASE_SUPPLY_CURRENT_LIMIT, currentLimitConfigs.SupplyCurrentLimit);
-            Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((TalonFX) mModules[0].getDriveMotor()).getSupplyCurrent());
-            Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((TalonFX) mModules[1].getDriveMotor()).getSupplyCurrent());
-            Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((TalonFX) mModules[2].getDriveMotor()).getSupplyCurrent());
-            Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((TalonFX) mModules[3].getDriveMotor()).getSupplyCurrent());
+            Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((TalonFX) mModules[0].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
+            Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((TalonFX) mModules[1].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
+            Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((TalonFX) mModules[2].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
+            Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((TalonFX) mModules[3].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
         }
     }
 }
