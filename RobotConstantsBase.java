@@ -41,7 +41,7 @@ public class RobotConstantsBase {
         public static final double kMaxSteerCurrent = 30.0;//Defaults
 
         public static final double kCurrentSampleTimeRange = 5;
-        public static final int kCurrentSampleSize = kCurrentSampleTimeRange * 50; // mustangPeriodic runs 50hz
+        public static final int kCurrentSampleSize = (int) (kCurrentSampleTimeRange * 50); // mustangPeriodic runs 50hz
         public static final double kTotalDriveCurrentThreshold = 120; // 30 per motor
         public static final double kDriveCurrentLimit = 25; // single motor 
 

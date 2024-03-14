@@ -40,6 +40,7 @@ import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
 import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.SwervePoseEstimatorBase;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig.Motor_Type;
 
