@@ -358,6 +358,7 @@ public abstract class SwerveDrive extends DriveBase {
                 for (int i = 0; i < mModules.length; i++) {
                     ((TalonFX) mModules[i].getDriveMotor()).getConfigurator().apply(driveMotorConfig);
                 }
+                ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " + currentLimitConfigs.SupplyCurrentLimit);
             }             
         }
 
