@@ -127,7 +127,7 @@ public class SparkMAXFactory {
     public static SparkMAXLite buildSparkMAX(int deviceID, Config config, MotorConfig.Motor_Type motorType) {
         SparkMAXLite sparkMax = new SparkMAXLite(deviceID, motorType);
         sparkMax.restoreFactoryDefaults();
-        for(int i=0;i<30;i++){
+        for(int i=0;i<10;i++){
             sparkMax.set(ControlType.kDutyCycle, 0);
             sparkMax.setInverted(config.INVERTED);
             sparkMax.setSmartCurrentLimit(config.CURRENT_LIMIT);
