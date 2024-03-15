@@ -1,7 +1,5 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
-import java.util.ArrayDeque;
-import java.util.Queue;
 import java.util.function.BooleanSupplier;
 
 import com.pathplanner.lib.path.PathPlannerPath;
@@ -69,7 +67,7 @@ public abstract class SwerveDrive extends DriveBase {
     private final double kRollOffset;
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private CurrentLimitsConfigs currentLimitConfigs = driveMotorConfig.CurrentLimits;
-    private final double[] driveCurrentBuffer = new double[250];
+    private final double[] driveCurrentBuffer = new double[RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize];
     private int index = 0;
     private double averageCurrent;
     private boolean bufferFull = false;
