@@ -109,12 +109,12 @@ public abstract class SwervePoseEstimatorBase {
      */
     public void update() {
         // if (vision != null && !DriverStation.isAutonomous()) {
-        if (vision != null){
+         if (vision != null){
 
-            while (!vision.isMeasurementBufferEmpty()) {
-                VisionMeasurement m = vision.getVisionMeasurement();
-                EstimatedRobotPose estimation = m.estimation();
-                Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
+             while (!vision.isMeasurementBufferEmpty()) {
+                 VisionMeasurement m = vision.getVisionMeasurement();
+                 EstimatedRobotPose estimation = m.estimation();
+                 Pose2d estimatedPose = estimation.estimatedPose.toPose2d();
 
                 poseEstimator.addVisionMeasurement(estimatedPose, estimation.timestampSeconds, m.confidence());
                 Logger.recordOutput(VISION_ESTIMATED_POSE,

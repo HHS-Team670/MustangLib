@@ -45,7 +45,7 @@ public class DIOUltrasonic {
      * @param automaticMode
      */
     public void setUltrasonicAutomaticMode(boolean automaticMode) {
-        ultrasonic.setAutomaticMode(automaticMode);
+        Ultrasonic.setAutomaticMode(automaticMode);
     }
 
 }

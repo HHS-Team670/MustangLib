@@ -1,24 +1,11 @@
 package frc.team670.mustanglib;
 
-import static java.util.Map.entry;
-
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
-import java.util.Map;
-
-import com.pathplanner.lib.PathConstraints;
-import com.pathplanner.lib.auto.PIDConstants;
+import com.pathplanner.lib.util.PIDConstants;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
-import edu.wpi.first.math.trajectory.constraint.DifferentialDriveKinematicsConstraint;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj.SerialPort;
-import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
-import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
-import frc.team670.mustanglib.swervelib.ModuleConfiguration;
-import frc.team670.mustanglib.swervelib.SdsModuleConfigurations;
 /**
  * A place for storing constants required in mustanglib. 
  * This includes most drivebase constants. For every robot, add mac address like below as well as relevant constants
@@ -50,8 +37,13 @@ public class RobotConstantsBase {
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI * 16;// Not robot specific
 
         public static final double kMaxVoltage = 12.0;// Good defaults
-        public static final double kMaxDriveCurrent = 70.0;//Defaults
-        public static final double kMaxSteerCurrent = 30.0;//Defaults
+        public static final double kMaxDriveCurrent = 60.0;//Defaults
+        public static final double kMaxSteerCurrent = 20.0;//Defaults
+
+        public static final double kCurrentSampleTimeRange = 5;
+        public static final int kCurrentSampleSize = (int) (kCurrentSampleTimeRange * 50); // mustangPeriodic runs 50hz
+        public static final double kTotalDriveCurrentThreshold = 120; // 30 per motor
+        public static final double kReducedDriveCurrentLimit = 20; // single motor 
 
         // The formula for calculating the theoretical maximum velocity is:
         // <Motor free speed RPM> / 60 * <Drive reduction> * <Wheel diameter meters> *
@@ -62,7 +54,7 @@ public class RobotConstantsBase {
         
         // Good defaults
         public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
-        public static final PIDConstants kAutonThetaPID = new PIDConstants(0.5, 0, 0);
+        public static final PIDConstants kAutonThetaPID = new PIDConstants(1.75, 0, 0);
 
         // PID controllers
         public static final PIDController xController = new PIDController(3, 0, 0);
@@ -94,6 +86,7 @@ public class RobotConstantsBase {
      */
     public static String getMACAddress() {
         try {
+            
             Enumeration<NetworkInterface> nwInterface = NetworkInterface.getNetworkInterfaces();
             StringBuilder ret = new StringBuilder();
             while (nwInterface.hasMoreElements()) {

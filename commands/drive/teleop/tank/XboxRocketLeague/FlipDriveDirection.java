@@ -10,10 +10,11 @@ package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 import java.util.Map;
 
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+// import frc.team670.robot.RobotContainer;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 /**
  * Flips the direction of the drive: forward or reversed.
@@ -35,7 +36,7 @@ public class FlipDriveDirection extends InstantCommand implements MustangCommand
     // }
     XboxRocketLeagueDrive.setDriveReversed(!isReversed);
     // RobotContainer.rumbleDriverController();
-    Logger.consoleLog("Flipped Drive: %s", (!isReversed));
+    ConsoleLogger.consoleLog("Flipped Drive: %s", (!isReversed));
   }
 
   @Override

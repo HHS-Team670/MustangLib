@@ -11,7 +11,7 @@ package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 import java.util.HashMap;
 import java.util.Map;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
@@ -25,7 +25,7 @@ import frc.team670.mustanglib.utils.MustangController;
  * Left stick up and down to move the left side of the robot
  */
 
-public class XboxTankDrive extends CommandBase implements MustangCommand {
+public class XboxTankDrive extends Command implements MustangCommand {
     
     private TankDrive driveBase;
     private MustangController controller;

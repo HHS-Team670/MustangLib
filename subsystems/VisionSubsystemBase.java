@@ -26,7 +26,7 @@ import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.numbers.N3;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import frc.team670.mustanglib.utils.Logger;
+import frc.team670.mustanglib.utils.ConsoleLogger;
 
 /**
  * Subsystem base vision. Mainly used for april tags pose estimation.
@@ -43,6 +43,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
     private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
     private HashMap<String, PhotonPipelineResult> latestResults;
     private boolean mInit = false;
+    private LED led;
 
     /**
      * A vision configuration that stores important information about the field and vision subsystem on the robot
@@ -74,7 +75,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      */
     public void initalize() {
         // does nothing if DS not initialized yet
-        if (DriverStation.getAlliance() == Alliance.Invalid) {
+        if (!DriverStation.getAlliance().isPresent()) {
             mInit = false;
             return;
         }
@@ -84,8 +85,10 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         for (int i = 0; i < c.length; i++) {
             c[i] = new CameraPoseEstimator(mCameras[i], kConfig.kCameraOffsets[i], kFieldLayout);
         }
+        led = LED.getInstance();
         this.mCameraEstimators = c;
         mInit = true;
+        
     }
     public void debugSubsystem() {
         for(String s : kConfig.kCameraIDs){
@@ -101,11 +104,12 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
      * Sets origin based on field side (red alliance or blue alliance)
      */
     private void setFieldOrigin() {
-        var origin = DriverStation.getAlliance() == Alliance.Blue
+        var origin = DriverStation.getAlliance().get() == Alliance.Blue
                 ? OriginPosition.kBlueAllianceWallRightSide
                 : OriginPosition.kRedAllianceWallRightSide;
         kFieldLayout.setOrigin(origin);
     }
+    
     /**
      * Attempts to initalize vision and estimate robot pose after processing the vision feed
      */
@@ -197,6 +201,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             if(camera == null || !camera.isConnected()){
                 state = HealthState.YELLOW;
                 counter++;
+                if (camera.getName() == "Arducam_B") {
+                    Logger.recordOutput("Arducam_B_Connected", false);
+                }
+            } else {
+                if (camera.getName() == "Arducam_B") {
+                    Logger.recordOutput("Arducam_B_Connected", true);
+                }
             }
         }
         //iff all of the cameras are null or not connected healthstate = red
@@ -222,7 +233,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         public CameraPoseEstimator(PhotonCamera photonCamera, Transform3d robotToCam,
                 AprilTagFieldLayout fieldLayout) {
             this.photonCamera = photonCamera;
-            estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP,
+            estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
                     photonCamera, robotToCam);
             estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         }
@@ -243,7 +254,15 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             latestResults.put(photonCamera.getName(), result);
             if (ignoreFrame(result)){
                 return Optional.empty();
-
+                for(int i = 1; i < result.getTargets().size(); i++){
+                    if(led.getAllianceColor() == LED.LEDColor.RED && photonCamera.getName().equals("Arducam_B") && result.getTargets().get(i - 1).getFiducialId() == 3 ||  result.getTargets().get(i - 1).getFiducialId() == 4){
+                        led.setLedMode(LED.Mode.VISIONON);
+                        break;
+                    } else if(led.getAllianceColor() == LED.LEDColor.BLUE && photonCamera.getName().equals("Arducam_B") && result.getTargets().get(i - 1).getFiducialId() == 7 ||  result.getTargets().get(i - 1).getFiducialId() == 8){
+                        led.setLedMode(LED.Mode.VISIONON);
+                        break;
+                    }
+                }
             Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
             if (optEstimation.isEmpty())
                 return Optional.empty();
@@ -300,7 +319,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                     break;
             }
             if (!possible)
-                Logger.consoleLog("Impossible FIDs combination: " + ids);
+                ConsoleLogger.consoleLog("Impossible FIDs combination: " + ids);
             return possible;
         }
 

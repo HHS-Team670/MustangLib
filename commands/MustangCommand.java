@@ -2,7 +2,6 @@ package frc.team670.mustanglib.commands;
 
 import java.util.Map;
 
-import edu.wpi.first.wpilibj2.command.Command;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 
 /**
@@ -11,7 +10,7 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
  * 
  * @author lakshbhambhani, ethan c, armaan, aditi
  */
-public interface MustangCommand extends Command {
+public interface MustangCommand{
 
     /**
      * @return A Map containing the minimum health condition for each subsystem that
@@ -27,7 +26,6 @@ public interface MustangCommand extends Command {
     /**
      * schedules this command
      */
-    @Override
     default void schedule() {
         MustangScheduler.getInstance().schedule(this);
     }

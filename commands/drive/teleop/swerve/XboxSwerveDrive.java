@@ -2,23 +2,20 @@ package frc.team670.mustanglib.commands.drive.teleop.swerve;
 
 import java.util.HashMap;
 import java.util.Map;
-import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
-import edu.wpi.first.math.util.Units;
-import edu.wpi.first.wpilibj2.command.CommandBase;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
-import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.subsystems.drivebase.SwerveDrive;
 import frc.team670.mustanglib.utils.MustangController;
 
-public class XboxSwerveDrive extends CommandBase implements MustangCommand {
+
+public class XboxSwerveDrive extends Command implements MustangCommand {
     private final SwerveDrive driveBase;
-    private RotationController rotPIDController;
+   
     private MustangController controller;
 
     // private Rotation2d desiredHeading = null;
@@ -27,15 +24,11 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     public XboxSwerveDrive(SwerveDrive swerveDriveBase, MustangController controller) {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
-        this.rotPIDController = new RotationController(new ProfiledPIDController(3.5, 0, 0,
-                new Constraints(RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecond,
-                        RobotConstantsBase.SwerveDriveBase.kMaxAngularAccelerationRadiansPerSecondSquared)));
-        this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(5)));
-
+      
 
         MAX_VELOCITY = swerveDriveBase.getMaxVelocityMetersPerSecond();
         MAX_ANGULAR_VELOCITY = swerveDriveBase.getMaxAngularVelocityMetersPerSecond();
-
+        
         addRequirements(driveBase);
     }
 
@@ -43,31 +36,22 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     public void execute() {
         // clear desired heading if at the heading or joystick touched
         if (driveBase.getDesiredHeading() != null) {
-            if (rotPIDController.atReference() || modifyAxis(-controller.getRightX()) != 0)
+            if (modifyAxis(-controller.getRightX()) != 0)
                 driveBase.setmDesiredHeading(null);
         }
-
         double xVel = MAX_VELOCITY * modifyAxis(-controller.getLeftY());
         double yVel = MAX_VELOCITY * modifyAxis(-controller.getLeftX());
         double thetaVel;
+        thetaVel = MAX_ANGULAR_VELOCITY * modifyAxis(-controller.getRightX());
 
-        Rotation2d desiredHeading = driveBase.getDesiredHeading();
-        if (desiredHeading == null) {
-            thetaVel = MAX_ANGULAR_VELOCITY * modifyAxis(-controller.getRightX());
-        } else {
-            thetaVel = rotPIDController.calculateRotationSpeed(driveBase.getGyroscopeRotation(),
-                    desiredHeading);
-        }
-
-        driveBase.drive(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
-                driveBase.getGyroscopeRotation()));
+        driveBase.drive(xVel, yVel, thetaVel);
 
     }
 
 
     @Override
     public void end(boolean interrupted) {
-        driveBase.drive(new ChassisSpeeds(0.0, 0.0, 0.0));
+        driveBase.drive(0.0, 0.0, 0.0);
     }
 
     @Override
@@ -97,39 +81,7 @@ public class XboxSwerveDrive extends CommandBase implements MustangCommand {
     }
 
 
-    private class RotationController {
-        private Rotation2d m_rotationError = new Rotation2d();
-        private Rotation2d m_rotationTolerance = new Rotation2d();
 
-        private final ProfiledPIDController m_thetaController;
-
-        public RotationController(ProfiledPIDController thetaController) {
-            m_thetaController = thetaController;
-            m_thetaController.enableContinuousInput(0, Units.degreesToRadians(360.0));
-        }
-
-        public boolean atReference() {
-            // final var eTranslate = m_poseError.getTranslation();
-            final var eRotate = m_rotationError;
-            // final var tolTranslate = m_poseTolerance.getTranslation();
-            return Math.abs(eRotate.getRadians()) < m_rotationTolerance.getRadians();
-        }
-
-        public void setTolerance(Rotation2d tolerance) {
-            m_rotationError = tolerance;
-        }
-
-
-        public double calculateRotationSpeed(Rotation2d currentHeading, Rotation2d desiredHeading) {
-            double thetaFF = m_thetaController.calculate(currentHeading.getRadians(),
-                    desiredHeading.getRadians());
-
-            m_rotationError = desiredHeading.minus(currentHeading);
-
-            return thetaFF;
-        }
-
-    }
 
     public class SetDesiredHeading extends InstantCommand implements MustangCommand {
         Rotation2d desiredHeading;
