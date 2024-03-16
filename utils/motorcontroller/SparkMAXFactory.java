@@ -71,30 +71,30 @@ public class SparkMAXFactory {
 
     //We leave frames 0 and 1 at default for non follower motors because we often need to track motor applied output (Frame 0) and current (Frame 1) regadless of if we need precise position or velocity
     static {
-        defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 60000;
-        defaultFollowerConfig.STATUS_FRAME_1_RATE_MS = 60000;
-        defaultFollowerConfig.STATUS_FRAME_2_RATE_MS = 60000;
-        defaultFollowerConfig.STATUS_FRAME_3_RATE_MS = 60000;
-        defaultFollowerConfig.STATUS_FRAME_4_RATE_MS = 60000;
-        defaultFollowerConfig.STATUS_FRAME_5_RATE_MS = 60000;
-        defaultFollowerConfig.STATUS_FRAME_6_RATE_MS = 60000;
+        defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_1_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_2_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_6_RATE_MS = 30000;
 
-        defaultVelocityConfig.STATUS_FRAME_2_RATE_MS = 60000;
-        defaultVelocityConfig.STATUS_FRAME_3_RATE_MS = 60000;
-        defaultVelocityConfig.STATUS_FRAME_4_RATE_MS = 60000;
-        defaultVelocityConfig.STATUS_FRAME_5_RATE_MS = 60000;
-        defaultVelocityConfig.STATUS_FRAME_6_RATE_MS = 60000;
+        defaultVelocityConfig.STATUS_FRAME_2_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_6_RATE_MS = 30000;
 
-        defaultPositionConfig.STATUS_FRAME_3_RATE_MS = 60000;
-        defaultPositionConfig.STATUS_FRAME_4_RATE_MS = 60000;
-        defaultPositionConfig.STATUS_FRAME_5_RATE_MS = 60000;
-        defaultPositionConfig.STATUS_FRAME_6_RATE_MS = 60000;
-
-        defaultLowUpdateRateConfig.STATUS_FRAME_2_RATE_MS = 60000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS = 60000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS = 60000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS = 60000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS = 60000;
+        defaultPositionConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultPositionConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultPositionConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultPositionConfig.STATUS_FRAME_6_RATE_MS = 30000;
+        
+        defaultLowUpdateRateConfig.STATUS_FRAME_2_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS = 30000;
     }
 
     /**

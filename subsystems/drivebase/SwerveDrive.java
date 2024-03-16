@@ -76,7 +76,6 @@ public abstract class SwerveDrive extends DriveBase {
     private int index = 0;
     private double averageCurrent;
     private boolean bufferFull = false;
-    private double latestDriveCurrentDraw = 0;
     private final RotationController rotPIDController;
 
    
@@ -369,13 +368,20 @@ public abstract class SwerveDrive extends DriveBase {
         Logger.recordOutput(DRIVEBASE_ROLL, getRoll());
 
         if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)) {
+            double latestDriveCurrentDraw = 0;
             for (int i = 0; i < mModules.length; i++) {
                 latestDriveCurrentDraw += ((TalonFX) mModules[i].getDriveMotor()).getSupplyCurrent().getValueAsDouble();
             }
             if (!bufferFull) {
-                averageCurrent = ((averageCurrent * index) + latestDriveCurrentDraw) / (index + 1);
+                averageCurrent = ((averageCurrent * index) + latestDriveCurrentDraw) / (double)(index + 1);
             } else {
-                averageCurrent += (latestDriveCurrentDraw - driveCurrentBuffer[index]) / RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
+                int sum=0;
+                for(int j=0;j<driveCurrentBuffer.length;j++){
+                    sum+=driveCurrentBuffer[j];
+                }
+                averageCurrent=(double)sum/driveCurrentBuffer.length;
+                // // driveCurrentBuffer
+                // averageCurrent += (latestDriveCurrentDraw - driveCurrentBuffer[index]) / (double)RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
             }
             
             index = (index + 1) % RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize; // 0-249
@@ -384,6 +390,7 @@ public abstract class SwerveDrive extends DriveBase {
             }
 
             driveCurrentBuffer[index] = latestDriveCurrentDraw;
+            Logger.recordOutput(DRIVEBASE_LATEST_DRAW, latestDriveCurrentDraw);
             
             // Check if average current exceeds the threshold
             if ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent)) {
@@ -397,6 +404,7 @@ public abstract class SwerveDrive extends DriveBase {
                 ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " + currentLimitConfigs.SupplyCurrentLimit);
             }             
         }
+
 
     }
 
@@ -575,7 +583,6 @@ public abstract class SwerveDrive extends DriveBase {
         } else if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)){
             Logger.recordOutput(DRIVEBASE_SUPPLY_CURRENT_LIMIT, currentLimitConfigs.SupplyCurrentLimit);
             Logger.recordOutput(DRIVEBASE_AVG_CURRENT_DRAW, averageCurrent);
-            Logger.recordOutput(DRIVEBASE_LATEST_DRAW, latestDriveCurrentDraw);
             Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((TalonFX) mModules[0].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
             Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((TalonFX) mModules[1].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
             Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((TalonFX) mModules[2].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
