@@ -37,8 +37,8 @@ public class RobotConstantsBase {
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI * 16;// Not robot specific
 
         public static final double kMaxVoltage = 12.0;// Good defaults
-        public static final double kMaxDriveCurrent = 70.0;//Defaults
-        public static final double kMaxSteerCurrent = 30.0;//Defaults
+        public static final double kMaxDriveCurrent = 60.0;//Defaults
+        public static final double kMaxSteerCurrent = 20.0;//Defaults
 
         public static final double kCurrentSampleTimeRange = 5;
         public static final int kCurrentSampleSize = (int) (kCurrentSampleTimeRange * 50); // mustangPeriodic runs 50hz
@@ -53,7 +53,7 @@ public class RobotConstantsBase {
         // SdsModuleConfigurations.MK4_L2.getWheelDiameter() * Math.PI
         
         // Good defaults
-        public static final PIDConstants kAutonTranslationPID = new PIDConstants(5, 0, 0.5);
+        public static final PIDConstants kAutonTranslationPID = new PIDConstants(4, 0, 0);
         public static final PIDConstants kAutonThetaPID = new PIDConstants(1.75, 0, 0);
 
         // PID controllers
