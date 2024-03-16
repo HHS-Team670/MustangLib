@@ -47,20 +47,33 @@ public final class KrakenX60DriveControllerFactoryBuilder {
                     * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 
-            if (hasCurrentLimit()) {
-                motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit;
-                motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-            }
+            // if (hasCurrentLimit()) {
+            //     motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit; // TODO lines 54-59?
+            //     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+            // }
+           // These lines of code are configuring the current limits for the TalonFX motor controller.
+           // Here's a breakdown of what each line is doing:
+            motorConfiguration.CurrentLimits.SupplyCurrentLimit = 60;
+            motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+            motorConfiguration.CurrentLimits.StatorCurrentLimit= 100;
+            motorConfiguration.CurrentLimits.StatorCurrentLimitEnable=true;
+            motorConfiguration.CurrentLimits.SupplyTimeThreshold=0.25;
+            motorConfiguration.CurrentLimits.SupplyCurrentThreshold=120;
+            
 
             TalonFX motor = new TalonFX(id, canbus);
             CtreUtils.checkCtreError(motor.getConfigurator().apply(motorConfiguration),
                     "Failed to configure Kraken X60");
+            
 
             motor.setNeutralMode(NeutralModeValue.Brake);
 
             motor.setInverted(moduleConfiguration.isDriveInverted()); // is inverted in clockwise or not? we don't know
 
             // Reduce CAN status frame rates
+            CtreUtils.checkCtreError(motor.getVelocity().setUpdateFrequency(50), "failed to set velocity update frequency on Kraken " + id);
+            CtreUtils.checkCtreError(motor.getVelocity().setUpdateFrequency(50), "failed to set velocity update frequency on Kraken " + id);
+            CtreUtils.checkCtreError(motor.optimizeBusUtilization(), "failed to optimize bus utilization on Kraken " + id);
             double positionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter()
                     * moduleConfiguration.getDriveReduction();
 

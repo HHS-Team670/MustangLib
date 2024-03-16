@@ -2,6 +2,8 @@ package frc.team670.mustanglib.utils;
 
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 /**
  * Represents a MustangController, built over Wpilibs XboxController
@@ -114,6 +116,14 @@ public class MustangController extends XboxController {
     public int getPOVValue() {
         return super.getPOV();
     }
+    public Trigger leftTrigger() {
+        return new Trigger(leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    }
+
+    public Trigger rightTrigger() {
+        return new Trigger(rightTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
+    }
+
 
     /**
      * Sets the rumble on the controller

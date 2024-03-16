@@ -25,6 +25,7 @@ public class SparkMAXFactory {
         public boolean BURN_FACTORY_DEFAULT_FLASH = false;
         public IdleMode DEFAULT_MODE = IdleMode.kCoast;
         public boolean INVERTED = false;
+        public int CURRENT_LIMIT = 40;
 
         public int STATUS_FRAME_0_RATE_MS = 10; // Default status frame periods from https://docs.revrobotics.com/brushless/spark-max/control-interfaces#periodic-status-frames
         public int STATUS_FRAME_1_RATE_MS = 20;
@@ -37,8 +38,28 @@ public class SparkMAXFactory {
         public double OPEN_LOOP_RAMP_RATE = 0.0;
         public double CLOSED_LOOP_RAMP_RATE = 0.0;
 
-        public boolean ENABLE_VOLTAGE_COMPENSATION = false;
         public double NOMINAL_VOLTAGE = 12.0;
+
+        public static SparkMAXFactory.Config copy(SparkMAXFactory.Config config){
+            Config copy = new Config();
+            copy.BURN_FACTORY_DEFAULT_FLASH = config.BURN_FACTORY_DEFAULT_FLASH;
+            copy.DEFAULT_MODE = config.DEFAULT_MODE;
+            copy.INVERTED = config.INVERTED;
+            copy.STATUS_FRAME_0_RATE_MS = config.STATUS_FRAME_0_RATE_MS;
+            copy.STATUS_FRAME_1_RATE_MS = config.STATUS_FRAME_1_RATE_MS;
+            copy.STATUS_FRAME_2_RATE_MS = config.STATUS_FRAME_2_RATE_MS;
+            copy.STATUS_FRAME_3_RATE_MS = config.STATUS_FRAME_3_RATE_MS;
+            copy.STATUS_FRAME_4_RATE_MS = config.STATUS_FRAME_4_RATE_MS;
+            copy.STATUS_FRAME_5_RATE_MS = config.STATUS_FRAME_5_RATE_MS;
+            copy.STATUS_FRAME_6_RATE_MS = config.STATUS_FRAME_6_RATE_MS;
+            copy.OPEN_LOOP_RAMP_RATE = config.OPEN_LOOP_RAMP_RATE;
+            copy.CLOSED_LOOP_RAMP_RATE = config.CLOSED_LOOP_RAMP_RATE;
+            copy.NOMINAL_VOLTAGE = config.NOMINAL_VOLTAGE;
+            copy.CURRENT_LIMIT = config.CURRENT_LIMIT;
+
+            return copy;            
+
+        }
 
     }
 
@@ -50,30 +71,30 @@ public class SparkMAXFactory {
 
     //We leave frames 0 and 1 at default for non follower motors because we often need to track motor applied output (Frame 0) and current (Frame 1) regadless of if we need precise position or velocity
     static {
-        defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 4000;
-        defaultFollowerConfig.STATUS_FRAME_1_RATE_MS = 4000;
-        defaultFollowerConfig.STATUS_FRAME_2_RATE_MS = 4000;
-        defaultFollowerConfig.STATUS_FRAME_3_RATE_MS = 4000;
-        defaultFollowerConfig.STATUS_FRAME_4_RATE_MS = 4000;
-        defaultFollowerConfig.STATUS_FRAME_5_RATE_MS = 4000;
-        defaultFollowerConfig.STATUS_FRAME_6_RATE_MS = 4000;
+        defaultFollowerConfig.STATUS_FRAME_0_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_1_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_2_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultFollowerConfig.STATUS_FRAME_6_RATE_MS = 30000;
 
-        defaultVelocityConfig.STATUS_FRAME_2_RATE_MS = 4000;
-        defaultVelocityConfig.STATUS_FRAME_3_RATE_MS = 4000;
-        defaultVelocityConfig.STATUS_FRAME_4_RATE_MS = 4000;
-        defaultVelocityConfig.STATUS_FRAME_5_RATE_MS = 4000;
-        defaultVelocityConfig.STATUS_FRAME_6_RATE_MS = 4000;
+        defaultVelocityConfig.STATUS_FRAME_2_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultVelocityConfig.STATUS_FRAME_6_RATE_MS = 30000;
 
-        defaultPositionConfig.STATUS_FRAME_3_RATE_MS = 4000;
-        defaultPositionConfig.STATUS_FRAME_4_RATE_MS = 4000;
-        defaultPositionConfig.STATUS_FRAME_5_RATE_MS = 4000;
-        defaultPositionConfig.STATUS_FRAME_6_RATE_MS = 4000;
-
-        defaultLowUpdateRateConfig.STATUS_FRAME_2_RATE_MS = 4000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS = 4000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS = 4000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS = 4000;
-        defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS = 4000;
+        defaultPositionConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultPositionConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultPositionConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultPositionConfig.STATUS_FRAME_6_RATE_MS = 30000;
+        
+        defaultLowUpdateRateConfig.STATUS_FRAME_2_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS = 30000;
+        defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS = 30000;
     }
 
     /**
@@ -105,11 +126,14 @@ public class SparkMAXFactory {
      */
     public static SparkMAXLite buildSparkMAX(int deviceID, Config config, MotorConfig.Motor_Type motorType) {
         SparkMAXLite sparkMax = new SparkMAXLite(deviceID, motorType);
-        sparkMax.restoreFactoryDefaults();
-        sparkMax.set(ControlType.kDutyCycle, 0);
-        sparkMax.setInverted(config.INVERTED);
-        sparkMax.setSmartCurrentLimit(MotorConfig.MOTOR_MAX_CURRENT.get(motorType));
-        sparkMax.enableVoltageCompensation(12);
+        for(int i=0;i<10;i++){
+            sparkMax.restoreFactoryDefaults();
+            sparkMax.set(ControlType.kDutyCycle, 0);
+            sparkMax.setInverted(config.INVERTED);
+            sparkMax.setSmartCurrentLimit(MotorConfig.MOTOR_MAX_CURRENT.get(motorType));
+            sparkMax.enableVoltageCompensation(12);
+        }
+      
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus0, config.STATUS_FRAME_0_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus1, config.STATUS_FRAME_1_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus2, config.STATUS_FRAME_2_RATE_MS);
@@ -117,7 +141,7 @@ public class SparkMAXFactory {
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus4, config.STATUS_FRAME_4_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, config.STATUS_FRAME_5_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus6, config.STATUS_FRAME_6_RATE_MS);
-
+        
         return sparkMax;
     }
 

@@ -8,6 +8,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadPoolExecutor;
 
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
 import org.photonvision.PhotonPoseEstimator;
@@ -185,6 +186,13 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
             if(camera == null || !camera.isConnected()){
                 state = HealthState.YELLOW;
                 counter++;
+                if (camera.getName() == "Arducam_B") {
+                    Logger.recordOutput("Arducam_B_Connected", false);
+                }
+            } else {
+                if (camera.getName() == "Arducam_B") {
+                    Logger.recordOutput("Arducam_B_Connected", true);
+                }
             }
         }
         //iff all of the cameras are null or not connected healthstate = red
