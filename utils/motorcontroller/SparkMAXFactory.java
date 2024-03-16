@@ -126,13 +126,14 @@ public class SparkMAXFactory {
      */
     public static SparkMAXLite buildSparkMAX(int deviceID, Config config, MotorConfig.Motor_Type motorType) {
         SparkMAXLite sparkMax = new SparkMAXLite(deviceID, motorType);
-        sparkMax.restoreFactoryDefaults();
         for(int i=0;i<10;i++){
+            sparkMax.restoreFactoryDefaults();
             sparkMax.set(ControlType.kDutyCycle, 0);
             sparkMax.setInverted(config.INVERTED);
-            sparkMax.setSmartCurrentLimit(config.CURRENT_LIMIT);
+            sparkMax.setSmartCurrentLimit(MotorConfig.MOTOR_MAX_CURRENT.get(motorType));
             sparkMax.enableVoltageCompensation(12);
-        
+        }
+      
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus0, config.STATUS_FRAME_0_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus1, config.STATUS_FRAME_1_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus2, config.STATUS_FRAME_2_RATE_MS);
@@ -140,7 +141,7 @@ public class SparkMAXFactory {
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus4, config.STATUS_FRAME_4_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus5, config.STATUS_FRAME_5_RATE_MS);
         sparkMax.setPeriodicFramePeriod(PeriodicFrame.kStatus6, config.STATUS_FRAME_6_RATE_MS);
-        }
+        
         return sparkMax;
     }
 

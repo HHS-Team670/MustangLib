@@ -14,6 +14,8 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkBase.IdleMode;
 
 import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -21,7 +23,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.SerialPort;
@@ -63,6 +68,7 @@ public abstract class SwerveDrive extends DriveBase {
     private final Mk4ModuleConfiguration kModuleConfigBackRight = new Mk4ModuleConfiguration();
     private final double kPitchOffset;
     private final double kRollOffset;
+    private final RotationController rotPIDController;
 
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
@@ -209,6 +215,11 @@ public abstract class SwerveDrive extends DriveBase {
         // odometer = new SwerveDriveOdometry(getSwerveKinematics(), new Rotation2d(0),
         // getModulePositions());
         // mPoseEstimator = new SwervePoseEstimatorBase(this);
+
+        this.rotPIDController = new RotationController(new ProfiledPIDController(4, 0, 0,
+                new Constraints(RobotConstantsBase.SwerveDriveBase.kMaxAngularSpeedRadiansPerSecond,
+                        RobotConstantsBase.SwerveDriveBase.kMaxAngularAccelerationRadiansPerSecondSquared)));
+        this.rotPIDController.setTolerance(new Rotation2d(Units.degreesToRadians(.5)));
         initPoseEstimator();
         kPitchOffset = mNavx.getPitch();
         kRollOffset = mNavx.getRoll();
@@ -227,12 +238,10 @@ public abstract class SwerveDrive extends DriveBase {
     }
     protected abstract void initPoseEstimator();
 
-    public void drive(ChassisSpeeds chassisSpeeds) {
-        setModuleStates(kKinematics.toSwerveModuleStates(chassisSpeeds));
-    }
+   
 
     public void stop() {
-        drive(new ChassisSpeeds());
+        drive(0,0,0);
     }
 
     /**
@@ -282,6 +291,22 @@ public abstract class SwerveDrive extends DriveBase {
     public Rotation2d getDesiredHeading() {
         return this.mDesiredHeading;
     }
+    public void drive(double xVel, double yVel, double thetaVel){
+        
+        if (this.mDesiredHeading != null) {
+            if (rotPIDController.atReference()){
+                this.setmDesiredHeading(null);
+            }
+        }
+        if (this.mDesiredHeading != null) {
+            thetaVel = rotPIDController.calculateRotationSpeed(this.getGyroscopeRotation(),
+            this.mDesiredHeading);
+        } 
+        
+        setModuleStates(kKinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
+                        this.getGyroscopeRotation())));
+    }
+
     // public double getMaxVelocityMetersPerSecond(){
     //     return  5676.0 / 60.0
     //     * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
@@ -488,5 +513,41 @@ public abstract class SwerveDrive extends DriveBase {
             }
         };
         return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, alliance, reqSubsystems);
+    }
+    private class RotationController {
+        private Rotation2d m_rotationError = new Rotation2d();
+        private Rotation2d m_rotationTolerance = new Rotation2d();
+
+        private final ProfiledPIDController m_thetaController;
+
+        public RotationController(ProfiledPIDController thetaController) {
+            m_thetaController = thetaController;
+            m_thetaController.enableContinuousInput(0, Units.degreesToRadians(360.0));
+        }
+
+        public boolean atReference() {
+            // final var eTranslate = m_poseError.getTranslation();
+            final var eRotate = m_rotationError;
+            // final var tolTranslate = m_poseTolerance.getTranslation();
+            return Math.abs(eRotate.getRadians()) < m_rotationTolerance.getRadians();
+        }
+
+        public void setTolerance(Rotation2d tolerance) {
+            m_rotationError = tolerance;
+        }
+
+
+        public double calculateRotationSpeed(Rotation2d currentHeading, Rotation2d desiredHeading) {
+            double thetaFF =  m_thetaController.calculate(currentHeading.getRadians(),
+                    desiredHeading.getRadians());
+            // if(DriverStation.isAutonomousEnabled() && SwervePoseEstimatorBase.getAlliance() == Alliance.Blue)
+            //     thetaFF *= -1;
+            //TO DO: Fix this abombination because desired heading goes the wrong way for blue
+
+            m_rotationError = desiredHeading.minus(currentHeading);
+
+            return thetaFF;
+        }
+
     }
 }
