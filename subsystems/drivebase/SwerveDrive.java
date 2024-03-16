@@ -360,9 +360,9 @@ public abstract class SwerveDrive extends DriveBase {
             driveCurrentBuffer[index] = latestDriveCurrentDraw;
             
             // Check if average current exceeds the threshold
-            if ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent)) {
+            if ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent)) {
                 // Adjust current limit accordingly
-                currentLimitConfigs.SupplyCurrentLimit = (averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ? RobotConstantsBase.SwerveDriveBase.kDriveCurrentLimit : kConfig.kMaxDriveCurrent;
+                currentLimitConfigs.SupplyCurrentLimit = (averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ? RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit : kConfig.kMaxDriveCurrent;
                 driveMotorConfig.withCurrentLimits(currentLimitConfigs);
                 currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit + 5; // if the current goes at or above supply current threshold for more than 0.5 sec (time threshold), limited to supply current limit
                 for (int i = 0; i < mModules.length; i++) {
