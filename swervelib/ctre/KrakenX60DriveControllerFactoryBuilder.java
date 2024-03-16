@@ -47,16 +47,16 @@ public final class KrakenX60DriveControllerFactoryBuilder {
                     * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 
-            // if (hasCurrentLimit()) {
-            //     motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit;
-            //     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-            // }
-            motorConfiguration.CurrentLimits.SupplyCurrentLimit = 60;
-            motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-            motorConfiguration.CurrentLimits.StatorCurrentLimit= 100;
-            motorConfiguration.CurrentLimits.StatorCurrentLimitEnable=true;
-            motorConfiguration.CurrentLimits.SupplyTimeThreshold=0.25;
-            motorConfiguration.CurrentLimits.SupplyCurrentThreshold=120;
+            if (hasCurrentLimit()) {
+                motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit; // TODO lines 54-59?
+                motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+            }
+            // motorConfiguration.CurrentLimits.SupplyCurrentLimit = 60;
+            // motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+            // motorConfiguration.CurrentLimits.StatorCurrentLimit= 100;
+            // motorConfiguration.CurrentLimits.StatorCurrentLimitEnable=true;
+            // motorConfiguration.CurrentLimits.SupplyTimeThreshold=0.25;
+            // motorConfiguration.CurrentLimits.SupplyCurrentThreshold=120;
             
 
             TalonFX motor = new TalonFX(id, canbus);

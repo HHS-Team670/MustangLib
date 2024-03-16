@@ -102,6 +102,7 @@ public abstract class SwerveDrive extends DriveBase {
         
         averageCurrent = 0;
         currentLimitConfigs.SupplyTimeThreshold = 0.5; // TODO 
+        currentLimitConfigs.SupplyCurrentLimit = config.kMaxDriveCurrent;
 
         kModuleConfigFrontLeft.setNominalVoltage(kMaxVoltage);
         kModuleConfigFrontLeft.setDriveCurrentLimit(config.kMaxDriveCurrent);
