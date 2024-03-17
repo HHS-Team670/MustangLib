@@ -71,9 +71,9 @@ public final class KrakenX60DriveControllerFactoryBuilder {
             motor.setInverted(moduleConfiguration.isDriveInverted()); // is inverted in clockwise or not? we don't know
 
             // Reduce CAN status frame rates
-            CtreUtils.checkCtreError(motor.getVelocity().setUpdateFrequency(50), "failed to set velocity update frequency on Kraken " + id);
-            CtreUtils.checkCtreError(motor.getVelocity().setUpdateFrequency(50), "failed to set velocity update frequency on Kraken " + id);
-            CtreUtils.checkCtreError(motor.optimizeBusUtilization(), "failed to optimize bus utilization on Kraken " + id);
+            // CtreUtils.checkCtreError(motor.getVelocity().setUpdateFrequency(50), "failed to set velocity update frequency on Kraken " + id);
+            // CtreUtils.checkCtreError(motor.getVelocity().setUpdateFrequency(50), "failed to set velocity update frequency on Kraken " + id);
+            // CtreUtils.checkCtreError(motor.optimizeBusUtilization(), "failed to optimize bus utilization on Kraken " + id);
             double positionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter()
                     * moduleConfiguration.getDriveReduction();
 
