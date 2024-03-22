@@ -42,7 +42,7 @@ public class RobotConstantsBase {
 
         public static final double kCurrentSampleTimeRange = 5;
         public static final int kCurrentSampleSize = (int) (kCurrentSampleTimeRange * 50); // mustangPeriodic runs 50hz
-        public static final double kTotalDriveCurrentThreshold = 120; // 30 per motor
+        public static final double kTotalDriveCurrentThreshold = 160; // 30 per motor
         public static final double kReducedDriveCurrentLimit = 20; // single motor 
 
         // The formula for calculating the theoretical maximum velocity is:

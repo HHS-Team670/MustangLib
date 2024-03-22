@@ -31,6 +31,7 @@ import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.SerialPort;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
@@ -77,6 +78,7 @@ public abstract class SwerveDrive extends DriveBase {
     private double averageCurrent;
     private boolean bufferFull = false;
     private final RotationController rotPIDController;
+    private Timer currentTimer = new Timer();
 
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
@@ -252,6 +254,8 @@ public abstract class SwerveDrive extends DriveBase {
        
 
         Logger.recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
+
+        currentTimer.start();
         
     }
     protected abstract void initPoseEstimator();
@@ -379,30 +383,33 @@ public abstract class SwerveDrive extends DriveBase {
                 for(int j=0;j<driveCurrentBuffer.length;j++){
                     sum+=driveCurrentBuffer[j];
                 }
-                averageCurrent=(double)sum/driveCurrentBuffer.length;
+                averageCurrent=((double)sum)/driveCurrentBuffer.length;
                 // // driveCurrentBuffer
                 // averageCurrent += (latestDriveCurrentDraw - driveCurrentBuffer[index]) / (double)RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
             }
-            
+            driveCurrentBuffer[index] = latestDriveCurrentDraw;
+
             index = (index + 1) % RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize; // 0-249
             if (index == 0) {
                 bufferFull = true;
             }
 
-            driveCurrentBuffer[index] = latestDriveCurrentDraw;
             Logger.recordOutput(DRIVEBASE_LATEST_DRAW, latestDriveCurrentDraw);
             
             // Check if average current exceeds the threshold
-            if ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent)) {
-                // Adjust current limit accordingly
-                currentLimitConfigs.SupplyCurrentLimit = (averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ? RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit : kConfig.kMaxDriveCurrent;
-                driveMotorConfig.withCurrentLimits(currentLimitConfigs);
-                currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit + 5; // if the current goes at or above supply current threshold for more than 0.5 sec (time threshold), limited to supply current limit
-                for (int i = 0; i < mModules.length; i++) {
-                    ((TalonFX) mModules[i].getDriveMotor()).getConfigurator().apply(driveMotorConfig);
-                }
-                ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " + currentLimitConfigs.SupplyCurrentLimit);
-            }             
+        //     if (currentTimer.hasElapsed(15) && ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent))) {
+        //         // Adjust current limit accordingly
+        //         currentLimitConfigs.SupplyCurrentLimit = (averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ? RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit : kConfig.kMaxDriveCurrent;
+        //         currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit + 5; // if the current goes at or above supply current threshold for more than 0.5 sec (time threshold), limited to supply current limit
+        //         for (int i = 0; i < mModules.length; i++) {
+        //             TalonFX motor = ((TalonFX) mModules[i].getDriveMotor());
+        //             motor.getConfigurator().refresh(driveMotorConfig);
+        //             driveMotorConfig.withCurrentLimits(currentLimitConfigs);
+        //             motor.getConfigurator().apply(driveMotorConfig);
+        //         }
+        //         ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " + currentLimitConfigs.SupplyCurrentLimit);
+        //         currentTimer.restart();
+        //     }             
         }
 
 
