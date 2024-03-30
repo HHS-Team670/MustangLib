@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.ExternalFollower;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.PeriodicFrame;
+import com.ctre.phoenix6.BaseStatusSignal;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.controls.Follower;
 import com.ctre.phoenix6.hardware.TalonFX;
@@ -23,6 +24,15 @@ public class TalonFXFactory {
         public NeutralModeValue DEFAULT_MODE = NeutralModeValue.Coast;
         public boolean INVERTED = false;
         public int CURRENT_LIMIT = 40;
+        public double SUPPLY_TIME_THRESHOLD=0.25;
+        public double SUPPLY_CURRENT_THRESHOLD=120;
+        public double FAULT_UPDATE_FREQUENCY=10;
+        public double POSITION_UPDATE_FREQUENCY=50;
+        public double VELOCITY_UPDATE_FREQUENCY=50;
+        public double ROTOR_POSITION_UPDATE_FREQUENCY=50;
+        public double CURRENT_UPDATE_FREQUENCY=50;
+        public double VOLTAGE_UPDATE_FREQUENCY=50;
+
 
    
 
@@ -72,9 +82,19 @@ public class TalonFXFactory {
         TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
         motorConfiguration.CurrentLimits.SupplyCurrentLimit = config.CURRENT_LIMIT;
         motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-        motorConfiguration.CurrentLimits.SupplyTimeThreshold=0.25;
-        motorConfiguration.CurrentLimits.SupplyCurrentThreshold=120;
+        motorConfiguration.CurrentLimits.SupplyTimeThreshold=config.SUPPLY_TIME_THRESHOLD;
+        motorConfiguration.CurrentLimits.SupplyCurrentThreshold=config.SUPPLY_CURRENT_THRESHOLD;
+        BaseStatusSignal.setUpdateFrequencyForAll(config.FAULT_UPDATE_FREQUENCY, talonfx.getStickyFaultField()); //period 0
+        BaseStatusSignal.setUpdateFrequencyForAll(config.POSITION_UPDATE_FREQUENCY, talonfx.getPosition()); //period 0
+        BaseStatusSignal.setUpdateFrequencyForAll(config.VELOCITY_UPDATE_FREQUENCY, talonfx.getVelocity()); //period 0
+        BaseStatusSignal.setUpdateFrequencyForAll(config.ROTOR_POSITION_UPDATE_FREQUENCY, talonfx.getRotorPosition()); //period 0
+        BaseStatusSignal.setUpdateFrequencyForAll(config.CURRENT_UPDATE_FREQUENCY, talonfx.getSupplyCurrent(),talonfx.getStatorCurrent()); //period 0
+        BaseStatusSignal.setUpdateFrequencyForAll(config.VOLTAGE_UPDATE_FREQUENCY, talonfx.getMotorVoltage(),talonfx.getSupplyVoltage()); //period 0
 
+
+    
+        // Optimize bus utilization
+        talonfx.optimizeBusUtilization(1.0);
         CtreUtils.checkCtreError(talonfx.getConfigurator().apply(motorConfiguration),
                     "Failed to configure Kraken X60");
         
