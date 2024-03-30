@@ -20,24 +20,16 @@ import frc.team670.mustanglib.utils.MustangNotifications;
 public class TalonFXFactory {
         public static class Config {
 
-        public boolean BURN_FACTORY_DEFAULT_FLASH = false;
         public NeutralModeValue DEFAULT_MODE = NeutralModeValue.Coast;
         public boolean INVERTED = false;
         public int CURRENT_LIMIT = 40;
 
-        public double OPEN_LOOP_RAMP_RATE = 0.0;
-        public double CLOSED_LOOP_RAMP_RATE = 0.0;
-
-        public double NOMINAL_VOLTAGE = 12.0;
+   
 
         public static TalonFXFactory.Config copy(TalonFXFactory.Config config){
             Config copy = new Config();
-            copy.BURN_FACTORY_DEFAULT_FLASH = config.BURN_FACTORY_DEFAULT_FLASH;
             copy.DEFAULT_MODE = config.DEFAULT_MODE;
             copy.INVERTED = config.INVERTED;
-            copy.OPEN_LOOP_RAMP_RATE = config.OPEN_LOOP_RAMP_RATE;
-            copy.CLOSED_LOOP_RAMP_RATE = config.CLOSED_LOOP_RAMP_RATE;
-            copy.NOMINAL_VOLTAGE = config.NOMINAL_VOLTAGE;
             copy.CURRENT_LIMIT = config.CURRENT_LIMIT;
 
             return copy;            
