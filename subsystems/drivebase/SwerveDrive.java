@@ -79,6 +79,7 @@ public abstract class SwerveDrive extends DriveBase {
     private boolean bufferFull = false;
     private final RotationController rotPIDController;
     private Timer currentTimer = new Timer();
+    private boolean enableLimits = false;
 
    
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
@@ -397,19 +398,23 @@ public abstract class SwerveDrive extends DriveBase {
             Logger.recordOutput(DRIVEBASE_LATEST_DRAW, latestDriveCurrentDraw);
             
             // Check if average current exceeds the threshold
-        //     if (currentTimer.hasElapsed(15) && ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent))) {
-        //         // Adjust current limit accordingly
-        //         currentLimitConfigs.SupplyCurrentLimit = (averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ? RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit : kConfig.kMaxDriveCurrent;
-        //         currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit + 5; // if the current goes at or above supply current threshold for more than 0.5 sec (time threshold), limited to supply current limit
-        //         for (int i = 0; i < mModules.length; i++) {
-        //             TalonFX motor = ((TalonFX) mModules[i].getDriveMotor());
-        //             motor.getConfigurator().refresh(driveMotorConfig);
-        //             driveMotorConfig.withCurrentLimits(currentLimitConfigs);
-        //             motor.getConfigurator().apply(driveMotorConfig);
-        //         }
-        //         ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " + currentLimitConfigs.SupplyCurrentLimit);
-        //         currentTimer.restart();
-        //     }             
+
+            if (enableLimits) {
+                if (currentTimer.hasElapsed(15) && ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent))) {
+                    // Adjust current limit accordingly
+                    currentLimitConfigs.SupplyCurrentLimit = (averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ? RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit : kConfig.kMaxDriveCurrent;
+                    currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit + 5; // if the current goes at or above supply current threshold for more than 0.5 sec (time threshold), limited to supply current limit
+                    for (int i = 0; i < mModules.length; i++) {
+                        TalonFX motor = ((TalonFX) mModules[i].getDriveMotor());
+                        motor.getConfigurator().refresh(driveMotorConfig);
+                        driveMotorConfig.withCurrentLimits(currentLimitConfigs);
+                        motor.getConfigurator().apply(driveMotorConfig);
+                    }
+                    ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " + currentLimitConfigs.SupplyCurrentLimit);
+                    currentTimer.restart();
+                }
+            }
+                         
         }
 
 
@@ -485,6 +490,10 @@ public abstract class SwerveDrive extends DriveBase {
         for (SwerveModule m : mModules) {
             ((CANSparkMax) m.getDriveMotor()).setIdleMode(mode);
         }
+    }
+
+    public void enableCurrentLimits(boolean enable) {
+        this.enableLimits = enable;
     }
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
