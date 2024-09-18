@@ -38,7 +38,7 @@ public final class Mk4iSwerveModuleHelper {
                         .build());
     }
 
-        private static SteerControllerFactory<?, SteerConfiguration<CanandCoderAbsoluteConfiguration>> getNeoHeliumSteerFactory(Mk4ModuleConfiguration configuration) {
+        private static SteerControllerFactory<?, SteerConfiguration<CanandMagAbsoluteConfiguration>> getNeoHeliumSteerFactory(Mk4ModuleConfiguration configuration) {
         return new NeoSteerControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
         .withPidConstants(1.0, 0.0, 0.1)
@@ -83,7 +83,7 @@ public final class Mk4iSwerveModuleHelper {
                         driveMotorPort,
                         new SteerConfiguration<>(
                                 steerMotorPort,
-                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                                new CanandMagAbsoluteConfiguration(steerEncoderPort)
                         )
                 );
         }
@@ -156,7 +156,7 @@ public final class Mk4iSwerveModuleHelper {
                         driveMotorPort,
                         new SteerConfiguration<>(
                                 steerMotorPort,
-                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                                new CanandMagAbsoluteConfiguration(steerEncoderPort)
                         )
                 );
         }
@@ -224,7 +224,7 @@ public final class Mk4iSwerveModuleHelper {
                         driveMotorPort,
                         new SteerConfiguration<>(
                                 steerMotorPort,
-                                new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                                new CanandMagAbsoluteConfiguration(steerEncoderPort)
                         )
                 );
     }
@@ -279,7 +279,7 @@ public final class Mk4iSwerveModuleHelper {
                 driveMotorPort,
                 new SteerConfiguration<>(
                         steerMotorPort,
-                        new CanandCoderAbsoluteConfiguration(steerEncoderPort)
+                        new CanandMagAbsoluteConfiguration(steerEncoderPort)
                 )
         );
     }
