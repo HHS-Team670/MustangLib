@@ -253,7 +253,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
         public Optional<CameraEstimatorMeasurement> update() {
             PhotonPipelineResult result = photonCamera.getLatestResult();
             latestResults.put(photonCamera.getName(), result);
-            if (ignoreFrame(result))
+            if (ignoreFrame(result)){
                 return Optional.empty();
             }
             
