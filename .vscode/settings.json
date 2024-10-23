@@ -8,7 +8,8 @@
   },
 
   // Set maximum line length for word wrapping
-  "editor.wordWrapColumn": 120,
+  "editor.wordWrap": "bounded",
+  "editor.wordWrapColumn": 140,
 
   "java.format.enabled": true,
   "[java]": {
