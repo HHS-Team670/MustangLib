@@ -1,10 +1,5 @@
 package frc.team670.mustanglib.pathfinder;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Translation2d;
 import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.Rectangle;
@@ -16,9 +11,14 @@ import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 /**
  * Polygon represnting an obstacle. Credits to Hemlock.
+ * 
  * @author ethan c Dx
  */
 public class Obstacle {

@@ -8,9 +8,8 @@ import java.util.TreeMap;
  *      "https://github.com/Team254/FRC-2017-Public/blob/master/src/com/team254/lib/util/InterpolatingTreeMap.java">
  *      Taken from 254's 2017 code.</a>
  * 
- *      Interpolating Tree Maps are used to get values at points that are not
- *      defined by making a guess from points that are defined. This uses linear
- *      interpolation.
+ *      Interpolating Tree Maps are used to get values at points that are not defined by making a
+ *      guess from points that are defined. This uses linear interpolation.
  * 
  * @param <K> The type of the key (must implement InverseInterpolable)
  * @param <V> The type of the value (must implement Interpolable)
@@ -32,7 +31,7 @@ public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<
     /**
      * Inserts a key value pair, and trims the tree if a max size is specified
      * 
-     * @param key   Key for inserted data
+     * @param key Key for inserted data
      * @param value Value for inserted data
      * @return the value
      */
@@ -50,14 +49,13 @@ public class InterpolatingTreeMap<K extends InverseInterpolable<K> & Comparable<
     }
 
     @Override
-    public void putAll(Map<? extends K, ? extends V> map) {
-    }
+    public void putAll(Map<? extends K, ? extends V> map) {}
 
     /**
      *
      * @param key Lookup for a value (does not have to exist)
-     * @return V or null; V if it is Interpolable or exists, null if it is at a
-     *         bound and cannot average
+     * @return V or null; V if it is Interpolable or exists, null if it is at a bound and cannot
+     *         average
      */
     public V getInterpolated(K key) {
         V gotval = get(key);

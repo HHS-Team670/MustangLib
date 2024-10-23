@@ -23,8 +23,8 @@ public class DIOUltrasonic {
     }
 
     /**
-     * Gets the ultrasonic distance in inches adjusted for the angle to target and
-     * offset of the ultrasonic from the center of the robot.
+     * Gets the ultrasonic distance in inches adjusted for the angle to target and offset of the
+     * ultrasonic from the center of the robot.
      * 
      */
     public double getDistance() {
@@ -39,9 +39,11 @@ public class DIOUltrasonic {
     public double getUnadjustedDistance() {
         return ultrasonic.getRangeInches();
     }
+
     /**
-     * Enables or disables automatic mode
-     * Automatic mode calls all sensors automatically in a round robin fashion
+     * Enables or disables automatic mode Automatic mode calls all sensors automatically in a round
+     * robin fashion
+     * 
      * @param automaticMode
      */
     public void setUltrasonicAutomaticMode(boolean automaticMode) {

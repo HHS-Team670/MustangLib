@@ -4,7 +4,7 @@ public class CanCoderAbsoluteConfiguration {
     private final int id;
     private final String canbus;
 
-    public CanCoderAbsoluteConfiguration(int id,  String canbus) {
+    public CanCoderAbsoluteConfiguration(int id, String canbus) {
         this.id = id;
         this.canbus = canbus;
     }

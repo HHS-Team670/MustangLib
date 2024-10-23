@@ -1,17 +1,14 @@
 package frc.team670.mustanglib.swervelib;
 
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 import frc.team670.mustanglib.swervelib.ctre.*;
 import frc.team670.mustanglib.swervelib.rev.*;
-
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 
 public class Mk4SwerveModuleBuilder {
 
     public enum GearRatio {
-        L1(SdsModuleConfigurations.MK4_L1),
-        L2(SdsModuleConfigurations.MK4_L2),
-        L3(SdsModuleConfigurations.MK4_L3),
-        L4(SdsModuleConfigurations.MK4_L4);
+        L1(SdsModuleConfigurations.MK4_L1), L2(SdsModuleConfigurations.MK4_L2), L3(
+                SdsModuleConfigurations.MK4_L3), L4(SdsModuleConfigurations.MK4_L4);
 
         private final ModuleConfiguration configuration;
 
@@ -24,28 +21,27 @@ public class Mk4SwerveModuleBuilder {
         }
     }
 
-    private static DriveControllerFactory<?, Integer> getKrakenX60DriveFactory(Mk4ModuleConfiguration configuration) {
+    private static DriveControllerFactory<?, Integer> getKrakenX60DriveFactory(
+            Mk4ModuleConfiguration configuration) {
         return new KrakenX60DriveControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
-                .withCurrentLimit(configuration.getDriveCurrentLimit())
-                .build();
+                .withCurrentLimit(configuration.getDriveCurrentLimit()).build();
     }
 
-    private static DriveControllerFactory<?, Integer> getNeoDriveFactory(Mk4ModuleConfiguration configuration) {
+    private static DriveControllerFactory<?, Integer> getNeoDriveFactory(
+            Mk4ModuleConfiguration configuration) {
         return new NeoDriveControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
-                .withCurrentLimit(configuration.getDriveCurrentLimit())
-                .build();
+                .withCurrentLimit(configuration.getDriveCurrentLimit()).build();
     }
 
-    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getNeoSteerFactory(Mk4ModuleConfiguration configuration) {
+    private static SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> getNeoSteerFactory(
+            Mk4ModuleConfiguration configuration) {
         return new NeoSteerControllerFactoryBuilder()
                 .withVoltageCompensation(configuration.getNominalVoltage())
                 .withPidConstants(1.0, 0.0, 0.1)
                 .withCurrentLimit(configuration.getSteerCurrentLimit())
-                .build(new CanCoderFactoryBuilder()
-                        .withReadingUpdatePeriod(100)
-                        .build());
+                .build(new CanCoderFactoryBuilder().withReadingUpdatePeriod(100).build());
     }
 
     private final Mk4ModuleConfiguration configuration;
@@ -53,7 +49,8 @@ public class Mk4SwerveModuleBuilder {
     private GearRatio gearRatio = null;
 
     private DriveControllerFactory<?, Integer> driveFactory = null;
-    private SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> steerFactory = null;
+    private SteerControllerFactory<?, SteerConfiguration<CanCoderAbsoluteConfiguration>> steerFactory =
+            null;
 
     private int driveMotorPort = -1;
     private String driveCanbus = "";
@@ -83,7 +80,8 @@ public class Mk4SwerveModuleBuilder {
         return this;
     }
 
-    public Mk4SwerveModuleBuilder withDriveMotor(MotorType motorType, int motorPort, String motorCanbus) {
+    public Mk4SwerveModuleBuilder withDriveMotor(MotorType motorType, int motorPort,
+            String motorCanbus) {
         switch (motorType) {
             case NEO:
                 this.driveFactory = getNeoDriveFactory(this.configuration);
@@ -103,7 +101,8 @@ public class Mk4SwerveModuleBuilder {
         return this.withDriveMotor(motorType, motorPort, "");
     }
 
-    public Mk4SwerveModuleBuilder withSteerMotor(MotorType motorType, int motorPort, String motorCanbus) {
+    public Mk4SwerveModuleBuilder withSteerMotor(MotorType motorType, int motorPort,
+            String motorCanbus) {
         switch (motorType) {
             case NEO:
                 this.steerFactory = getNeoSteerFactory(this.configuration);
@@ -161,41 +160,22 @@ public class Mk4SwerveModuleBuilder {
             throw new RuntimeException("Steer Encoder Port should be greater than 0!");
         }
 
-        SwerveModuleFactory<Integer, SteerConfiguration<CanCoderAbsoluteConfiguration>> factory = new SwerveModuleFactory<>(
-                gearRatio.getConfiguration(), 
-                driveFactory, 
-                steerFactory
-        );
+        SwerveModuleFactory<Integer, SteerConfiguration<CanCoderAbsoluteConfiguration>> factory =
+                new SwerveModuleFactory<>(gearRatio.getConfiguration(), driveFactory, steerFactory);
 
         SteerConfiguration<CanCoderAbsoluteConfiguration> steerConfig;
 
         if (steerMotorType == MotorType.KRAKEN_X60) {
-            steerConfig = new SteerConfiguration<>(
-                    steerMotorPort, 
-                    new CanCoderAbsoluteConfiguration(
-                            steerEncoderPort, 
-                            steerEncoderCanbus
-                    )
-            );
+            steerConfig = new SteerConfiguration<>(steerMotorPort,
+                    new CanCoderAbsoluteConfiguration(steerEncoderPort, steerEncoderCanbus));
         } else {
             throw new RuntimeException("Steer Motor Type should not be null!");
         }
 
         if (container == null) {
-            return factory.create(
-                    driveMotorPort, 
-                    driveCanbus, 
-                    steerConfig, 
-                    steerCanbus
-            );
+            return factory.create(driveMotorPort, driveCanbus, steerConfig, steerCanbus);
         } else {
-            return factory.create(
-                    container, 
-                    driveMotorPort, 
-                    driveCanbus, 
-                    steerConfig, 
-                    steerCanbus
-            );
+            return factory.create(container, driveMotorPort, driveCanbus, steerConfig, steerCanbus);
         }
     }
 }

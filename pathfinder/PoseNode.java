@@ -9,13 +9,16 @@ import frc.team670.mustanglib.utils.math.sort.Node;
 
 /**
  * Node representing Pose. Inspired by Hemlock 5712
+ * 
  * @author ethan c ;)
  */
 public class PoseNode implements Node<PoseNode> {
 	public Pose2d pose;
 	private List<PoseNode> neighbors;
+
 	/**
 	 * Constructs a new pose node at the given coordinates
+	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 */
@@ -23,8 +26,10 @@ public class PoseNode implements Node<PoseNode> {
 		this.pose = new Pose2d(x, y, Rotation2d.fromDegrees(0));
 		this.neighbors = new ArrayList<>();
 	}
+
 	/**
 	 * constructs a new pose node at given coordinates and rotations
+	 * 
 	 * @param x the x coordinate
 	 * @param y the y coordinate
 	 * @param holonomicRotation the rotation of the node
@@ -33,8 +38,10 @@ public class PoseNode implements Node<PoseNode> {
 		this.pose = new Pose2d(x, y, Rotation2d.fromDegrees(0));
 		this.neighbors = new ArrayList<>();
 	}
+
 	/**
 	 * Constructs a new pose node with the passed in pose
+	 * 
 	 * @param currentPose the pose of the new node
 	 */
 	public PoseNode(Pose2d currentPose) {
@@ -44,6 +51,7 @@ public class PoseNode implements Node<PoseNode> {
 
 	/**
 	 * constructs a new pose node at given coordinates and rotations
+	 * 
 	 * @param coordinates the x and y position of the node
 	 * @param holonomicRotation the rotation of the node
 	 */
@@ -54,12 +62,13 @@ public class PoseNode implements Node<PoseNode> {
 
 
 	/**
-	 *  
+	 * 
 	 * @return the x coordinate of this pose
 	 */
 	public double getX() {
 		return pose.getX();
 	}
+
 	/**
 	 * 
 	 * @return the y coordinate of this pose
@@ -67,6 +76,7 @@ public class PoseNode implements Node<PoseNode> {
 	public double getY() {
 		return pose.getY();
 	}
+
 	/**
 	 * 
 	 * @return the rotation of this pose
@@ -74,15 +84,17 @@ public class PoseNode implements Node<PoseNode> {
 	public Rotation2d getHolRot() {
 		return pose.getRotation();
 	}
-	
+
 	/**
 	 * Adds a neighbor to this node for graph algorithms
-	 *@param neighbor the neighbor to add 
+	 * 
+	 * @param neighbor the neighbor to add
 	 */
 	@Override
 	public void addNeighbor(PoseNode neighbor) {
 		this.neighbors.add(neighbor);
 	}
+
 	/**
 	 * @param target The target to calculate distance from
 	 * @return double the distance
@@ -91,9 +103,9 @@ public class PoseNode implements Node<PoseNode> {
 	public double getHeuristicDistance(PoseNode target) {
 		return this.pose.getTranslation().getDistance(target.pose.getTranslation());
 	}
-	
+
 	/**
-	 *@return the neighbors
+	 * @return the neighbors
 	 */
 	@Override
 	public List<PoseNode> getNeighbors() {

@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.Set;
+import org.w3c.dom.Node;
 
 /**
  * Implementation of an A* search algorithm https://www.geeksforgeeks.org/a-search-algorithm/
@@ -70,16 +71,16 @@ public class AStarSearch<N extends Node<N>, E extends Edge<N>> {
 
     // Get the node in the open set with the lowest f score
     // private N getLowestFScore(Set<N> openSet, Map<N, Double> fScore) {
-    //     N lowestFScoreNode = null;
-    //     double lowestFScore = Double.MAX_VALUE;
-    //     for (N node : openSet) {
-    //         double f = fScore.get(node);
-    //         if (f < lowestFScore) {
-    //             lowestFScore = f;
-    //             lowestFScoreNode = node;
-    //         }
-    //     }
-    //     return lowestFScoreNode;
+    // N lowestFScoreNode = null;
+    // double lowestFScore = Double.MAX_VALUE;
+    // for (N node : openSet) {
+    // double f = fScore.get(node);
+    // if (f < lowestFScore) {
+    // lowestFScore = f;
+    // lowestFScoreNode = node;
+    // }
+    // }
+    // return lowestFScoreNode;
 
     // }
 
@@ -89,7 +90,7 @@ public class AStarSearch<N extends Node<N>, E extends Edge<N>> {
         pq.addAll(openSet);
         return pq.poll();
     }
-    
+
 
     /**
      * @return the found path (list of nodes)

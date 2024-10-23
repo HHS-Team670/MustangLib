@@ -1,12 +1,9 @@
 package frc.team670.mustanglib.utils.motorcontroller.check;
 
-import edu.wpi.first.wpilibj.Timer;
-
-import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.DoubleSupplier;
+import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 
 /**
  * For performing basic tests to check functionality of a subsystem's motors.
@@ -50,21 +47,20 @@ public abstract class MotorChecker<T> {
     public abstract double getCurrent(T motor);
 
     /**
-     * Runs basic tests for any motor, specifically, the ability to run at a
-     * consistent current and RPM.
+     * Runs basic tests for any motor, specifically, the ability to run at a consistent current and
+     * RPM.
      * 
-     * @param subsystem     Subsystem to run the motor check on
+     * @param subsystem Subsystem to run the motor check on
      * @param motorsToCheck
      * @param checkerConfig
-     * @return true if all tests pass, false if any of the following happens: motor
-     *         is running at below a defined minimum current or RPM, and/or current
-     *         or RPM is varying too much.
+     * @return true if all tests pass, false if any of the following happens: motor is running at
+     *         below a defined minimum current or RPM, and/or current or RPM is varying too much.
      */
     public boolean check(MustangSubsystemBase subsystem, ArrayList<MotorConfig<T>> motorsToCheck,
             Config checkerConfig) {
 
-        System.out.println("Checking MustangSubsystemBase " + subsystem.getClass() + " for " + motorsToCheck.size()
-                + " motors...");
+        System.out.println("Checking MustangSubsystemBase " + subsystem.getClass() + " for "
+                + motorsToCheck.size() + " motors...");
 
         boolean failed = false;
 
@@ -99,14 +95,14 @@ public abstract class MotorChecker<T> {
             setOutput(config.motor, 0.0);
 
             if (current < checkerConfig.minCurrent) {
-                System.out.println("Current check failed for: " + config.name + ", the target current should be "
-                        + checkerConfig.minCurrent + "!\n");
+                System.out.println("Current check failed for: " + config.name
+                        + ", the target current should be " + checkerConfig.minCurrent + "!\n");
                 failed = true;
             }
             if (checkerConfig.rpmSupplier != null) {
                 if (rpm < checkerConfig.minRPM) {
-                    System.out.println("RPM check failed for: " + config.name + ", the  target RPM should be "
-                            + checkerConfig.minRPM + "!\n");
+                    System.out.println("RPM check failed for: " + config.name
+                            + ", the  target RPM should be " + checkerConfig.minRPM + "!\n");
                     failed = true;
                 }
             }

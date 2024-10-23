@@ -2,8 +2,6 @@
 
 Generalized Robot Code for Team 670
 
-
-
 ## Contents
 
 - Subsystem Generalizations (Rotating Subsystem,LED, Vision, Turnable, Subsystem)
@@ -16,5 +14,3 @@ Generalized Robot Code for Team 670
 - SparkMaxFactory - configuring SparkMax motor to default settings
 
 **Note**: Files utilizing brushless motors (Talon and Victor) have been removed. You can view them in the history [here] (insert valid link here).
-
-

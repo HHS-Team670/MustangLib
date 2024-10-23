@@ -14,7 +14,6 @@ import java.util.logging.Formatter;
 import java.util.logging.Handler;
 import java.util.logging.Level;
 import java.util.logging.LogRecord;
-
 import edu.wpi.first.wpilibj.DriverStation;
 
 /**
@@ -29,20 +28,19 @@ public class ConsoleLogger {
     public static final PrintStream LOG_PRINT_STREAM = new PrintStream(new LoggingOutputStream());
 
     /**
-     * Logging class for use by other classes to log though this custom logging
-     * scheme. All logging should be done by calls to methods on this class instance
-     * or with the convenience methods of the Logging class.
+     * Logging class for use by other classes to log though this custom logging scheme. All logging
+     * should be done by calls to methods on this class instance or with the convenience methods of
+     * the Logging class.
      */
     public final static java.util.logging.Logger LOGGER = java.util.logging.Logger.getGlobal();
 
     // Private constructor means this class cannot be instantiated. All access is
     // static.
-    private ConsoleLogger() {
-    }
+    private ConsoleLogger() {}
 
     /**
-     * Configures and holds (static) classes for our custom logging system. Call
-     * setup() method to initialize logging.
+     * Configures and holds (static) classes for our custom logging system. Call setup() method to
+     * initialize logging.
      */
     public static class CustomLogger {
         static private FileHandler fileTxt;
@@ -85,8 +83,9 @@ public class ConsoleLogger {
 
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd:HH:mm:ss");
             Date date = new Date();
-            fileTxt = new FileHandler(String.format("/home/lvuser/Log_%s_%s_%s.txt", DriverStation.getEventName(),
-                    DriverStation.getMatchNumber(), dateFormat.format(date)));
+            fileTxt = new FileHandler(
+                    String.format("/home/lvuser/Log_%s_%s_%s.txt", DriverStation.getEventName(),
+                            DriverStation.getMatchNumber(), dateFormat.format(date)));
 
             fileTxt.setFormatter(logFormatter);
 
@@ -212,38 +211,46 @@ public class ConsoleLogger {
     /**
      * Write message to console log with optional formatting and program location.
      * 
-     * @param message    Message with optional format specifiers for listed
-     *                   parameters. Use '%s' for formatting. It makes the
-     *                   parameters appear in the String where the '%s' are in order
-     *                   of input.
+     * @param message Message with optional format specifiers for listed parameters. Use '%s' for
+     *        formatting. It makes the parameters appear in the String where the '%s' are in order
+     *        of input.
      * @param parameters Parameter list matching format specifiers.
      */
     public static void consoleLog(String message, Object... parameters) {
         // logs to the console as well as our log file on RR disk.
-        LOGGER.log(Level.INFO, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(),
-                currentMethod(2), String.format(message, parameters)));
+        LOGGER.log(Level.INFO,
+                String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(),
+                        currentMethod(2), String.format(message, parameters)));
     }
 
     /**
      * Write message to console log with optional formatting and program location.
-     * @param message Message with optional format specifiers for listed parameters. Use '%s' for formatting. It makes the parameters appear in the String where the '%s' are in order of input.
+     * 
+     * @param message Message with optional format specifiers for listed parameters. Use '%s' for
+     *        formatting. It makes the parameters appear in the String where the '%s' are in order
+     *        of input.
      * @param parameters Parameter list matching format specifiers.
      */
-    public static void consoleError(String message, Object... parameters)
-    {
+    public static void consoleError(String message, Object... parameters) {
         // logs to the console as well as our log file on RR disk.
-        LOGGER.log(Level.SEVERE, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(), currentMethod(2), String.format(message, parameters)));
+        LOGGER.log(Level.SEVERE,
+                String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(),
+                        currentMethod(2), String.format(message, parameters)));
     }
 
     /**
      * Write message to console log with optional formatting and program location.
-     * @param message Message with optional format specifiers for listed parameters. Use '%s' for formatting. It makes the parameters appear in the String where the '%s' are in order of input.
+     * 
+     * @param message Message with optional format specifiers for listed parameters. Use '%s' for
+     *        formatting. It makes the parameters appear in the String where the '%s' are in order
+     *        of input.
      * @param parameters Parameter list matching format specifiers.
      */
-    public static void consoleWarning(String message, Object... parameters)
-    {
+    public static void consoleWarning(String message, Object... parameters) {
         // logs to the console as well as our log file on RR disk.
-        LOGGER.log(Level.WARNING, String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(), currentMethod(2), String.format(message, parameters)));
+        LOGGER.log(Level.WARNING,
+                String.format("robot: MatchTime:%s: %s: %s", DriverStation.getMatchTime(),
+                        currentMethod(2), String.format(message, parameters)));
     }
 
     /**
@@ -251,13 +258,12 @@ public class ConsoleLogger {
      */
     public static void consoleLog() {
         // logs to the console as well as our log file on RR disk.
-        LOGGER.log(Level.INFO,
-                String.format("robot: MatchTime:%s: %s", DriverStation.getMatchTime(), currentMethod(2)));
+        LOGGER.log(Level.INFO, String.format("robot: MatchTime:%s: %s",
+                DriverStation.getMatchTime(), currentMethod(2)));
     }
 
     /**
-     * Write exception message to DS console window and exception stack trace to log
-     * file.
+     * Write exception message to DS console window and exception stack trace to log file.
      * 
      * @param e The exception to log.
      */

@@ -1,13 +1,13 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
+import org.w3c.dom.css.Counter;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.AnalogTrigger;
 import edu.wpi.first.wpilibj.AnalogTriggerOutput.AnalogTriggerType;
-import edu.wpi.first.wpilibj.Counter;
 
 /**
- * Driver for an analog Sharp IR sensor (or any distance sensor where output
- * voltage is a function of range, really).
+ * Driver for an analog Sharp IR sensor (or any distance sensor where output voltage is a function
+ * of range, really).
  */
 public class SharpIRSensor {
     protected final AnalogInput M_ANALOG_INPUT;

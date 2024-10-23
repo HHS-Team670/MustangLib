@@ -3,7 +3,6 @@ package frc.team670.mustanglib.commands.drive.teleop.swerve;
 import java.util.HashMap;
 import java.util.Map;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import frc.team670.mustanglib.commands.MustangCommand;
@@ -15,7 +14,7 @@ import frc.team670.mustanglib.utils.MustangController;
 
 public class XboxSwerveDrive extends Command implements MustangCommand {
     private final SwerveDrive driveBase;
-   
+
     private MustangController controller;
 
     // private Rotation2d desiredHeading = null;
@@ -24,11 +23,11 @@ public class XboxSwerveDrive extends Command implements MustangCommand {
     public XboxSwerveDrive(SwerveDrive swerveDriveBase, MustangController controller) {
         this.driveBase = swerveDriveBase;
         this.controller = controller;
-      
+
 
         MAX_VELOCITY = swerveDriveBase.getMaxVelocityMetersPerSecond();
         MAX_ANGULAR_VELOCITY = swerveDriveBase.getMaxAngularVelocityMetersPerSecond();
-        
+
         addRequirements(driveBase);
     }
 
@@ -79,7 +78,6 @@ public class XboxSwerveDrive extends Command implements MustangCommand {
         value = deadband(value, 0.05);
         return value;
     }
-
 
 
 

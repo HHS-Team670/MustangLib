@@ -1,11 +1,15 @@
 package frc.team670.mustanglib.swervelib.rev;
 
-import com.revrobotics.*;
-import frc.team670.mustanglib.swervelib.*;
-import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
-import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
-import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import static frc.team670.mustanglib.swervelib.rev.RevUtils.checkNeoError;
+import com.revrobotics.*;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
+import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
+import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
+import frc.team670.mustanglib.swervelib.ModuleConfiguration;
+import frc.team670.mustanglib.swervelib.SteerConfiguration;
+import frc.team670.mustanglib.swervelib.SteerController;
+import frc.team670.mustanglib.swervelib.SteerControllerFactory;
+import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 
 public final class NeoSteerControllerFactoryBuilder {
     // PID configuration
@@ -16,7 +20,8 @@ public final class NeoSteerControllerFactoryBuilder {
     private double nominalVoltage = Double.NaN;
     private double currentLimit = Double.NaN;
 
-    public NeoSteerControllerFactoryBuilder withPidConstants(double proportional, double integral, double derivative) {
+    public NeoSteerControllerFactoryBuilder withPidConstants(double proportional, double integral,
+            double derivative) {
         this.pidProportional = proportional;
         this.pidIntegral = integral;
         this.pidDerivative = derivative;
@@ -24,7 +29,8 @@ public final class NeoSteerControllerFactoryBuilder {
     }
 
     public boolean hasPidConstants() {
-        return Double.isFinite(pidProportional) && Double.isFinite(pidIntegral) && Double.isFinite(pidDerivative);
+        return Double.isFinite(pidProportional) && Double.isFinite(pidIntegral)
+                && Double.isFinite(pidDerivative);
     }
 
     public NeoSteerControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
@@ -59,7 +65,8 @@ public final class NeoSteerControllerFactoryBuilder {
         }
 
         @Override
-        public void addDashboardEntries(ShuffleboardContainer container, ControllerImplementation controller) {
+        public void addDashboardEntries(ShuffleboardContainer container,
+                ControllerImplementation controller) {
 
             SteerControllerFactory.super.addDashboardEntries(container, controller);
             container.addNumber("Absolute Encoder Angle",
@@ -67,35 +74,43 @@ public final class NeoSteerControllerFactoryBuilder {
         }
 
         @Override
-        public ControllerImplementation create(SteerConfiguration<T> steerConfiguration, String _canbus,
-                ModuleConfiguration moduleConfiguration) {
-            AbsoluteEncoder absoluteEncoder = encoderFactory.create(steerConfiguration.getEncoderConfiguration());
+        public ControllerImplementation create(SteerConfiguration<T> steerConfiguration,
+                String _canbus, ModuleConfiguration moduleConfiguration) {
+            AbsoluteEncoder absoluteEncoder =
+                    encoderFactory.create(steerConfiguration.getEncoderConfiguration());
 
             CANSparkMax motor = new CANSparkMax(steerConfiguration.getMotorPort(),
                     CANSparkLowLevel.MotorType.kBrushless);
-            checkNeoError(motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus0, 100),
+            checkNeoError(
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus0, 100),
                     "Failed to set periodic status frame 0 rate");
             checkNeoError(motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus1, 20),
                     "Failed to set periodic status frame 1 rate");
             checkNeoError(motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus2, 20),
                     "Failed to set periodic status frame 2 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus3,
+                            SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_3_RATE_MS),
                     "Failed to set periodic status frame 3 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus4,
+                            SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_4_RATE_MS),
                     "Failed to set periodic status frame 4 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS),
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus5,
+                            SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_5_RATE_MS),
                     "Failed to set periodic status frame 5 rate");
             checkNeoError(
-                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,  SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS),
-                    "Failed to set periodic status frame 6 rate");    
-                    
-            checkNeoError(motor.setIdleMode(CANSparkMax.IdleMode.kBrake), "Failed to set NEO idle mode");
+                    motor.setPeriodicFramePeriod(CANSparkLowLevel.PeriodicFrame.kStatus6,
+                            SparkMAXFactory.defaultLowUpdateRateConfig.STATUS_FRAME_6_RATE_MS),
+                    "Failed to set periodic status frame 6 rate");
+
+            checkNeoError(motor.setIdleMode(CANSparkMax.IdleMode.kBrake),
+                    "Failed to set NEO idle mode");
             motor.setInverted(!moduleConfiguration.isSteerInverted());
             if (hasVoltageCompensation()) {
-                checkNeoError(motor.enableVoltageCompensation(nominalVoltage), "Failed to enable voltage compensation");
+                checkNeoError(motor.enableVoltageCompensation(nominalVoltage),
+                        "Failed to enable voltage compensation");
             }
             if (hasCurrentLimit()) {
                 checkNeoError(motor.setSmartCurrentLimit((int) Math.round(currentLimit)),
@@ -104,8 +119,8 @@ public final class NeoSteerControllerFactoryBuilder {
 
             RelativeEncoder integratedEncoder = motor.getEncoder();
             checkNeoError(
-                    integratedEncoder
-                            .setPositionConversionFactor(2.0 * Math.PI * moduleConfiguration.getSteerReduction()),
+                    integratedEncoder.setPositionConversionFactor(
+                            2.0 * Math.PI * moduleConfiguration.getSteerReduction()),
                     "Failed to set NEO encoder conversion factor");
             checkNeoError(
                     integratedEncoder.setVelocityConversionFactor(
@@ -116,11 +131,15 @@ public final class NeoSteerControllerFactoryBuilder {
 
             SparkPIDController controller = motor.getPIDController();
             if (hasPidConstants()) {
-                checkNeoError(controller.setP(pidProportional), "Failed to set NEO PID proportional constant");
-                checkNeoError(controller.setI(pidIntegral), "Failed to set NEO PID integral constant");
-                checkNeoError(controller.setD(pidDerivative), "Failed to set NEO PID derivative constant");
+                checkNeoError(controller.setP(pidProportional),
+                        "Failed to set NEO PID proportional constant");
+                checkNeoError(controller.setI(pidIntegral),
+                        "Failed to set NEO PID integral constant");
+                checkNeoError(controller.setD(pidDerivative),
+                        "Failed to set NEO PID derivative constant");
             }
-            checkNeoError(controller.setFeedbackDevice(integratedEncoder), "Failed to set NEO PID feedback device");
+            checkNeoError(controller.setFeedbackDevice(integratedEncoder),
+                    "Failed to set NEO PID feedback device");
 
             return new ControllerImplementation(motor, absoluteEncoder);
         }
@@ -172,15 +191,15 @@ public final class NeoSteerControllerFactoryBuilder {
             // end up getting a good reading. If we reset periodically this won't matter
             // anymore.
             if (motorEncoder.getVelocity() < ENCODER_RESET_MAX_ANGULAR_VELOCITY) {
-            // ConsoleLogger.consoleLog("Reset Iteration: "+resetIteration);
-            if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
-            // ConsoleLogger.consoleLog("resetIterationHit--");
-                resetIteration = 0;
-                double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
-                motorEncoder.setPosition(absoluteAngle);
-                currentAngleRadians = absoluteAngle;
-                currentAngleRadians=realign();
-            }
+                // ConsoleLogger.consoleLog("Reset Iteration: "+resetIteration);
+                if (++resetIteration >= ENCODER_RESET_ITERATIONS) {
+                    // ConsoleLogger.consoleLog("resetIterationHit--");
+                    resetIteration = 0;
+                    double absoluteAngle = absoluteEncoder.getAbsoluteAngle();
+                    motorEncoder.setPosition(absoluteAngle);
+                    currentAngleRadians = absoluteAngle;
+                    currentAngleRadians = realign();
+                }
             } else {
                 resetIteration = 0;
             }
@@ -193,8 +212,9 @@ public final class NeoSteerControllerFactoryBuilder {
 
             // The reference angle has the range [0, 2pi) but the Neo's encoder can go above
             // that
-            double adjustedReferenceAngleRadians = referenceAngleRadians + currentAngleRadians - currentAngleRadiansMod;
-            
+            double adjustedReferenceAngleRadians =
+                    referenceAngleRadians + currentAngleRadians - currentAngleRadiansMod;
+
             if (referenceAngleRadians - currentAngleRadiansMod > Math.PI) {
                 adjustedReferenceAngleRadians -= 2.0 * Math.PI;
             } else if (referenceAngleRadians - currentAngleRadiansMod < -Math.PI) {
@@ -203,7 +223,8 @@ public final class NeoSteerControllerFactoryBuilder {
 
             this.referenceAngleRadians = referenceAngleRadians;
 
-            controller.setReference(adjustedReferenceAngleRadians, CANSparkMax.ControlType.kPosition);
+            controller.setReference(adjustedReferenceAngleRadians,
+                    CANSparkMax.ControlType.kPosition);
         }
 
         public double realign() {

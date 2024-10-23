@@ -2,7 +2,7 @@ package frc.team670.mustanglib.swervelib.rev;
 
 import com.revrobotics.REVLibError;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotBase;
+import frc.team670.mustanglib.RobotBase;
 
 public final class RevUtils {
     private RevUtils() {}

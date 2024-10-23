@@ -1,0 +1,21 @@
+{
+  // Format the code when saving files
+  "editor.formatOnSave": true,
+
+  // Enable organizing imports (sort imports and remove unused ones)
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+
+  // Set maximum line length for word wrapping
+  "editor.wordWrapColumn": 120,
+
+  "java.format.enabled": true,
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+
+  // Use a specific Java formatter
+  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+  "java.format.settings.profile": "GoogleStyle", // Change to your preferred profile
+}

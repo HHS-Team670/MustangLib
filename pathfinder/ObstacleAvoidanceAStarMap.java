@@ -8,6 +8,7 @@ import frc.team670.mustanglib.utils.math.sort.AStarSearch;
 
 /**
  * Uses Pose Edge and A Star search in a graph traversal fashion to avoid obstacles on the field
+ * 
  * @author ethan c :D
  */
 public class ObstacleAvoidanceAStarMap {
@@ -19,45 +20,56 @@ public class ObstacleAvoidanceAStarMap {
     private PoseNode startNode, endNode;
 
     /**
-     * Constructs a new obstacle avoidance map with the given obstacles as well as the starting position and the destination position
+     * Constructs a new obstacle avoidance map with the given obstacles as well as the starting
+     * position and the destination position
+     * 
      * @param start the start
      * @param destination the destination position
      * @param obstacles obstacles in the field ex: the charge station from the 2023 field
      */
-    public ObstacleAvoidanceAStarMap(PoseNode start, PoseNode destination, List<Obstacle> obstacles) {
+    public ObstacleAvoidanceAStarMap(PoseNode start, PoseNode destination,
+            List<Obstacle> obstacles) {
         this.startNode = start;
         this.endNode = destination;
         addObstacles(obstacles);
     }
+
     /**
-     * Constructs a new obstacle avoidance map with the given obstacles as well as the starting position and the destination positions and a list of contingency nodes
+     * Constructs a new obstacle avoidance map with the given obstacles as well as the starting
+     * position and the destination positions and a list of contingency nodes
+     * 
      * @param start the start
      * @param destination the destination position
      * @param obstacles obstacles in the field
      * @param obstacleContingencyNodes a list of fallback nodes for the navigation mesh
      */
-    public ObstacleAvoidanceAStarMap(PoseNode start, PoseNode destination, List<Obstacle> obstacles, List<PoseNode> obstacleContingencyNodes) {
+    public ObstacleAvoidanceAStarMap(PoseNode start, PoseNode destination, List<Obstacle> obstacles,
+            List<PoseNode> obstacleContingencyNodes) {
         this.startNode = start;
         this.endNode = destination;
         this.contingencyNodes = obstacleContingencyNodes;
         addObstacles(obstacles);
     }
 
-    
+
     /**
      * Add a node to the navigation mesh
+     * 
      * @param node
      */
     public void addNode(PoseNode node) {
         this.contingencyNodes.add(node);
     }
+
     /**
      * Adds a list of nodes to the navigation mesh
+     * 
      * @param nodes
      */
     public void addNodes(List<PoseNode> nodes) {
         this.contingencyNodes.addAll(nodes);
     }
+
     /**
      * @return the node size
      */
@@ -73,8 +85,10 @@ public class ObstacleAvoidanceAStarMap {
     public PoseNode getNode(int index) {
         return contingencyNodes.get(index);
     }
+
     /**
-     *  Finds and returns a path from the start node to the end node while avoiding obstacles
+     * Finds and returns a path from the start node to the end node while avoiding obstacles
+     * 
      * @return The path from the start node to the end node
      */
     public List<PoseNode> findPath() {
@@ -90,15 +104,17 @@ public class ObstacleAvoidanceAStarMap {
         }
         return fullPath;
     }
+
     /**
      * adds a list of obstacles to the list of obstacles
+     * 
      * @param obstacles
      */
     public void addObstacles(List<Obstacle> obstacles) {
         this.obstacles.addAll(obstacles);
     }
 
-    
+
     /**
      * Add edges to nodes it doesn't intersect obstacles
      */
@@ -124,10 +140,11 @@ public class ObstacleAvoidanceAStarMap {
         PoseEdge contTocont;
         for (PoseNode node : contingencyNodes) {
             for (PoseNode other : contingencyNodes) {
-                if (node == other) continue;
+                if (node == other)
+                    continue;
 
                 contTocont = new PoseEdge(node, other);
-                if(!intersectsObstacles(contTocont)) {
+                if (!intersectsObstacles(contTocont)) {
                     this.edges.add(contTocont);
                     contTocont.start.addNeighbor(contTocont.end);
                     contTocont.end.addNeighbor(contTocont.start);
@@ -138,6 +155,7 @@ public class ObstacleAvoidanceAStarMap {
 
     /**
      * Checks if an passed in edge intersects with obstacles
+     * 
      * @param edge the edge to be checked
      * @return if the edge intersects with any obstacle
      */
@@ -158,6 +176,7 @@ public class ObstacleAvoidanceAStarMap {
         }
         return false;
     }
+
     /**
      * 
      * @return the edges

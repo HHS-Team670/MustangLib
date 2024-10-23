@@ -1,15 +1,16 @@
 package frc.team670.mustanglib.utils.math.interpolable;
 
 /**
- * @see <a href="https://github.com/Team254/FRC-2017-Public/blob/master/src/com/team254/lib/util/InterpolatingDouble.java"> Taken
- *      from 254's 2017 code.</a>
+ * @see <a href=
+ *      "https://github.com/Team254/FRC-2017-Public/blob/master/src/com/team254/lib/util/InterpolatingDouble.java">
+ *      Taken from 254's 2017 code.</a>
  * 
- * A Double that can be interpolated using the InterpolatingTreeMap.
+ *      A Double that can be interpolated using the InterpolatingTreeMap.
  * 
  * @see InterpolatingTreeMap
  */
-public class InterpolatingDouble implements Interpolable<InterpolatingDouble>, InverseInterpolable<InterpolatingDouble>,
-        Comparable<InterpolatingDouble> {
+public class InterpolatingDouble implements Interpolable<InterpolatingDouble>,
+        InverseInterpolable<InterpolatingDouble>, Comparable<InterpolatingDouble> {
     public Double value = 0.0;
 
     public InterpolatingDouble(Double val) {

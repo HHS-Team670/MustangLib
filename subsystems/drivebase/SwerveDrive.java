@@ -1,22 +1,17 @@
 package frc.team670.mustanglib.subsystems.drivebase;
 
 import java.util.function.BooleanSupplier;
-
-import com.pathplanner.lib.path.PathPlannerPath;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.ReplanningConfig;
+import javax.swing.SpringLayout.Constraints;
 import com.ctre.phoenix6.configs.CurrentLimitsConfigs;
 import com.ctre.phoenix6.configs.TalonFXConfiguration;
 import com.ctre.phoenix6.hardware.TalonFX;
-import com.ctre.phoenix6.signals.NeutralModeValue;
 import com.pathplanner.lib.auto.AutoBuilder;
-import org.littletonrobotics.junction.Logger;
-import com.revrobotics.CANSparkMax;
+import com.pathplanner.lib.path.PathPlannerPath;
+import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
+import com.pathplanner.lib.util.ReplanningConfig;
 import com.revrobotics.CANSparkBase.IdleMode;
-
-import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
+import com.revrobotics.CANSparkMax;
 import edu.wpi.first.math.controller.ProfiledPIDController;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
@@ -24,12 +19,9 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.TrapezoidProfile.Constraints;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.motorcontrol.Talon;
 import edu.wpi.first.wpilibj.SerialPort;
 import edu.wpi.first.wpilibj.shuffleboard.BuiltInLayouts;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -37,13 +29,13 @@ import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardTab;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
+import frc.team670.mustanglib.subsystems.VisionSubsystemBase;
 import frc.team670.mustanglib.swervelib.Mk4ModuleConfiguration;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper;
 import frc.team670.mustanglib.swervelib.Mk4iSwerveModuleHelper.GearRatio;
 import frc.team670.mustanglib.swervelib.SwerveModule;
 import frc.team670.mustanglib.swervelib.pathplanner.MustangPPSwerveControllerCommand;
 import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
-import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.SwervePoseEstimatorBase;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig.Motor_Type;
 
@@ -61,7 +53,10 @@ public abstract class SwerveDrive extends DriveBase {
     private final SwerveDriveKinematics kKinematics;
     private Rotation2d mGyroOffset = new Rotation2d();
     private Rotation2d mDesiredHeading = null; // for rotation snapping
-    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE, DRIVEBASE_PITCH, DRIVEBASE_ROLL, DRIVEBASE_FL_CURRENT, DRIVEBASE_FR_CURRENT, DRIVEBASE_BL_CURRENT, DRIVEBASE_BR_CURRENT, DRIVEBASE_SUPPLY_CURRENT_LIMIT, DRIVEBASE_AVG_CURRENT_DRAW, DRIVEBASE_LATEST_DRAW, DRIVEBASE_STATOR_CURRENT_LIMIT;
+    private final String DRIVEBASE_MAX_VELOCITY, DRIVEBASE_OFFSET, DRIVEBASE_HEADING_DEGREE,
+            DRIVEBASE_PITCH, DRIVEBASE_ROLL, DRIVEBASE_FL_CURRENT, DRIVEBASE_FR_CURRENT,
+            DRIVEBASE_BL_CURRENT, DRIVEBASE_BR_CURRENT, DRIVEBASE_SUPPLY_CURRENT_LIMIT,
+            DRIVEBASE_AVG_CURRENT_DRAW, DRIVEBASE_LATEST_DRAW, DRIVEBASE_STATOR_CURRENT_LIMIT;
     private final double kMaxVelocity, kMaxVoltage;
     private Config kConfig;
     private final Mk4ModuleConfiguration kModuleConfigFrontLeft = new Mk4ModuleConfiguration();
@@ -72,41 +67,48 @@ public abstract class SwerveDrive extends DriveBase {
     private final double kRollOffset;
     private TalonFXConfiguration driveMotorConfig = new TalonFXConfiguration();
     private CurrentLimitsConfigs currentLimitConfigs = driveMotorConfig.CurrentLimits;
-    private final double[] driveCurrentBuffer = new double[RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize];
+    private final double[] driveCurrentBuffer =
+            new double[RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize];
     private int index = 0;
     private double averageCurrent;
     private boolean bufferFull = false;
     private final RotationController rotPIDController;
 
-   
+
     public static record Config(double kDriveBaseTrackWidth, double kDriveBaseWheelBase,
-            double kMaxVelocity,double kMaxAngularVelocity, double kMaxVoltage, double kMaxDriveCurrent,
-            double kMaxSteerCurrent, SerialPort.Port kNavXPort, GearRatio kSwerveModuleGearRatio,
-            Motor_Type kDriveMotorType, Motor_Type kSteerMotorType,  double headingOffsetRadians,
+            double kMaxVelocity, double kMaxAngularVelocity, double kMaxVoltage,
+            double kMaxDriveCurrent, double kMaxSteerCurrent, SerialPort.Port kNavXPort,
+            GearRatio kSwerveModuleGearRatio, Motor_Type kDriveMotorType,
+            Motor_Type kSteerMotorType, double headingOffsetRadians,
 
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
-            int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset, AbsoluteEncoderType kFrontLeftModuleEncoderType,
-            
-            int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
-            int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset, AbsoluteEncoderType kFrontRightModuleEncoderType,
-            
-            int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
-            int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset, AbsoluteEncoderType kBackLeftModuleEncoderType,
-            
-            int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
-            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset, AbsoluteEncoderType kBackRightModuleEncoderType
+            int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset,
+            AbsoluteEncoderType kFrontLeftModuleEncoderType,
 
-            
-            ) {
+            int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
+            int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset,
+            AbsoluteEncoderType kFrontRightModuleEncoderType,
+
+            int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
+            int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset,
+            AbsoluteEncoderType kBackLeftModuleEncoderType,
+
+            int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
+            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset,
+            AbsoluteEncoderType kBackRightModuleEncoderType
+
+
+    ) {
     }
+
     public SwerveDrive(Config config) {
-        this.kConfig=config;
-        
+        this.kConfig = config;
+
         kMaxVelocity = config.kMaxVelocity;
         kMaxVoltage = config.kMaxVoltage;
-        
+
         averageCurrent = 0;
-        currentLimitConfigs.SupplyTimeThreshold = 0.5; // TODO 
+        currentLimitConfigs.SupplyTimeThreshold = 0.5; // TODO
         currentLimitConfigs.SupplyCurrentLimit = config.kMaxDriveCurrent;
 
         kModuleConfigFrontLeft.setNominalVoltage(kMaxVoltage);
@@ -134,76 +136,86 @@ public abstract class SwerveDrive extends DriveBase {
 
         ShuffleboardTab tab = Shuffleboard.getTab("Drivetrain");
         mModules = new SwerveModule[4];
-        
+
         // front left
-        if (config.kDriveMotorType == Motor_Type.NEO){
+        if (config.kDriveMotorType == Motor_Type.NEO) {
             mModules[0] = Mk4iSwerveModuleHelper.createNeo(
-                tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
-                    .withPosition(0, 0),
-                kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
-                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
-                config.kFrontLeftModuleSteerOffset);
+                    tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(0, 0),
+                    kModuleConfigFrontLeft, config.kSwerveModuleGearRatio,
+                    config.kFrontLeftModuleDriveMotor, config.kFrontLeftModuleSteerMotor,
+                    config.kFrontLeftModuleSteerEncoder, config.kFrontLeftModuleSteerOffset);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[0] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
-                tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
-                    .withPosition(0, 0),
-                kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
-                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder);
+                    tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(0, 0),
+                    kModuleConfigFrontLeft, config.kSwerveModuleGearRatio,
+                    config.kFrontLeftModuleDriveMotor, config.kFrontLeftModuleSteerMotor,
+                    config.kFrontLeftModuleSteerEncoder);
         } else {
-            throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
+            throw new IllegalArgumentException(
+                    "Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
-        
+
         // front right
         if (config.kDriveMotorType == Motor_Type.NEO) {
             mModules[1] = Mk4iSwerveModuleHelper.createNeo(
-                tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
-                        .withPosition(2, 0),
-                kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
-                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
-                config.kFrontRightModuleSteerOffset);
+                    tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(2, 0),
+                    kModuleConfigFrontRight, config.kSwerveModuleGearRatio,
+                    config.kFrontRightModuleDriveMotor, config.kFrontRightModuleSteerMotor,
+                    config.kFrontRightModuleSteerEncoder, config.kFrontRightModuleSteerOffset);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[1] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
-                tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
-                        .withPosition(2, 0),
-                kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
-                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder);
+                    tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(2, 0),
+                    kModuleConfigFrontRight, config.kSwerveModuleGearRatio,
+                    config.kFrontRightModuleDriveMotor, config.kFrontRightModuleSteerMotor,
+                    config.kFrontRightModuleSteerEncoder);
             // ((TalonFX)mModules[1].getDriveMotor()).setNeutralMode(NeutralModeValue.Coast);
         } else {
-            throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
+            throw new IllegalArgumentException(
+                    "Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
 
         // back left
         if (config.kDriveMotorType == Motor_Type.NEO) {
             mModules[2] = Mk4iSwerveModuleHelper.createNeo(
-                tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
-                        .withPosition(4, 0),
-                kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
-                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,config.kBackLeftModuleSteerOffset);
+                    tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(4, 0),
+                    kModuleConfigBackLeft, config.kSwerveModuleGearRatio,
+                    config.kBackLeftModuleDriveMotor, config.kBackLeftModuleSteerMotor,
+                    config.kBackLeftModuleSteerEncoder, config.kBackLeftModuleSteerOffset);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[2] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
-                tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
-                        .withPosition(4, 0),
-                kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
-                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder);
+                    tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(4, 0),
+                    kModuleConfigBackLeft, config.kSwerveModuleGearRatio,
+                    config.kBackLeftModuleDriveMotor, config.kBackLeftModuleSteerMotor,
+                    config.kBackLeftModuleSteerEncoder);
         } else {
-            throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
+            throw new IllegalArgumentException(
+                    "Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
 
         // back right
         if (config.kDriveMotorType == Motor_Type.NEO) {
             mModules[3] = Mk4iSwerveModuleHelper.createNeo(
-                tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
-                    .withPosition(6, 0),
-            kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
-            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,config.kBackLeftModuleSteerOffset);
+                    tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(6, 0),
+                    kModuleConfigBackRight, config.kSwerveModuleGearRatio,
+                    config.kBackRightModuleDriveMotor, config.kBackRightModuleSteerMotor,
+                    config.kBackRightModuleSteerEncoder, config.kBackLeftModuleSteerOffset);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[3] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
-                tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
-                    .withPosition(6, 0),
-            kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
-            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder);
+                    tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
+                            .withPosition(6, 0),
+                    kModuleConfigBackRight, config.kSwerveModuleGearRatio,
+                    config.kBackRightModuleDriveMotor, config.kBackRightModuleSteerMotor,
+                    config.kBackRightModuleSteerEncoder);
         } else {
-            throw new IllegalArgumentException("Wrong type of motor... we only support Krakens and Neos as drive motors");
+            throw new IllegalArgumentException(
+                    "Wrong type of motor... we only support Krakens and Neos as drive motors");
         }
 
         kKinematics = new SwerveDriveKinematics(
@@ -220,7 +232,10 @@ public abstract class SwerveDrive extends DriveBase {
                 new Translation2d(-config.kDriveBaseTrackWidth / 2.0,
                         -config.kDriveBaseWheelBase / 2.0));
 
-        kKinematics.resetHeadings(new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians), new Rotation2d(config.headingOffsetRadians));
+        kKinematics.resetHeadings(new Rotation2d(config.headingOffsetRadians),
+                new Rotation2d(config.headingOffsetRadians),
+                new Rotation2d(config.headingOffsetRadians),
+                new Rotation2d(config.headingOffsetRadians));
 
         mNavx = new NavX(config.kNavXPort);
         // mChassisSpeeds = new ChassisSpeeds(0.0, 0.0, 0.0);
@@ -236,57 +251,58 @@ public abstract class SwerveDrive extends DriveBase {
         kPitchOffset = mNavx.getPitch();
         kRollOffset = mNavx.getRoll();
 
-        DRIVEBASE_MAX_VELOCITY = getName()+"/MaxVelocityMps";
-        DRIVEBASE_OFFSET = getName()+"/GyroOffset";
-        DRIVEBASE_HEADING_DEGREE = getName()+"/NavXHeadingDeg";
-        DRIVEBASE_PITCH = getName()+"/pitch";
-        DRIVEBASE_ROLL = getName()+"/roll";
-        DRIVEBASE_FL_CURRENT = getName()+"/FrontLeftCurrent";
-        DRIVEBASE_FR_CURRENT = getName()+"/FrontRightCurrent";
-        DRIVEBASE_BL_CURRENT = getName()+"/BackLeftCurrent";
-        DRIVEBASE_BR_CURRENT = getName()+"/BackRightCurrent";
-        DRIVEBASE_SUPPLY_CURRENT_LIMIT = getName()+"/SupplyCurrentLimit";
-        DRIVEBASE_AVG_CURRENT_DRAW = getName()+"/AvgCurrent";
-        DRIVEBASE_LATEST_DRAW = getName()+"/LatestCurrent";
-        DRIVEBASE_STATOR_CURRENT_LIMIT=getName()+"/StatorCurrentLimit";
-       
+        DRIVEBASE_MAX_VELOCITY = getName() + "/MaxVelocityMps";
+        DRIVEBASE_OFFSET = getName() + "/GyroOffset";
+        DRIVEBASE_HEADING_DEGREE = getName() + "/NavXHeadingDeg";
+        DRIVEBASE_PITCH = getName() + "/pitch";
+        DRIVEBASE_ROLL = getName() + "/roll";
+        DRIVEBASE_FL_CURRENT = getName() + "/FrontLeftCurrent";
+        DRIVEBASE_FR_CURRENT = getName() + "/FrontRightCurrent";
+        DRIVEBASE_BL_CURRENT = getName() + "/BackLeftCurrent";
+        DRIVEBASE_BR_CURRENT = getName() + "/BackRightCurrent";
+        DRIVEBASE_SUPPLY_CURRENT_LIMIT = getName() + "/SupplyCurrentLimit";
+        DRIVEBASE_AVG_CURRENT_DRAW = getName() + "/AvgCurrent";
+        DRIVEBASE_LATEST_DRAW = getName() + "/LatestCurrent";
+        DRIVEBASE_STATOR_CURRENT_LIMIT = getName() + "/StatorCurrentLimit";
+
 
         Logger.recordOutput(DRIVEBASE_MAX_VELOCITY, config.kMaxVelocity);
-        
+
     }
+
     protected abstract void initPoseEstimator();
 
-   
+
 
     public void stop() {
-        drive(0,0,0);
+        drive(0, 0, 0);
     }
 
     /**
-     * Sets the gyroscope angle to zero. This can be used to set the direction the
-     * robot is
+     * Sets the gyroscope angle to zero. This can be used to set the direction the robot is
      * currently facing to the 'forwards' direction.
      */
     public void zeroHeading() {
         mGyroOffset = getGyroscopeRotation(false);
     }
 
-    public void rotateOffset180(){
+    public void rotateOffset180() {
         mGyroOffset = mGyroOffset.plus(new Rotation2d(Math.PI));
     }
 
-    public void rotateOffset(double angle){
+    public void rotateOffset(double angle) {
         mGyroOffset = mGyroOffset.plus(new Rotation2d(Math.toRadians(angle)));
     }
 
-    public GearRatio getGearRatio(){
+    public GearRatio getGearRatio() {
         return kConfig.kSwerveModuleGearRatio();
     }
-    public double getMaxVelocityMetersPerSecond(){
+
+    public double getMaxVelocityMetersPerSecond() {
         return kMaxVelocity;
     }
-    
-    public double getMaxAngularVelocityMetersPerSecond(){
+
+    public double getMaxAngularVelocityMetersPerSecond() {
         return kConfig.kMaxAngularVelocity;
     }
 
@@ -313,34 +329,36 @@ public abstract class SwerveDrive extends DriveBase {
     public Rotation2d getDesiredHeading() {
         return this.mDesiredHeading;
     }
-    public void drive(double xVel, double yVel, double thetaVel){
-        
+
+    public void drive(double xVel, double yVel, double thetaVel) {
+
         if (this.mDesiredHeading != null) {
-            if (rotPIDController.atReference()){
+            if (rotPIDController.atReference()) {
                 this.setmDesiredHeading(null);
             }
         }
         if (this.mDesiredHeading != null) {
             thetaVel = rotPIDController.calculateRotationSpeed(this.getGyroscopeRotation(),
-            this.mDesiredHeading);
-        } 
-        
-        setModuleStates(kKinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xVel, yVel, thetaVel,
-                        this.getGyroscopeRotation())));
+                    this.mDesiredHeading);
+        }
+
+        setModuleStates(kKinematics.toSwerveModuleStates(ChassisSpeeds.fromFieldRelativeSpeeds(xVel,
+                yVel, thetaVel, this.getGyroscopeRotation())));
     }
 
     // public double getMaxVelocityMetersPerSecond(){
-    //     return  5676.0 / 60.0
-    //     * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
+    // return 5676.0 / 60.0
+    // * kModuleConfig.getDriveReduction() * kModuleConfig.getWheelDiameter() * Math.PI;
     // }
 
     public Rotation2d getGyroscopeRotation(boolean offset) {
         if (mNavx.isMagnetometerCalibrated()) {
             // We will only get valid fused headings if the magnetometer is calibrated
             if (offset) {
-                Rotation2d angle = Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
+                Rotation2d angle =
+                        Rotation2d.fromDegrees(-mNavx.getFusedHeading()).minus(mGyroOffset);
                 Logger.recordOutput(DRIVEBASE_OFFSET, mGyroOffset.getDegrees());
-             
+
                 return angle;
             } else {
                 return Rotation2d.fromDegrees(-mNavx.getFusedHeading());
@@ -374,20 +392,23 @@ public abstract class SwerveDrive extends DriveBase {
         if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)) {
             double latestDriveCurrentDraw = 0;
             for (int i = 0; i < mModules.length; i++) {
-                latestDriveCurrentDraw += ((TalonFX) mModules[i].getDriveMotor()).getSupplyCurrent().getValueAsDouble();
+                latestDriveCurrentDraw += ((TalonFX) mModules[i].getDriveMotor()).getSupplyCurrent()
+                        .getValueAsDouble();
             }
             if (!bufferFull) {
-                averageCurrent = ((averageCurrent * index) + latestDriveCurrentDraw) / (double)(index + 1);
+                averageCurrent =
+                        ((averageCurrent * index) + latestDriveCurrentDraw) / (double) (index + 1);
             } else {
-                int sum=0;
-                for(int j=0;j<driveCurrentBuffer.length;j++){
-                    sum+=driveCurrentBuffer[j];
+                int sum = 0;
+                for (int j = 0; j < driveCurrentBuffer.length; j++) {
+                    sum += driveCurrentBuffer[j];
                 }
-                averageCurrent=(double)sum/driveCurrentBuffer.length;
+                averageCurrent = (double) sum / driveCurrentBuffer.length;
                 // // driveCurrentBuffer
-                // averageCurrent += (latestDriveCurrentDraw - driveCurrentBuffer[index]) / (double)RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
+                // averageCurrent += (latestDriveCurrentDraw - driveCurrentBuffer[index]) /
+                // (double)RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize;
             }
-            
+
             index = (index + 1) % RobotConstantsBase.SwerveDriveBase.kCurrentSampleSize; // 0-249
             if (index == 0) {
                 bufferFull = true;
@@ -395,18 +416,28 @@ public abstract class SwerveDrive extends DriveBase {
 
             driveCurrentBuffer[index] = latestDriveCurrentDraw;
             Logger.recordOutput(DRIVEBASE_LATEST_DRAW, latestDriveCurrentDraw);
-            
+
             // Check if average current exceeds the threshold
-            // if ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <= RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold && currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent)) {
-            //     // Adjust current limit accordingly
-            //     currentLimitConfigs.SupplyCurrentLimit = (averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ? RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit : kConfig.kMaxDriveCurrent;
-            //     driveMotorConfig.withCurrentLimits(currentLimitConfigs);
-            //     currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit + 5; // if the current goes at or above supply current threshold for more than 0.5 sec (time threshold), limited to supply current limit
-            //     for (int i = 0; i < mModules.length; i++) {
-            //         ((TalonFX) mModules[i].getDriveMotor()).getConfigurator().apply(driveMotorConfig);
-            //     }
-            //     ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " + currentLimitConfigs.SupplyCurrentLimit);
-            // }             
+            // if ((averageCurrent > RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold
+            // && currentLimitConfigs.SupplyCurrentLimit !=
+            // RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit) || (averageCurrent <=
+            // RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold &&
+            // currentLimitConfigs.SupplyCurrentLimit != this.kConfig.kMaxDriveCurrent)) {
+            // // Adjust current limit accordingly
+            // currentLimitConfigs.SupplyCurrentLimit = (averageCurrent >
+            // RobotConstantsBase.SwerveDriveBase.kTotalDriveCurrentThreshold) ?
+            // RobotConstantsBase.SwerveDriveBase.kReducedDriveCurrentLimit :
+            // kConfig.kMaxDriveCurrent;
+            // driveMotorConfig.withCurrentLimits(currentLimitConfigs);
+            // currentLimitConfigs.SupplyCurrentThreshold = currentLimitConfigs.SupplyCurrentLimit +
+            // 5; // if the current goes at or above supply current threshold for more than 0.5 sec
+            // (time threshold), limited to supply current limit
+            // for (int i = 0; i < mModules.length; i++) {
+            // ((TalonFX) mModules[i].getDriveMotor()).getConfigurator().apply(driveMotorConfig);
+            // }
+            // ConsoleLogger.consoleLog("CHANGED DRIVE CURRENT LIMIT TO " +
+            // currentLimitConfigs.SupplyCurrentLimit);
+            // }
         }
 
 
@@ -471,10 +502,11 @@ public abstract class SwerveDrive extends DriveBase {
     public void toggleIdleMode() {
         for (SwerveModule m : mModules) {
             if (((CANSparkMax) m.getDriveMotor()).getIdleMode() != IdleMode.kBrake)
-                    ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kCoast);
+                ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kCoast);
             else {
-                ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kBrake);}
-            //We do not want to toggle steer motor idle mode 
+                ((CANSparkMax) m.getDriveMotor()).setIdleMode(IdleMode.kBrake);
+            }
+            // We do not want to toggle steer motor idle mode
         }
     }
 
@@ -486,12 +518,12 @@ public abstract class SwerveDrive extends DriveBase {
 
     public void driveRobotRelative(ChassisSpeeds speeds) {
         SwerveModuleState[] targetStates = kKinematics.toSwerveModuleStates(speeds);
-    
+
         SwerveDriveKinematics.desaturateWheelSpeeds(targetStates, kMaxVelocity);
-    
+
         setModuleStates(targetStates);
     }
-    
+
 
     public Pose2d getPose() {
         return mPoseEstimator.getCurrentPose();
@@ -500,6 +532,7 @@ public abstract class SwerveDrive extends DriveBase {
     public double getPitch() {
         return mNavx.getPitch() - kPitchOffset;
     }
+
     public double getRoll() {
         return mNavx.getRoll() - kRollOffset;
     }
@@ -546,54 +579,72 @@ public abstract class SwerveDrive extends DriveBase {
 
     public void configureHolonomic() {
 
-        double driveBaseRadius = Math.sqrt(Math.pow(kConfig.kDriveBaseTrackWidth/2, 2) + Math.pow(kConfig.kDriveBaseWheelBase/2, 2));
+        double driveBaseRadius = Math.sqrt(Math.pow(kConfig.kDriveBaseTrackWidth / 2, 2)
+                + Math.pow(kConfig.kDriveBaseWheelBase / 2, 2));
 
-        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
-        kMaxVelocity, driveBaseRadius, new ReplanningConfig()); 
+        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(
+                RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID,
+                RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, kMaxVelocity, driveBaseRadius,
+                new ReplanningConfig());
         BooleanSupplier alliance = new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
                 return DriverStation.getAlliance().get() != Alliance.Blue;
             }
         };
-        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,  this::driveRobotRelative, config, alliance, (Subsystem)this);
-    
+        AutoBuilder.configureHolonomic(this::getPose, this::resetOdometry, this::getChassisSpeeds,
+                this::driveRobotRelative, config, alliance, (Subsystem) this);
+
     }
- 
+
     /**
      * @param path
      * @param reqSubsytems
-     * @param driveBaseRadius in meters (for swerve) the distance between the center of the robot to the furthest module (for mecanum this is the width of the drivebase / 2)
+     * @param driveBaseRadius in meters (for swerve) the distance between the center of the robot to
+     *        the furthest module (for mecanum this is the width of the drivebase / 2)
      */
-    public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerPath path, Subsystem[] reqSubsystems, double driveBaseRadius) {
-        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID, RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, 
-        kMaxVelocity, driveBaseRadius, new ReplanningConfig());
+    public MustangPPSwerveControllerCommand getFollowTrajectoryCommand(PathPlannerPath path,
+            Subsystem[] reqSubsystems, double driveBaseRadius) {
+        HolonomicPathFollowerConfig config = new HolonomicPathFollowerConfig(
+                RobotConstantsBase.SwerveDriveBase.kAutonTranslationPID,
+                RobotConstantsBase.SwerveDriveBase.kAutonThetaPID, kMaxVelocity, driveBaseRadius,
+                new ReplanningConfig());
         BooleanSupplier alliance = new BooleanSupplier() {
             @Override
             public boolean getAsBoolean() {
                 return DriverStation.getAlliance().get() != Alliance.Blue;
             }
         };
-        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds, this::driveRobotRelative, config, alliance, reqSubsystems);
+        return new MustangPPSwerveControllerCommand(path, this::getPose, this::getChassisSpeeds,
+                this::driveRobotRelative, config, alliance, reqSubsystems);
     }
 
     @Override
     public void debugSubsystem() {
         if (kConfig.kDriveMotorType.equals(Motor_Type.NEO)) {
-            Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((CANSparkMax) mModules[0].getDriveMotor()).getOutputCurrent());
-            Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((CANSparkMax) mModules[1].getDriveMotor()).getOutputCurrent());
-            Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((CANSparkMax) mModules[2].getDriveMotor()).getOutputCurrent());
-            Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
-        } else if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)){
-            Logger.recordOutput(DRIVEBASE_SUPPLY_CURRENT_LIMIT, currentLimitConfigs.SupplyCurrentLimit);
+            Logger.recordOutput(DRIVEBASE_FL_CURRENT,
+                    ((CANSparkMax) mModules[0].getDriveMotor()).getOutputCurrent());
+            Logger.recordOutput(DRIVEBASE_FR_CURRENT,
+                    ((CANSparkMax) mModules[1].getDriveMotor()).getOutputCurrent());
+            Logger.recordOutput(DRIVEBASE_BL_CURRENT,
+                    ((CANSparkMax) mModules[2].getDriveMotor()).getOutputCurrent());
+            Logger.recordOutput(DRIVEBASE_BR_CURRENT,
+                    ((CANSparkMax) mModules[3].getDriveMotor()).getOutputCurrent());
+        } else if (kConfig.kDriveMotorType.equals(Motor_Type.KRAKEN_X60)) {
+            Logger.recordOutput(DRIVEBASE_SUPPLY_CURRENT_LIMIT,
+                    currentLimitConfigs.SupplyCurrentLimit);
             Logger.recordOutput(DRIVEBASE_AVG_CURRENT_DRAW, averageCurrent);
-            Logger.recordOutput(DRIVEBASE_FL_CURRENT, ((TalonFX) mModules[0].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
-            Logger.recordOutput(DRIVEBASE_FR_CURRENT, ((TalonFX) mModules[1].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
-            Logger.recordOutput(DRIVEBASE_BL_CURRENT, ((TalonFX) mModules[2].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
-            Logger.recordOutput(DRIVEBASE_BR_CURRENT, ((TalonFX) mModules[3].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
+            Logger.recordOutput(DRIVEBASE_FL_CURRENT,
+                    ((TalonFX) mModules[0].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
+            Logger.recordOutput(DRIVEBASE_FR_CURRENT,
+                    ((TalonFX) mModules[1].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
+            Logger.recordOutput(DRIVEBASE_BL_CURRENT,
+                    ((TalonFX) mModules[2].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
+            Logger.recordOutput(DRIVEBASE_BR_CURRENT,
+                    ((TalonFX) mModules[3].getDriveMotor()).getSupplyCurrent().getValueAsDouble());
         }
     }
-    
+
     private class RotationController {
         private Rotation2d m_rotationError = new Rotation2d();
         private Rotation2d m_rotationTolerance = new Rotation2d();
@@ -618,11 +669,12 @@ public abstract class SwerveDrive extends DriveBase {
 
 
         public double calculateRotationSpeed(Rotation2d currentHeading, Rotation2d desiredHeading) {
-            double thetaFF =  m_thetaController.calculate(currentHeading.getRadians(),
+            double thetaFF = m_thetaController.calculate(currentHeading.getRadians(),
                     desiredHeading.getRadians());
-            // if(DriverStation.isAutonomousEnabled() && SwervePoseEstimatorBase.getAlliance() == Alliance.Blue)
-            //     thetaFF *= -1;
-            //TO DO: Fix this abombination because desired heading goes the wrong way for blue
+            // if(DriverStation.isAutonomousEnabled() && SwervePoseEstimatorBase.getAlliance() ==
+            // Alliance.Blue)
+            // thetaFF *= -1;
+            // TO DO: Fix this abombination because desired heading goes the wrong way for blue
 
             m_rotationError = desiredHeading.minus(currentHeading);
 

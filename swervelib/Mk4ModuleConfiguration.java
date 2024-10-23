@@ -1,7 +1,6 @@
 package frc.team670.mustanglib.swervelib;
 
 import java.util.Objects;
-
 import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
 
 /**
@@ -15,7 +14,7 @@ public class Mk4ModuleConfiguration {
     private double driveCurrentLimit = 45.0;
     private double steerCurrentLimit = 20.0;
 
-    private AbsoluteEncoderType steerEncoderType=AbsoluteEncoderType.CANCODER;
+    private AbsoluteEncoderType steerEncoderType = AbsoluteEncoderType.CANCODER;
 
     private double steerKP = Double.NaN;
     private double steerKI = Double.NaN;
@@ -24,7 +23,7 @@ public class Mk4ModuleConfiguration {
     private double steerMMkV = Double.NaN;
     private double steerMMkA = Double.NaN;
     private double steerMMkS = Double.NaN;
-    
+
 
 
     public double getNominalVoltage() {
@@ -86,9 +85,11 @@ public class Mk4ModuleConfiguration {
         this.steerMMkA = steerMMkA;
         this.steerMMkS = steerMMkS;
     }
+
     public void setSteerEncoderType(AbsoluteEncoderType steerEncoderType) {
         this.steerEncoderType = steerEncoderType;
     }
+
     public AbsoluteEncoderType getSteerEncoderType() {
         return steerEncoderType;
     }
@@ -96,10 +97,12 @@ public class Mk4ModuleConfiguration {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Mk4ModuleConfiguration that = (Mk4ModuleConfiguration) o;
-        return     Double.compare(that.getNominalVoltage(), getNominalVoltage()) == 0
+        return Double.compare(that.getNominalVoltage(), getNominalVoltage()) == 0
                 && Double.compare(that.getDriveCurrentLimit(), getDriveCurrentLimit()) == 0
                 && Double.compare(that.getSteerCurrentLimit(), getSteerCurrentLimit()) == 0
                 && Double.compare(that.getSteerKP(), getSteerKP()) == 0
@@ -112,32 +115,18 @@ public class Mk4ModuleConfiguration {
 
     @Override
     public int hashCode() {
-        return Objects.hash(
-                getNominalVoltage(),
-                getDriveCurrentLimit(),
-                getSteerCurrentLimit(),
-                getSteerKP(),
-                getSteerKI(),
-                getSteerKD(),
-                getSteerMMkV(),
-                getSteerMMkA(),
-                getSteerMMkS()
-        );
+        return Objects.hash(getNominalVoltage(), getDriveCurrentLimit(), getSteerCurrentLimit(),
+                getSteerKP(), getSteerKI(), getSteerKD(), getSteerMMkV(), getSteerMMkA(),
+                getSteerMMkS());
     }
 
     @Override
     public String toString() {
-        return "Mk4ModuleConfiguration{" +
-                "nominalVoltage=" + getNominalVoltage() +
-                ", driveCurrentLimit=" + getDriveCurrentLimit() +
-                ", steerCurrentLimit=" + getSteerCurrentLimit() +
-                ", steerKP=" + getSteerKP() +
-                ", steerKI=" + getSteerKI() +
-                ", steerKD=" + getSteerKD() +
-                ", steerMMkV=" + getSteerMMkV() +
-                ", steerMMkA=" + getSteerMMkA() +
-                ", steerMMkS=" + getSteerMMkS() +
-                '}';
+        return "Mk4ModuleConfiguration{" + "nominalVoltage=" + getNominalVoltage()
+                + ", driveCurrentLimit=" + getDriveCurrentLimit() + ", steerCurrentLimit="
+                + getSteerCurrentLimit() + ", steerKP=" + getSteerKP() + ", steerKI=" + getSteerKI()
+                + ", steerKD=" + getSteerKD() + ", steerMMkV=" + getSteerMMkV() + ", steerMMkA="
+                + getSteerMMkA() + ", steerMMkS=" + getSteerMMkS() + '}';
     }
 
     public static Mk4ModuleConfiguration getDefaultSteerNEO() {

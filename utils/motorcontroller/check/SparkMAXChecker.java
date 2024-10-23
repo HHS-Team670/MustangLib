@@ -1,10 +1,9 @@
 package frc.team670.mustanglib.utils.motorcontroller.check;
 
+import java.util.ArrayList;
 import com.revrobotics.CANSparkMax;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
-
-import java.util.ArrayList;
 
 /**
  * Basic test for motors using SparkMAX controllers
@@ -52,8 +51,8 @@ public class SparkMAXChecker extends MotorChecker<CANSparkMax> {
         return motor.getOutputCurrent();
     }
 
-    public static boolean checkMotors(MustangSubsystemBase subsystem, ArrayList<MotorConfig<CANSparkMax>> motorsToCheck,
-            Config checkerConfig) {
+    public static boolean checkMotors(MustangSubsystemBase subsystem,
+            ArrayList<MotorConfig<CANSparkMax>> motorsToCheck, Config checkerConfig) {
         return SparkMAXChecker.checkMotors(subsystem, motorsToCheck, checkerConfig);
     }
 

@@ -1,11 +1,10 @@
 package frc.team670.mustanglib.subsystems;
 
+import com.revrobotics.CANSparkBase.IdleMode;
+import com.revrobotics.CANSparkBase.SoftLimitDirection;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
-
 import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
@@ -26,13 +25,13 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
     protected final Config kConfig;
     protected static final double kNoSetPoint = 9999;
-    
+
     private final double kAllowedDeviation;
-    
+
     public record Config(int kDeviceID, int kSlot, MotorConfig.Motor_Type kMotorType,
             IdleMode kIdleMode, double kRotatorGearRatio, double kP, double kI, double kD,
             double kFF, double kIz, double kMaxOutput, double kMinOutput, double kMaxRotatorRPM,
-            double kMinRotatorRPM, double kMaxAcceleration, double kAllowedErrorDegrees, 
+            double kMinRotatorRPM, double kMaxAcceleration, double kAllowedErrorDegrees,
             float[] kSoftLimits, int kContinuousCurrent, int kPeakCurrent) {
     }
 
@@ -60,7 +59,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
         mRotator.setSmartCurrentLimit(kConfig.kPeakCurrent, kConfig.kContinuousCurrent);
 
-        //sets the soft limits
+        // sets the soft limits
         if (kConfig.kSoftLimits == null || kConfig.kSoftLimits.length > 2) {
             mRotator.enableSoftLimit(SoftLimitDirection.kForward, false);
             mRotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
@@ -84,37 +83,42 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     public double getUnadjustedPosition() {
         return this.mEncoder.getPosition();
     }
+
     /**
-     * The function calculates the maximum subsystem RPM based on the given rotator RPM and a constant
-     * gear ratio.
+     * The function calculates the maximum subsystem RPM based on the given rotator RPM and a
+     * constant gear ratio.
      * 
-     * @param rotRPM The parameter "rotRPM" represents the rotational speed of a subsystem, rotations per minute
+     * @param rotRPM The parameter "rotRPM" represents the rotational speed of a subsystem,
+     *        rotations per minute
      * @return The method is returning the maximum subsystem RPM.
      */
     public double getMaxSubsystemRPM(double rotRPM) {
         return rotRPM / kConfig.kRotatorGearRatio;
     }
-    
+
     /**
-     * The function checks if a given setpoint is within the soft limits defined in the kConfig object.
+     * The function checks if a given setpoint is within the soft limits defined in the kConfig
+     * object.
      * 
      * @param setpoint The "setpoint" parameter represents the value that you want to check if it is
-     * within the soft limits.
+     *        within the soft limits.
      * @return if a given setpoint is within the soft limits defined in the kConfig object.
      */
-    private boolean checkSoftLimits(double setpoint){
-        
-        if (kConfig.kSoftLimits != null && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
-            ConsoleLogger.consoleLog("In " +getName()+" Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
-            + " and " + kConfig.kSoftLimits[0]);
+    private boolean checkSoftLimits(double setpoint) {
+
+        if (kConfig.kSoftLimits != null
+                && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
+            ConsoleLogger.consoleLog("In " + getName() + " Improper setpoint: " + setpoint
+                    + " Setpoint should be between " + kConfig.kSoftLimits[1] + " and "
+                    + kConfig.kSoftLimits[0]);
             return false;
         }
         return true;
     }
 
     /**
-     * The function sets the motion target for a system, but first checks if the setpoint is within the soft
-     * limits and logs an error message if it is not.
+     * The function sets the motion target for a system, but first checks if the setpoint is within
+     * the soft limits and logs an error message if it is not.
      * 
      * @param setpoint The setpoint is the desired target value for the system's motion.
      * @return if this action was sucessful
@@ -125,18 +129,18 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
             return true;
         }
         return false;
-        
+
     }
 
-   /**
+    /**
      * The function sets the motion target for a system, taking into account soft limits and using a
      * PID controller if a setpoint is provided.
      * 
-     * @param setpoint The setpoint parameter is the desired target value for the system's motion. It
-     * represents the position that the system needs to reach or maintain.
+     * @param setpoint The setpoint parameter is the desired target value for the system's motion.
+     *        It represents the position that the system needs to reach or maintain.
      * @param arbitraryFF The arbitraryFF parameter is a feedforward term that is used to compensate
-     * for any external forces or disturbances acting on the system. It is an arbitrary value that you
-     * can adjust to achieve the desired response of the system.
+     *        for any external forces or disturbances acting on the system. It is an arbitrary value
+     *        that you can adjust to achieve the desired response of the system.
      * @return if this action was sucessful
      */
     protected boolean setSystemMotionTarget(double setpoint, double arbitraryFF) {
@@ -144,7 +148,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
             if (setpoint != kNoSetPoint) {
                 mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
                         arbitraryFF);
-    
+
             } else {
                 mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
             }
@@ -152,7 +156,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
             return true;
         }
         return false;
-       
+
     }
 
     /**
@@ -181,7 +185,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @return if this action was sucessful
      */
     public boolean setSystemTargetAngleInDegrees(double angle) {
-        double setpoint= getMotorRotationsFromAngle(angle);
+        double setpoint = getMotorRotationsFromAngle(angle);
         if (checkSoftLimits(setpoint)) {
             setSystemMotionTarget(getMotorRotationsFromAngle(angle));
             return true;
@@ -197,7 +201,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
      * @return if this action was sucessful
      */
     public boolean setTemporaryTargetAngleInDegrees(double angle) {
-        double setpoint= getMotorRotationsFromAngle(angle);
+        double setpoint = getMotorRotationsFromAngle(angle);
         if (checkSoftLimits(setpoint)) {
             setTemporaryMotionTarget(getMotorRotationsFromAngle(angle));
             return true;
@@ -249,7 +253,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     public double getCurrentAngleInDegrees() {
         double rotations = getRotatorEncoder().getPosition();
         double angle = 360 * ((rotations) / kConfig.kRotatorGearRatio);
-        return angle%360;
+        return angle % 360;
     }
 
     /**
@@ -286,6 +290,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     protected void enableCoastMode() {
         mRotator.setIdleMode(IdleMode.kCoast);
     }
+
     /*
      * sets idle mode to brake
      */
@@ -302,6 +307,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
 
     /**
      * Clears the setpoint of this subsystem
+     * 
      * @return if this action was sucessful
      */
     public boolean clearSetpoint() {
@@ -313,15 +319,17 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         return false;
 
     }
-  /**
-    * The function returns the SparkMAXLite object for the rotator.
-    * 
-    * @return The method is returning an object of type SparkMAXLite.
-    */
+
+    /**
+     * The function returns the SparkMAXLite object for the rotator.
+     * 
+     * @return The method is returning an object of type SparkMAXLite.
+     */
     public SparkMAXLite getRotator() {
         return this.mRotator;
     }
-   /**
+
+    /**
      * The function returns the rotator encoder.
      * 
      * @return The method is returning an object of type RelativeEncoder.
@@ -329,7 +337,8 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     public RelativeEncoder getRotatorEncoder() {
         return this.mEncoder;
     }
-   /**
+
+    /**
      * The function returns a SparkMaxPIDController object named "mController".
      * 
      * @return The method is returning a SparkMaxPIDController object.
@@ -337,11 +346,12 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
     public SparkPIDController getRotatorController() {
         return this.mController;
     }
-   /**
+
+    /**
      * The function sets the output of a rotator based on a given percentage.
      * 
-     * @param output The "output" parameter is a double value representing the desired percent output
-     * for the "mRotator" object.
+     * @param output The "output" parameter is a double value representing the desired percent
+     *        output for the "mRotator" object.
      */
     public void moveByPercentOutput(double output) {
         mRotator.set(output);

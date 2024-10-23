@@ -6,7 +6,6 @@ import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
-
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
 import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
@@ -24,23 +23,25 @@ public class CanCoderFactoryBuilder {
         return configuration -> {
             CANcoderConfiguration config = new CANcoderConfiguration();
             CANcoder encoder = new CANcoder(configuration.getId(), configuration.getCanbus());
-            
-            
+
+
             StatusCode val = encoder.getConfigurator().refresh(config);
 
-            if(val.isOK()){
-                  val = encoder.getConfigurator().refresh(config);
+            if (val.isOK()) {
+                val = encoder.getConfigurator().refresh(config);
             }
 
-            
+
             config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
             // config.MagnetSensor.MagnetOffset = configuration.getOffset();// Should be roations
             config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
             encoder.getConfigurator().apply(config);
-            CtreUtils.checkCtreError(encoder.getConfigurator().apply(config), "Failed to configure CANCoder");
+            CtreUtils.checkCtreError(encoder.getConfigurator().apply(config),
+                    "Failed to configure CANCoder");
 
-            // CtreUtils.checkCtreError(encoder.optimizeBusUtilization(periodMilliseconds), "Failed to configure CANCoder update rate");
+            // CtreUtils.checkCtreError(encoder.optimizeBusUtilization(periodMilliseconds), "Failed
+            // to configure CANCoder update rate");
 
             return new EncoderImplementation(encoder);
         };
@@ -57,12 +58,13 @@ public class CanCoderFactoryBuilder {
         }
 
         /**
-         * @return the angle in radians 
+         * @return the angle in radians
          */
         @Override
         public double getAbsoluteAngle() {
             StatusSignal<Double> poStatusSignal = encoder.getAbsolutePosition();
-            SmartDashboard.putNumber("Absolute Encoder Position", poStatusSignal.getValueAsDouble());
+            SmartDashboard.putNumber("Absolute Encoder Position",
+                    poStatusSignal.getValueAsDouble());
             double angle = 2 * Math.PI * poStatusSignal.getValue();
 
             StatusCode code = poStatusSignal.getStatus();
@@ -78,7 +80,7 @@ public class CanCoderFactoryBuilder {
                 angle = 2 * Math.PI * poStatusSignal.getValue();
 
                 code = poStatusSignal.getStatus();
-                
+
 
             }
 

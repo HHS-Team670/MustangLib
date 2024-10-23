@@ -1,28 +1,26 @@
 /*----------------------------------------------------------------------------*/
-/* Copyright (c) 2018 FIRST. All Rights Reserved.                             */
-/* Open Source Software - may be modified and shared by FRC teams. The code   */
+/* Copyright (c) 2018 FIRST. All Rights Reserved. */
+/* Open Source Software - may be modified and shared by FRC teams. The code */
 /* must be accompanied by the FIRST BSD license file in the root directory of */
-/* the project.                                                               */
+/* the project. */
 /*----------------------------------------------------------------------------*/
 
 package frc.team670.mustanglib.commands.drive.teleop.tank.XboxRocketLeague;
 
 import java.util.HashMap;
 import java.util.Map;
-
 import edu.wpi.first.wpilibj2.command.Command;
-import org.littletonrobotics.junction.Logger;
 import frc.team670.mustanglib.commands.MustangCommand;
-import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.utils.MustangController;
 import frc.team670.mustanglib.utils.functions.JoystickUtils;
 
 /**
- * Drives the Robot using Xbox controls like the game Rocket League. Triggers
- * control speed, stick is for steering.
- * Note: This is for tank drive only
+ * Drives the Robot using Xbox controls like the game Rocket League. Triggers control speed, stick
+ * is for steering. Note: This is for tank drive only
+ * 
  * @author lakshbhambhani, armaan g, aditi k
  */
 public class XboxRocketLeagueDrive extends Command implements MustangCommand {
@@ -31,10 +29,12 @@ public class XboxRocketLeagueDrive extends Command implements MustangCommand {
 
   private TankDrive driveBase;
   private MustangController controller;
-  
+
   private static final String DRIVEBASE_IS_DRIVE_REVERSED_KEY = "DriveBase/DriveReversed";
 
-  private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
+  private Map<MustangSubsystemBase, HealthState> healthRequirements =
+      new HashMap<MustangSubsystemBase, HealthState>();
+
   /**
    * 
    * @param driveBase
@@ -47,15 +47,14 @@ public class XboxRocketLeagueDrive extends Command implements MustangCommand {
     this.driveBase = driveBase;
     this.controller = controller;
   }
-  
+
   // Called once when the command executes
   @Override
   public void execute() {
     // Sets the speed to the reading given by the trigger axes on the controller.
     // Left is positive, but we multiply
     // by -1 to reverse that because we want right trigger to correspond to forward.
-    double speed = -1 * (controller.getLeftTriggerAxis()
-        - controller.getRightTriggerAxis());
+    double speed = -1 * (controller.getLeftTriggerAxis() - controller.getRightTriggerAxis());
     double steer = controller.getLeftStickX();
 
     // Decides whether or not to smooth the Steering and Trigger. Smoothing helps
@@ -72,20 +71,27 @@ public class XboxRocketLeagueDrive extends Command implements MustangCommand {
 
     if (driveBase.isQuickTurnPressed()) {
 
-      
+
       if (speed < -0.0001) {
- 
-          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed()); // If moving backwards 
+
+        driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed()); // If moving
+                                                                                     // backwards
 
       } else if (speed > 0.0001) {
-      
-          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed());// Moving forward
-        
+
+        driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed());// Moving forward
+
       } else {
         if (!XboxRocketLeagueDrive.isDriveReversed()) {
-          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed()); // If stationary and drive is reversed
+          driveBase.curvatureDrive(speed, steer, driveBase.isQuickTurnPressed()); // If stationary
+                                                                                  // and drive is
+                                                                                  // reversed
         } else {
-          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed()); // If stationary and drive is not reversed
+          driveBase.curvatureDrive(speed, -1 * steer, driveBase.isQuickTurnPressed()); // If
+                                                                                       // stationary
+                                                                                       // and drive
+                                                                                       // is not
+                                                                                       // reversed
         }
       }
     } else {
@@ -96,30 +102,33 @@ public class XboxRocketLeagueDrive extends Command implements MustangCommand {
       }
     }
   }
+
   /**
    * 
-   * @return if the drive is reversed 
+   * @return if the drive is reversed
    */
   public static boolean isDriveReversed() {
     return isReversed;
   }
-  
+
   @Override
-  public boolean isFinished(){
+  public boolean isFinished() {
     return false;
   }
+
   /**
-   *  Sets if the drivebase is reversed
-   * @param reversed whether or not to reverse the drivebase 
+   * Sets if the drivebase is reversed
+   * 
+   * @param reversed whether or not to reverse the drivebase
    */
   public static void setDriveReversed(boolean reversed) {
     XboxRocketLeagueDrive.isReversed = reversed;
     Logger.recordOutput(DRIVEBASE_IS_DRIVE_REVERSED_KEY, reversed);
   }
- 
+
   @Override
   public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-    
+
     return healthRequirements;
   }
 

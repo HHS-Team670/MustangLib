@@ -4,13 +4,15 @@ public enum ServoType {
     /**
      * Andymark L16 Linear Servo
      */
-    ANDYMARK_L16(new PWMConfig(2, 2, 1, 1, 1)); //not correct please change
+    ANDYMARK_L16(new PWMConfig(2, 2, 1, 1, 1)); // not correct please change
 
     public final PWMConfig config;
-    private ServoType(PWMConfig config){
+
+    private ServoType(PWMConfig config) {
         this.config = config;
     }
 }
+
 
 /**
  * Represents constraints for PWM based servos

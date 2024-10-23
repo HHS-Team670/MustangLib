@@ -64,11 +64,11 @@ public class MustangController extends XboxController {
         targetRumbleTime = System.currentTimeMillis() - 10;
         rumbler = new Notifier(new Runnable() {
             public void run() {
-                if(isRumbling) {
+                if (isRumbling) {
                     checkRumble();
                 }
             }
-          });
+        });
         rumbler.startPeriodic(0.125);
     }
 
@@ -116,6 +116,7 @@ public class MustangController extends XboxController {
     public int getPOVValue() {
         return super.getPOV();
     }
+
     public Trigger leftTrigger() {
         return new Trigger(leftTrigger(CommandScheduler.getInstance().getDefaultButtonLoop()));
     }
@@ -134,14 +135,14 @@ public class MustangController extends XboxController {
     public void rumble(double power, double time) {
         setRumblePower(power);
         isRumbling = true;
-        targetRumbleTime = System.currentTimeMillis() + (long)(time * 1000);
+        targetRumbleTime = System.currentTimeMillis() + (long) (time * 1000);
     }
 
     /**
      * Sets the rumble on the controller
      * 
      * @param power The desired power of the rumble [0, 1]
-     * @param time  The time to rumble for in seconds
+     * @param time The time to rumble for in seconds
      */
     private void setRumblePower(double power) {
         setRumble(RumbleType.kLeftRumble, power);
@@ -149,7 +150,7 @@ public class MustangController extends XboxController {
     }
 
     private void checkRumble() {
-        if(System.currentTimeMillis() >= targetRumbleTime) {
+        if (System.currentTimeMillis() >= targetRumbleTime) {
             setRumblePower(0);
             isRumbling = false;
         }

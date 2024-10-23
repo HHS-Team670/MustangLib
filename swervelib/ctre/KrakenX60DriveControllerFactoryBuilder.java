@@ -12,7 +12,7 @@ public final class KrakenX60DriveControllerFactoryBuilder {
     private static final double TICKS_PER_ROTATION = 2048.0;
 
 
-    private double nominalVoltage = Double.NaN; 
+    private double nominalVoltage = Double.NaN;
     private double currentLimit = Double.NaN;
 
     public KrakenX60DriveControllerFactoryBuilder withVoltageCompensation(double nominalVoltage) {
@@ -43,50 +43,58 @@ public final class KrakenX60DriveControllerFactoryBuilder {
         public ControllerImplementation create(Integer id, String canbus,
                 ModuleConfiguration moduleConfiguration) {
             TalonFXConfiguration motorConfiguration = new TalonFXConfiguration();
-            
+
             double sensorPositionCoefficient = Math.PI * moduleConfiguration.getWheelDiameter()
                     * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 
             // if (hasCurrentLimit()) {
-            //     motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit; // TODO lines 54-59?
-            //     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
+            // motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit; // TODO lines
+            // 54-59?
+            // motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
             // }
-           // These lines of code are configuring the current limits for the TalonFX motor controller.
-           // Here's a breakdown of what each line is doing:
+            // These lines of code are configuring the current limits for the TalonFX motor
+            // controller.
+            // Here's a breakdown of what each line is doing:
             motorConfiguration.CurrentLimits.SupplyCurrentLimit = 40;
             motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-            motorConfiguration.CurrentLimits.StatorCurrentLimit= 100;
-            motorConfiguration.CurrentLimits.StatorCurrentLimitEnable=true;
-            motorConfiguration.CurrentLimits.SupplyTimeThreshold=0.25;
-            motorConfiguration.CurrentLimits.SupplyCurrentThreshold=80;
-            
+            motorConfiguration.CurrentLimits.StatorCurrentLimit = 100;
+            motorConfiguration.CurrentLimits.StatorCurrentLimitEnable = true;
+            motorConfiguration.CurrentLimits.SupplyTimeThreshold = 0.25;
+            motorConfiguration.CurrentLimits.SupplyCurrentThreshold = 80;
+
 
             TalonFX motor = new TalonFX(id, canbus);
             CtreUtils.checkCtreError(motor.getConfigurator().apply(motorConfiguration),
                     "Failed to configure Kraken X60");
-            
+
 
             motor.setNeutralMode(NeutralModeValue.Brake);
 
-            motor.setInverted(moduleConfiguration.isDriveInverted()); // is inverted in clockwise or not? we don't know
+            motor.setInverted(moduleConfiguration.isDriveInverted()); // is inverted in clockwise or
+                                                                      // not? we don't know
 
             // Reduce CAN status frame rates
-            BaseStatusSignal.setUpdateFrequencyForAll(10, motor.getStickyFaultField()); //period 0
+            BaseStatusSignal.setUpdateFrequencyForAll(10, motor.getStickyFaultField()); // period 0
 
-            BaseStatusSignal.setUpdateFrequencyForAll(50, motor.getPosition(), motor.getVelocity(),  motor.getRotorPosition()); //period 1
-        
-            BaseStatusSignal.setUpdateFrequencyForAll(1, motor.getSupplyCurrent(), motor.getStatorCurrent(), motor.getMotorVoltage(), motor.getSupplyVoltage()); //period 2
+            BaseStatusSignal.setUpdateFrequencyForAll(50, motor.getPosition(), motor.getVelocity(),
+                    motor.getRotorPosition()); // period 1
+
+            BaseStatusSignal.setUpdateFrequencyForAll(1, motor.getSupplyCurrent(),
+                    motor.getStatorCurrent(), motor.getMotorVoltage(), motor.getSupplyVoltage()); // period
+                                                                                                  // 2
             // Optimize bus utilization
             motor.optimizeBusUtilization(1.0);
 
             // driveTalonConfig.Feedback.SensorToMechanismRatio = moduleConstants.driveReduction();
             // turnTalonConfig.Feedback.SensorToMechanismRatio = moduleConstants.turnReduction();
             // turnTalonConfig.ClosedLoopGeneral.ContinuousWrap = true;
-            
-            double positionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter() * moduleConfiguration.getDriveReduction();
 
-            return new ControllerImplementation(motor, sensorVelocityCoefficient, positionConversionFactor);
+            double positionConversionFactor = Math.PI * moduleConfiguration.getWheelDiameter()
+                    * moduleConfiguration.getDriveReduction();
+
+            return new ControllerImplementation(motor, sensorVelocityCoefficient,
+                    positionConversionFactor);
         }
     }
 
@@ -98,7 +106,8 @@ public final class KrakenX60DriveControllerFactoryBuilder {
                 : 12.0;
         private final double positionConversionFactor;
 
-        private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient, double positionConversionFactor) {
+        private ControllerImplementation(TalonFX motor, double sensorVelocityCoefficient,
+                double positionConversionFactor) {
             this.motor = motor;
             this.sensorVelocityCoefficient = sensorVelocityCoefficient;
             this.positionConversionFactor = positionConversionFactor;
@@ -111,7 +120,7 @@ public final class KrakenX60DriveControllerFactoryBuilder {
 
         @Override
         public void setReferenceVoltage(double voltage) {
-            motor.setVoltage(voltage ); // not in percentage
+            motor.setVoltage(voltage); // not in percentage
         }
 
         @Override

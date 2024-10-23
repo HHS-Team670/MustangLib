@@ -3,31 +3,38 @@ package frc.team670.mustanglib.dataCollection.sensors;
 import com.kauailabs.navx.AHRSProtocol.AHRSUpdateBase;
 import com.kauailabs.navx.frc.AHRS;
 import com.kauailabs.navx.frc.ITimestampedDataSubscriber;
-
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.I2C;
 import edu.wpi.first.wpilibj.SerialPort;
-import edu.wpi.first.math.geometry.Rotation2d;
 
 /**
- * Driver for a NavX board. Basically a wrapper for the AHRS class. Much of this
- * was taken from 254's code release.
+ * Driver for a NavX board. Basically a wrapper for the AHRS class. Much of this was taken from
+ * 254's code release.
  */
 public class NavX {
     protected class Callback implements ITimestampedDataSubscriber {
         @Override
-        public void timestampedDataReceived(long system_timestamp, long sensor_timestamp, AHRSUpdateBase update,
-                Object context) {
+        public void timestampedDataReceived(long system_timestamp, long sensor_timestamp,
+                AHRSUpdateBase update, Object context) {
             synchronized (NavX.this) {
                 // This handles the fact that the sensor is inverted from our coordinate
                 // conventions.
-                if (mLastSensorTimestampMs != K_INVALID_TIMESTAMP && mLastSensorTimestampMs < sensor_timestamp) {
-                    mYawRateDegreesPerSecond = -1 * 1000.0 * (-mYawDegrees - update.yaw) // Multiply by -1 because our
-                                                                                         // system is opposite of
+                if (mLastSensorTimestampMs != K_INVALID_TIMESTAMP
+                        && mLastSensorTimestampMs < sensor_timestamp) {
+                    mYawRateDegreesPerSecond = -1 * 1000.0 * (-mYawDegrees - update.yaw) // Multiply
+                                                                                         // by -1
+                                                                                         // because
+                                                                                         // our
+                                                                                         // system
+                                                                                         // is
+                                                                                         // opposite
+                                                                                         // of
                                                                                          // Bellarmine's
                             / (double) (sensor_timestamp - mLastSensorTimestampMs);
                 }
                 mLastSensorTimestampMs = sensor_timestamp;
-                mYawDegrees = update.yaw; // This used to be multiplied by -1 to flip it, but our coord system is the
+                mYawDegrees = update.yaw; // This used to be multiplied by -1 to flip it, but our
+                                          // coord system is the
                                           // opposite of Bellarmine's
             }
         }
@@ -55,8 +62,8 @@ public class NavX {
     }
 
     /**
-     * Resets and recalibrates the NavX (yaw will go back to zero and offset
-     * cleared). Call this right at the beginning of the match.
+     * Resets and recalibrates the NavX (yaw will go back to zero and offset cleared). Call this
+     * right at the beginning of the match.
      */
     public synchronized void reset() {
         mAHRS.reset();
@@ -64,7 +71,7 @@ public class NavX {
         offSet = 0;
     }
 
-    /** 
+    /**
      * Resets to a specific angle
      */
     public synchronized void reset(double angle) {
@@ -81,8 +88,8 @@ public class NavX {
     }
 
     /**
-     * Resets the values of mLastSensorTimestampMs, mYawDegrees, and
-     * mYawRateDegreesPerSecond to their initial values.
+     * Resets the values of mLastSensorTimestampMs, mYawDegrees, and mYawRateDegreesPerSecond to
+     * their initial values.
      */
 
     private void resetState() {
@@ -103,8 +110,8 @@ public class NavX {
     }
 
     /**
-     * @return the yaw with offset taken into account. Offset sets the zero of the gyro
-     * to the point where zeroYaw() was last called.
+     * @return the yaw with offset taken into account. Offset sets the zero of the gyro to the point
+     *         where zeroYaw() was last called.
      */
     public synchronized double getYawDouble() {
         double rtrnAngle = getRawYawDegrees() - offSet;
@@ -150,8 +157,7 @@ public class NavX {
 
 
     /**
-     * Gets the field centric yaw (0 degrees is forward for the robot from its
-     * starting position),
+     * Gets the field centric yaw (0 degrees is forward for the robot from its starting position),
      * 
      * @return The Yaw (-180, 180) with -180 and 180 being directly backwards.
      */
@@ -173,16 +179,18 @@ public class NavX {
     public double getRoll() {
         return mAHRS.getRoll();
     }
+
     /**
-    * @return if the magnetometer is calibrated
-    */
+     * @return if the magnetometer is calibrated
+     */
 
     public boolean isMagnetometerCalibrated() {
         return mAHRS.isMagnetometerCalibrated();
     }
 
     /**
-     * The function returns the fused heading value from the mAHRS object. Heading represents the sensor's best estimate of current heading
+     * The function returns the fused heading value from the mAHRS object. Heading represents the
+     * sensor's best estimate of current heading
      * 
      * @return the heading that represents the sensor's best estimate of current heading
      */

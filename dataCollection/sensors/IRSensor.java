@@ -1,7 +1,5 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 
 /**

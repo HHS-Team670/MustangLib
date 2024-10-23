@@ -4,8 +4,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.REVLibError;
 
 /**
- * Wrapper class for a SparkMAX for reducing CAN bus overhead by skipping
- * duplicate set commands.
+ * Wrapper class for a SparkMAX for reducing CAN bus overhead by skipping duplicate set commands.
  * 
  * @author ctychen, lakshbhambhani
  */
@@ -19,8 +18,7 @@ public final class SparkMAXLite extends CANSparkMax {
     /**
      * Creates a SparkMAX on a given ID, which is controlling a specified kind of motor.
      * 
-     * @param type type Which specific motor this controller will
-     *                               be using. For example, NEO or BAG
+     * @param type type Which specific motor this controller will be using. For example, NEO or BAG
      */
     public SparkMAXLite(int id, MotorConfig.Motor_Type type) {
         super(id, MotorConfig.MOTOR_TYPE.get(type));
@@ -35,7 +33,7 @@ public final class SparkMAXLite extends CANSparkMax {
         return this.lastControlType;
     }
 
-    public MotorConfig.Motor_Type getMotor(){
+    public MotorConfig.Motor_Type getMotor() {
         return this.motorType;
     }
 
@@ -58,11 +56,11 @@ public final class SparkMAXLite extends CANSparkMax {
 
     /**
      * @param kdutycycle mode for this motor controller
-     * @param value      value output of the controller, for the appropriate mode
+     * @param value value output of the controller, for the appropriate mode
      */
     public void set(ControlType kdutycycle, double value) {
         if (value != lastSet || kdutycycle != lastControlType) {
-            if(super.getPIDController().setReference(value, kdutycycle) == REVLibError.kOk){
+            if (super.getPIDController().setReference(value, kdutycycle) == REVLibError.kOk) {
                 this.lastSet = value;
                 this.lastControlType = kdutycycle;
             }
@@ -78,8 +76,8 @@ public final class SparkMAXLite extends CANSparkMax {
 
     /**
      * 
-     * @return true if there is an issue with this SparkMax, false if the SparkMax
-     *         is connected successfully and without errors.
+     * @return true if there is an issue with this SparkMax, false if the SparkMax is connected
+     *         successfully and without errors.
      */
     public boolean isErrored() {
         return (this == null || this.getLastError() != REVLibError.kOk);

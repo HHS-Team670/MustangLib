@@ -2,7 +2,6 @@ package frc.team670.mustanglib.dataCollection.sensors;
 
 
 import java.util.TimerTask;
-
 import edu.wpi.first.wpilibj.I2C;
 import frc.team670.mustanglib.utils.MustangNotifications;
 
@@ -49,14 +48,15 @@ public class TimeOfFlightSensor {
         this.address = address;
         this.isMultiplexer = true;
         this.threshold = threshold;
-        
-        if(isMultiplexer && !(address <= 7 && address >= 0)) {
-            MustangNotifications.reportError("TOF Sensor address out of range. Expected 0-7. Given: %s", address);
+
+        if (isMultiplexer && !(address <= 7 && address >= 0)) {
+            MustangNotifications.reportError(
+                    "TOF Sensor address out of range. Expected 0-7. Given: %s", address);
         }
-        
+
         sensor = new I2C(port, TOF_ADDR);
         updater = new java.util.Timer();
-    
+
         isHealthy = true;
         // initSensor();
     }
@@ -66,12 +66,12 @@ public class TimeOfFlightSensor {
      */
     public TimeOfFlightSensor(I2C.Port port) {
         sensor = new I2C(port, TOF_ADDR);
-        
+
         this.address = -1;
         this.isMultiplexer = false;
 
         updater = new java.util.Timer();
-    
+
         isHealthy = true;
         initSensor();
         start();
@@ -142,6 +142,7 @@ public class TimeOfFlightSensor {
     public int getDistance() {
         return range;
     }
+
     /**
      * 
      * @return if this sensor is healthy
@@ -149,6 +150,7 @@ public class TimeOfFlightSensor {
     public boolean isHealthy() {
         return isHealthy;
     }
+
     /**
      * Starts this sensor with a period of 100ms
      */
@@ -158,6 +160,7 @@ public class TimeOfFlightSensor {
 
     /**
      * Starts this sensor with the given period
+     * 
      * @param period the period in milliseconds
      */
     private void start(int period) {
@@ -179,68 +182,68 @@ public class TimeOfFlightSensor {
     }
 
     /**
-     * The function writes data to a register address in a sensor and returns a boolean indicating if
-     * the write operation was successful.
+     * The function writes data to a register address in a sensor and returns a boolean indicating
+     * if the write operation was successful.
      * 
-     * @param registerAddress The register address is an integer value that represents the address of
-     * the register in the sensor's memory where the data will be written to. It is used to specify
-     * which register the data should be written to.
-     * @param data The "data" parameter is an integer value that represents the data to be written to a
-     * specific register address.
-     * @return  if the write operation was successful or not
+     * @param registerAddress The register address is an integer value that represents the address
+     *        of the register in the sensor's memory where the data will be written to. It is used
+     *        to specify which register the data should be written to.
+     * @param data The "data" parameter is an integer value that represents the data to be written
+     *        to a specific register address.
+     * @return if the write operation was successful or not
      */
     private boolean write(int registerAddress, int data) {
-        try{
+        try {
             byte[] rawData = new byte[3];
 
             rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
             rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
             rawData[2] = (byte) data;
-    
+
             // if(isMultiplexer) selectTOF();
             if (!sensor.writeBulk(rawData, 3)) {
                 isHealthy = true;
                 return false;
             }
-    
+
             isHealthy = false;
             return true;
-        }
-        catch (Exception e){
-            MustangNotifications.reportError("Write for sensor %s could not be performed. Check connection", address);
+        } catch (Exception e) {
+            MustangNotifications.reportError(
+                    "Write for sensor %s could not be performed. Check connection", address);
         }
         return true;
     }
 
     /**
-     * The function reads a short integer value from a sensor at a specified register address using I2C
-     * communication.
+     * The function reads a short integer value from a sensor at a specified register address using
+     * I2C communication.
      * 
      * @param registerAddress The registerAddress parameter is an integer value representing the
-     * address of the register from which the data needs to be read.
+     *        address of the register from which the data needs to be read.
      * @return The method is returning an integer value.
      */
     private int readShortInt(int registerAddress) {
-        try{
+        try {
             byte[] data = new byte[1];
 
             // This sensor needs 2 bytes so cannot just use read method on I2C class
             byte[] rawData = new byte[2];
-    
+
             rawData[0] = (byte) ((registerAddress >> 8) & 0xFF); // MSB of register Address
             rawData[1] = (byte) (registerAddress & 0xFF); // LSB of register address
-    
+
             // if(isMultiplexer) selectTOF();
             if (!sensor.transaction(rawData, 2, data, 1)) {
                 isHealthy = true;
                 return data[0] & 0xFF;
             }
-    
+
             isHealthy = false;
             return ERROR;
-        }
-        catch(Exception e){
-            MustangNotifications.reportError("Read for sensor %s could not be performed. Check connection", address);
+        } catch (Exception e) {
+            MustangNotifications.reportError(
+                    "Read for sensor %s could not be performed. Check connection", address);
         }
         return ERROR;
     }
@@ -248,7 +251,7 @@ public class TimeOfFlightSensor {
     /**
      * @return The method is returning the address
      */
-    public int getAddress(){
+    public int getAddress() {
         return address;
     }
 
@@ -274,7 +277,7 @@ public class TimeOfFlightSensor {
     }
 
     /**
-     * @return  if the distance is within the threshold or not
+     * @return if the distance is within the threshold or not
      */
     public boolean isObjectWithinThreshold() {
         return getDistance() <= threshold;
@@ -283,10 +286,11 @@ public class TimeOfFlightSensor {
     /**
      * The function sets the threshold value for a variable.
      * 
-     * @param threshold The threshold parameter is an integer value that represents a certain limit or
-     * level. It is used to set a threshold value for a specific condition or action in a program.
+     * @param threshold The threshold parameter is an integer value that represents a certain limit
+     *        or level. It is used to set a threshold value for a specific condition or action in a
+     *        program.
      */
-    public void setThreshold(int threshold){
+    public void setThreshold(int threshold) {
         this.threshold = threshold;
     }
 

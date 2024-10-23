@@ -1,7 +1,5 @@
 package frc.team670.mustanglib.dataCollection.sensors;
 
-import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
@@ -23,12 +21,12 @@ public class BeamBreak {
     public BeamBreak(int dioPort) {
         dio = new DigitalInput(dioPort);
         this.port = dioPort;
-        BEAMBREAK_IS_TRIGGERED_KEY = "BeamBreak/"+port+"/Triggered";
+        BEAMBREAK_IS_TRIGGERED_KEY = "BeamBreak/" + port + "/Triggered";
     }
 
     /**
-     * @return boolean isTriggered True if the sensor is triggered 
-     * (the beam is broken meaning something is between the transmitter and the reciever)
+     * @return boolean isTriggered True if the sensor is triggered (the beam is broken meaning
+     *         something is between the transmitter and the reciever)
      */
     public boolean isTriggered() {
         return (!dio.get());
