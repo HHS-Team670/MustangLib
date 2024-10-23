@@ -18,4 +18,10 @@
   // Use a specific Java formatter
   "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
   "java.format.settings.profile": "GoogleStyle", // Change to your preferred profile
+
+  //Remove extra spaces/tabs at the end of lines
+  "files.trimTrailingWhitespace": true,
+
+  //Remove more than one extra new line at the end of files
+  "files.trimFinalNewlines": true,
 }
