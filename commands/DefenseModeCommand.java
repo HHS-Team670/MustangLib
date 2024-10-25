@@ -8,35 +8,44 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
 public class DefenseModeCommand extends InstantCommand {
-    List<MustangSubsystemBase> unusedSubsytems;
+    List<CurrentLimiter> limiter;
     boolean isActive;
-    List<Integer> currentLimits;
-    
-    public DefenseModeCommand(List<MustangSubsystemBase> unusedSubsytems, List<Integer> currentLimits, boolean isActive){
-        this.unusedSubsytems = unusedSubsytems;
+
+
+    public DefenseModeCommand(List<CurrentLimiter> limiter, boolean isActive){
         this.isActive = isActive;
-        this.currentLimits = currentLimits;
+        this.limiter = limiter;
     }
+
+    public DefenseModeCommand(List<MustangSubsystemBase> unusedSubsytems, List<Integer> originalLimits , int constLimit,  boolean isActive){
+        this.isActive = isActive;
+        for (int i = 0; i < unusedSubsytems.size(); i++){
+            limiter.set(i, new CurrentLimiter(unusedSubsytems.get(i), constLimit, originalLimits.get(i)));
+        }
+    }
+
 
     @Override
     public void initialize(){
-        for (int i = 0; i < unusedSubsytems.size(); i++){
-            Field[] fields = unusedSubsytems.get(i).getClass().getDeclaredFields();
+
+        for (int i = 0; i < limiter.size(); i++){
+            Field[] fields = limiter.get(i).subsytem.getClass().getDeclaredFields();
             for (Field field : fields) {
                 Class<?> type = field.getType();
                 if (type == SparkMAXLite.class){
                     field.setAccessible(true);
                     try {
-                        SparkMAXLite sparkMax = (SparkMAXLite) field.get(unusedSubsytems.get(i));
-                        sparkMax.setSmartCurrentLimit(currentLimits.get(i));
+                        SparkMAXLite sparkMax = (SparkMAXLite) field.get(limiter.get(i).subsytem);
+                        if (isActive) {
+                            sparkMax.setSmartCurrentLimit(limiter.get(i).limit);
+                        } else {
+                            sparkMax.setSmartCurrentLimit(limiter.get(i).orginalLimit);
+                        }
                     } catch (IllegalArgumentException e) {
                         e.printStackTrace();
                     } catch (IllegalAccessException e) {
                         e.printStackTrace();
                     }
-                    
-
-                    
                 }
             }
         }
