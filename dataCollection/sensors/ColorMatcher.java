@@ -24,7 +24,7 @@ public class ColorMatcher {
   /**
    * A Rev Color Match object is used to register and detect known colors. This can be calibrated
    * ahead of time or during operation.
-   * 
+   *
    * This object uses a simple euclidian distance to estimate the closest match with given
    * confidence range.
    */
@@ -46,7 +46,7 @@ public class ColorMatcher {
     }
 
     /**
-     * 
+     *
      * @return the corresponding integer code for each color on the wheel
      */
     public int getColorNumber() {
@@ -81,7 +81,7 @@ public class ColorMatcher {
     /**
      * The method GetColor() returns a normalized color value from the sensor and can be useful if
      * outputting the color to an RGB LED or similar. To read the raw color, use GetRawColor().
-     * 
+     *
      * The color sensor works best when within a few inches from an object in well lit conditions
      * (the built in LED is a big help here!). The farther an object is the more light from the
      * surroundings will bleed into the measurements and make it difficult to accurately determine

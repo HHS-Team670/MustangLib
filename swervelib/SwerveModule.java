@@ -4,21 +4,21 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public interface SwerveModule {
-    Object getDriveMotor();
+  Object getDriveMotor();
 
-    Object getSteerMotor();
+  Object getSteerMotor();
 
-    AbsoluteEncoder getSteerEncoder();
+  AbsoluteEncoder getSteerEncoder();
 
-    double getDriveVelocity();
+  double getDriveVelocity();
 
-    double getSteerAngle();
+  double getSteerAngle();
 
-    void set(double driveVoltage, double steerAngle);
+  void set(double driveVoltage, double steerAngle);
 
-    public void realign();
+  public void realign();
 
-    public SwerveModuleState getState();
+  public SwerveModuleState getState();
 
-    public SwerveModulePosition getPosition();
+  public SwerveModulePosition getPosition();
 }

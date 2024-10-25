@@ -17,27 +17,27 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
  */
 public class MustangFollowPathWithEvents extends FollowPathWithEvents implements MustangCommand {
 
-    /**
-     * Constructs a new {@link MustangFollowPathWithEvents} command.
-     * 
-     * @param command The {@link MustangPPSwerveControllerCommand} to execute.
-     * @param eventMarkers The list of {@link EventMarker}s to trigger events.
-     * @param eventMap The map of event names to {@link Command}s to execute.
-     */
-    public MustangFollowPathWithEvents(MustangPPSwerveControllerCommand command,
-            PathPlannerPath path, Supplier<Pose2d> poseSupplier) {
-        super(command, path, poseSupplier);
-    }
+  /**
+   * Constructs a new {@link MustangFollowPathWithEvents} command.
+   *
+   * @param command The {@link MustangPPSwerveControllerCommand} to execute.
+   * @param eventMarkers The list of {@link EventMarker}s to trigger events.
+   * @param eventMap The map of event names to {@link Command}s to execute.
+   */
+  public MustangFollowPathWithEvents(MustangPPSwerveControllerCommand command, PathPlannerPath path,
+      Supplier<Pose2d> poseSupplier) {
+    super(command, path, poseSupplier);
+  }
 
-    /**
-     * Gets the health requirements for this command.
-     * 
-     * @return A map of {@link MustangSubsystemBase} to {@link HealthState} representing the health
-     *         requirements.
-     */
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return null;
-    }
+  /**
+   * Gets the health requirements for this command.
+   *
+   * @return A map of {@link MustangSubsystemBase} to {@link HealthState} representing the health
+   *         requirements.
+   */
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return null;
+  }
 
 
 

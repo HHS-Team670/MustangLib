@@ -7,6 +7,11 @@
     "source.organizeImports": "explicit"
   },
 
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.autoIndent": "full",
+  "editor.detectIndentation": false,
+
   // Set maximum line length for word wrapping
   "editor.wordWrap": "bounded",
   "editor.wordWrapColumn": 140,

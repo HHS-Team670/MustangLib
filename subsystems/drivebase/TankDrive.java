@@ -29,7 +29,6 @@ import frc.team670.mustanglib.RobotConstantsBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.dataCollection.sensors.NavX;
-import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
@@ -37,9 +36,9 @@ import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 import frc.team670.robot.constants.OI;
 
 /**
- * 
+ *
  * Represents a tank drive base using the WPIlib DifferentialDrive class.
- * 
+ *
  * @author shaylandias, lakshbhambhani, armaan, aditi
  */
 public abstract class TankDrive extends DriveBase {
@@ -156,9 +155,9 @@ public abstract class TankDrive extends DriveBase {
   /**
    * This method is called by the constructor. Much of the time setup needs to be performed on
    * motors, so perform the setup in a subclass, then call this method.
-   * 
+   *
    * @param leftMotor Leader of the left motors
-   * 
+   *
    * @param rightMotor Leader of the right motors
    *
    * @param inverted Invert the motors (make what would have been the front the back)
@@ -181,7 +180,7 @@ public abstract class TankDrive extends DriveBase {
    * This method is called by the constructor or in a subclass if motor setup needs to be performed.
    * Much of the time setup needs to be performed on motors, so perform the setup in a subclass,
    * then call this method.
-   * 
+   *
    * @param leftMotor Leader of the left motors
    *
    * @param rightMotor Leader of the right motors
@@ -193,7 +192,7 @@ public abstract class TankDrive extends DriveBase {
   /**
    * This method is called by the constructor. Much of the time setup needs to be performed on
    * motors, so perform the setup in a subclass, then call this method.
-   * 
+   *
    * @param leftMotor Leader of the left motors
    *
    * @param rightMotor Leader of the rigth motors
@@ -233,10 +232,10 @@ public abstract class TankDrive extends DriveBase {
 
 
   /**
-   * 
+   *
    * Drives the Robot using a tank drive configuration (two joysticks, or auton). Squares inputs to
    * linearize them.
-   * 
+   *
    * @param leftSpeed Speed for left side of drive base [-1, 1]. Automatically squares this value to
    *        linearize it.
    * @param rightSpeed Speed for right side of drive base [-1, 1]. Automatically squares this value
@@ -247,9 +246,9 @@ public abstract class TankDrive extends DriveBase {
   }
 
   /**
-   * 
+   *
    * Drives the Robot using a tank drive configuration (two joysticks, or auton)
-   * 
+   *
    * @param leftSpeed Speed for left side of drive base [-1, 1]
    * @param rightSpeed Speed for right side of drive base [-1, 1]
    * @param squaredInputs If true, decreases sensitivity at lower inputs
@@ -259,9 +258,9 @@ public abstract class TankDrive extends DriveBase {
   }
 
   /**
-   * 
+   *
    * Drives the Robot using a curvature drive configuration (wheel)
-   * 
+   *
    * @param xSpeed The forward throttle speed [-1, 1]
    * @param zRotation The amount of rotation to turn [-1, 1] with positive being right
    * @param isQuickTurn If true enables turning in place and running one side backwards to turn
@@ -272,9 +271,9 @@ public abstract class TankDrive extends DriveBase {
   }
 
   /**
-   * 
+   *
    * Drives the Robot using an arcade drive configuration (single joystick with twist)
-   * 
+   *
    * @param xSpeed The forward throttle speed [-1, 1]
    * @param zRotation The amount of rotation to turn [-1, 1] with positive being right
    * @param squaredInputs if squared, output much more smoother (quadratic function)
@@ -284,10 +283,10 @@ public abstract class TankDrive extends DriveBase {
   }
 
   /**
-   * 
+   *
    * Drives the Robot using an arcade drive configuration (single joystick with twist). Squares
    * inputs for smoothing.
-   * 
+   *
    * @param xSpeed The forward throttle speed [-1, 1]
    * @param zRotation The amount of rotation to turn [-1, 1] with positive being right
    */
@@ -400,7 +399,7 @@ public abstract class TankDrive extends DriveBase {
 
   /**
    * Sets all motors in the specified list to be in the specified mode
-   * 
+   *
    * @param motors Motors to be set to a particular IdleMode
    * @param mode The target mode (coast or brake)
    */
@@ -440,7 +439,7 @@ public abstract class TankDrive extends DriveBase {
 
   /**
    * Returns the Left Motor Controllers
-   * 
+   *
    * @return The list of the motor controllers on the left side of the robot
    */
   public List<SparkMAXLite> getLeftControllers() {
@@ -449,7 +448,7 @@ public abstract class TankDrive extends DriveBase {
 
   /**
    * Returns the Right Motor Controller
-   * 
+   *
    * @return The list of the motor controllers on the right side of the robot
    */
   public List<SparkMAXLite> getRightControllers() {
@@ -458,7 +457,7 @@ public abstract class TankDrive extends DriveBase {
 
   /**
    * Sets the ramp rate for the list of motors passed in.
-   * 
+   *
    * @param rampRate The ramp rate in seconds from 0 to full throttle
    */
   public void setRampRate(List<SparkMAXLite> motors, double rampRate) {
@@ -531,7 +530,7 @@ public abstract class TankDrive extends DriveBase {
 
   /**
    * Returns the heading of the robot.
-   * 
+   *
    * @return the robot's heading in degrees, in range [-180, 180]
    */
   public double getHeading() {
@@ -550,7 +549,7 @@ public abstract class TankDrive extends DriveBase {
 
   /**
    * Sets the voltage for the left and right motors in a tank drive system.
-   * 
+   *
    * @param leftVoltage The voltage to be applied to the left side of the tank drive system. This
    *        will control the speed and direction of the left side of the tank drive.
    * @param rightVoltage The rightVoltage parameter is the desired voltage to be applied to the

@@ -11,9 +11,9 @@ import edu.wpi.first.math.geometry.Pose2d;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 
 /*
- * 
+ *
  * Represents a drivebase
- * 
+ *
  * @author shaylandias, lakshbhambhani, armaan, aditi
  */
 public abstract class DriveBase extends MustangSubsystemBase {

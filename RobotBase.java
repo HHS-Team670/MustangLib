@@ -95,7 +95,7 @@ public class RobotBase extends LoggedRobot {
    * <p>
    * This runs after the mode specific periodic functions, but before LiveWindow and SmartDashboard
    * integrated updating.
-   * 
+   *
    * Re-calculates the health of all subsystems on the robot at specified intervals.
    */
   @Override

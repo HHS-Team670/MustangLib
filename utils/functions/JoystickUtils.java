@@ -2,15 +2,15 @@ package frc.team670.mustanglib.utils.functions;
 
 /**
  * Class to hold functions which modify Joystick inputs to smooth them, moodify them, etc.
- * 
+ *
  * @author shaylandias
  */
 public class JoystickUtils {
 
   /**
-   * 
+   *
    * Runs a calculation to smooth out a joystick input in range [-1, 1] (currently cubes it)
-   * 
+   *
    * @param joystickVal The joystick raw input
    * @return Smoothed out joystick input
    */

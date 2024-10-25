@@ -19,7 +19,7 @@ import frc.team670.mustanglib.utils.JoystickUtils;
 import frc.team670.mustanglib.utils.MustangController;
 
 /**
- * 
+ *
  * Note: for tank drive Also known as Cheesy Drive The "curvature" naming comes from the algorithm's
  * change to the way that the "turn" joystick input is processed. When you a driving forward or
  * backwards and turning at the same time, the turn input affects the curvature of the movement
@@ -37,42 +37,42 @@ import frc.team670.mustanglib.utils.MustangController;
  */
 public class XboxCurvatureDrive extends Command implements MustangCommand {
 
-    private TankDrive driveBase;
-    private MustangController controller;
-    Joystick joystick;
-    private Map<MustangSubsystemBase, HealthState> healthRequirements =
-            new HashMap<MustangSubsystemBase, HealthState>();
+  private TankDrive driveBase;
+  private MustangController controller;
+  Joystick joystick;
+  private Map<MustangSubsystemBase, HealthState> healthRequirements =
+      new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    /**
-     * Constructs a new XboxCurvatureDrive.
-     * 
-     * @param driveBase the drrivebase to be drivnr
-     * @param controller the controllers to be used
-     */
-    public XboxCurvatureDrive(TankDrive driveBase, MustangController controller) {
-        super();
-        this.driveBase = driveBase;
-        this.controller = controller;
-        addRequirements(driveBase);
-        healthRequirements.put(driveBase, HealthState.YELLOW);
+  /**
+   * Constructs a new XboxCurvatureDrive.
+   *
+   * @param driveBase the drrivebase to be drivnr
+   * @param controller the controllers to be used
+   */
+  public XboxCurvatureDrive(TankDrive driveBase, MustangController controller) {
+    super();
+    this.driveBase = driveBase;
+    this.controller = controller;
+    addRequirements(driveBase);
+    healthRequirements.put(driveBase, HealthState.YELLOW);
 
-    }
+  }
 
-    // Called once when the command executes
-    @Override
-    public void execute() {
-        // Runs Curvature Drive with the left Joystick for steering and the right
-        // joystick for throttle (smoothed by squaring input). QuickTurn is bound to
-        // Right Bumper
-        driveBase.curvatureDrive(-1 * JoystickUtils.smoothInput(controller.getRightStickY()),
-                controller.getLeftStickX(), controller.getRightBumper());
-    }
+  // Called once when the command executes
+  @Override
+  public void execute() {
+    // Runs Curvature Drive with the left Joystick for steering and the right
+    // joystick for throttle (smoothed by squaring input). QuickTurn is bound to
+    // Right Bumper
+    driveBase.curvatureDrive(-1 * JoystickUtils.smoothInput(controller.getRightStickY()),
+        controller.getLeftStickX(), controller.getRightBumper());
+  }
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return healthRequirements;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return healthRequirements;
+  }
 
 
 }

@@ -21,32 +21,32 @@ import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
  */
 public class JoystickTankDrive extends Command implements MustangCommand {
 
-    private TankDrive driveBase;
-    private Joystick leftJoystick, rightJoystick;
-    private Map<MustangSubsystemBase, HealthState> healthRequirements =
-            new HashMap<MustangSubsystemBase, HealthState>();
+  private TankDrive driveBase;
+  private Joystick leftJoystick, rightJoystick;
+  private Map<MustangSubsystemBase, HealthState> healthRequirements =
+      new HashMap<MustangSubsystemBase, HealthState>();
 
-    public JoystickTankDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
-        // Use requires() here to declare subsystem dependencies
-        // eg. requires(chassis);
-        super();
-        this.driveBase = driveBase;
-        this.leftJoystick = leftJoystick;
-        this.rightJoystick = rightJoystick;
-        addRequirements(driveBase);
-        healthRequirements.put(driveBase, HealthState.YELLOW);
+  public JoystickTankDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
+    // Use requires() here to declare subsystem dependencies
+    // eg. requires(chassis);
+    super();
+    this.driveBase = driveBase;
+    this.leftJoystick = leftJoystick;
+    this.rightJoystick = rightJoystick;
+    addRequirements(driveBase);
+    healthRequirements.put(driveBase, HealthState.YELLOW);
 
-    }
+  }
 
-    // Called just before this Command runs the first time
-    @Override
-    public void execute() {
-        driveBase.tankDrive(-1 * leftJoystick.getY(), -1 * rightJoystick.getY());
-    }
+  // Called just before this Command runs the first time
+  @Override
+  public void execute() {
+    driveBase.tankDrive(-1 * leftJoystick.getY(), -1 * rightJoystick.getY());
+  }
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return healthRequirements;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return healthRequirements;
+  }
 
 }

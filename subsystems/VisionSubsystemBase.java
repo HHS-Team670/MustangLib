@@ -28,337 +28,333 @@ import frc.team670.robot.subsystems.LED;
 
 /**
  * Subsystem base vision. Mainly used for april tags pose estimation.
- * 
+ *
  * @author ethan c
  */
 public abstract class VisionSubsystemBase extends MustangSubsystemBase {
-    private Config kConfig;
-    private AprilTagFieldLayout kFieldLayout;
+  private Config kConfig;
+  private AprilTagFieldLayout kFieldLayout;
 
-    protected PhotonCamera[] mCameras;
-    protected CameraPoseEstimator[] mCameraEstimators;
-    private ThreadPoolExecutor mExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
-    private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
-    private HashMap<String, PhotonPipelineResult> latestResults;
-    private boolean mInit = false;
-    private LED led;
+  protected PhotonCamera[] mCameras;
+  protected CameraPoseEstimator[] mCameraEstimators;
+  private ThreadPoolExecutor mExecutor = (ThreadPoolExecutor) Executors.newFixedThreadPool(5);
+  private ConcurrentLinkedQueue<VisionMeasurement> mVisionMeasurementsBuffer;
+  private HashMap<String, PhotonPipelineResult> latestResults;
+  private boolean mInit = false;
+  private LED led;
+
+  /**
+   * A vision configuration that stores important information about the field and vision subsystem
+   * on the robot
+   */
+  public static record Config(AprilTagFieldLayout kFieldLayout, String[] kCameraIDs,
+      Transform3d[] kCameraOffsets, double kPoseAmbiguityCutOff, int kMaxFrameFIDs,
+      List<Set<Integer>> kPossibleFIDCombinations,
+      Map<Integer, TagCountDeviation> kVisionStdFromTagsSeen) {
+  }
+
+  public VisionSubsystemBase(Config config) {
+    this.kConfig = config;
+    this.kFieldLayout = config.kFieldLayout;
+    this.mVisionMeasurementsBuffer = new ConcurrentLinkedQueue<>();
+    this.mCameras = new PhotonCamera[config.kCameraIDs.length];
+    for (int i = 0; i < mCameras.length; i++) {
+      mCameras[i] = new PhotonCamera(config.kCameraIDs[i]);
+    }
+
+    this.latestResults = new HashMap<>();
+    led = LED.getInstance();
+  }
+
+  /**
+   * Initalizes the vision subsystem. DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN.
+   * CALL IN PERIODIC OR AUTONINIT. More details here:
+   * https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
+   */
+  public void initalize() {
+    // does nothing if DS not initialized yet
+    if (!DriverStation.getAlliance().isPresent()) {
+      mInit = false;
+      return;
+    }
+    setFieldOrigin();
+
+    CameraPoseEstimator[] c = new CameraPoseEstimator[mCameras.length];
+    for (int i = 0; i < c.length; i++) {
+      c[i] = new CameraPoseEstimator(mCameras[i], kConfig.kCameraOffsets[i], kFieldLayout);
+    }
+    led = LED.getInstance();
+    this.mCameraEstimators = c;
+    mInit = true;
+
+  }
+
+  public void debugSubsystem() {
+    for (String s : kConfig.kCameraIDs) {
+      PhotonPipelineResult r = latestResults.get(s);
+      for (PhotonTrackedTarget target : r.getTargets()) {
+        var transform = target.getBestCameraToTarget();
+        Logger.recordOutput("Camera: " + s + " distance to" + target.getFiducialId() + "is: ",
+            Math.sqrt(Math.pow(transform.getX(), 2) + Math.pow(transform.getY(), 2)));
+        Logger.recordOutput("Camera: " + s + " angle to" + target.getFiducialId() + "is: ",
+            target.getYaw());
+      }
+    }
+  }
+
+  /**
+   * Sets origin based on field side (red alliance or blue alliance)
+   */
+  private void setFieldOrigin() {
+    var origin = DriverStation.getAlliance().get() == Alliance.Blue
+        ? OriginPosition.kBlueAllianceWallRightSide
+        : OriginPosition.kRedAllianceWallRightSide;
+    kFieldLayout.setOrigin(origin);
+  }
+
+  /**
+   * Attempts to initalize vision and estimate robot pose after processing the vision feed
+   */
+  @Override
+  public void mustangPeriodic() {
+    // attempt initialization until initialized
+    if (!mInit) {
+      initalize();
+      return;
+    }
+
+    for (CameraPoseEstimator c : mCameraEstimators) {
+      mExecutor.execute(() -> {
+        processVisionFeed(c);
+      });
+    }
+  }
+
+
+  /**
+   *
+   * @return if initialized
+   */
+  public boolean isInitialized() {
+    return mInit;
+  }
+
+  /** A representation of the visions pose estimation and its confidence */
+  public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {
+  }
+
+  /**
+   *
+   * @return returns the first unprocessed vision measurement
+   */
+  public VisionMeasurement getVisionMeasurement() {
+    return mVisionMeasurementsBuffer.poll();
+  }
+
+  /**
+   * @return if mVisionMeasurementsBuffer is empty
+   */
+  public boolean isMeasurementBufferEmpty() {
+    return mVisionMeasurementsBuffer.isEmpty();
+  }
+
+  /**
+   * The function processes a vision feed from a camera estimator, calculates the average distance
+   * and deviation, and adds the measurement to a queue.
+   *
+   * @param cameraEstimator The cameraEstimator parameter is an instance of the CameraPoseEstimator
+   *        class. It is used to estimate the pose (position and orientation) of the camera based on
+   *        visual measurements.
+   */
+  private void processVisionFeed(CameraPoseEstimator cameraEstimator) {
+    Optional<CameraPoseEstimator.CameraEstimatorMeasurement> optMeasurement =
+        cameraEstimator.update();
+    if (optMeasurement.isEmpty())
+      return;
+    CameraPoseEstimator.CameraEstimatorMeasurement measurement = optMeasurement.get();
+    EstimatedRobotPose estimation = measurement.estimation;
+    double avgDistance = getAverageDistance(estimation); // TODO: figure out how vision std work
+    Vector<N3> deviation =
+        kConfig.kVisionStdFromTagsSeen.get(MathUtil.clamp(estimation.targetsUsed.size(), 0,
+            kConfig.kVisionStdFromTagsSeen.keySet().size())).computeDeviation(avgDistance);
+    mVisionMeasurementsBuffer.add(new VisionMeasurement(estimation, deviation));
+  }
+
+  /**
+   * Uses a pose estimation to calculate the average distance from the closest camera on the robot
+   * to each apriltag target on the field that was used for pose estimation Used to factor in vision
+   * trust
+   *
+   * @param estimation the pose estimation to be used for the average
+   * @return the average distance (in meters?)
+   */
+  private double getAverageDistance(EstimatedRobotPose estimation) {
+    double sumDistance = 0;
+    for (var target : estimation.targetsUsed) {
+      var t3d = target.getBestCameraToTarget();
+      sumDistance +=
+          Math.sqrt(Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
+    }
+    return sumDistance / estimation.targetsUsed.size();
+  }
+
+  /** @return the healthstate of the vision subsystem */
+  @Override
+  public HealthState checkHealth() {
+    HealthState state = HealthState.GREEN;
+    int counter = 0;
+    // checks through the photon cameras and checks if they are null or !connected
+    for (PhotonCamera camera : mCameras) {
+      if (camera == null || !camera.isConnected()) {
+        state = HealthState.YELLOW;
+        counter++;
+        if (camera.getName() == "Arducam_B") {
+          Logger.recordOutput("Arducam_B_Connected", false);
+        }
+      } else {
+        if (camera.getName() == "Arducam_B") {
+          Logger.recordOutput("Arducam_B_Connected", true);
+        }
+      }
+    }
+    // iff all of the cameras are null or not connected healthstate = red
+    if (counter == mCameras.length && mCameras.length != 0) {
+      state = HealthState.RED;
+    }
+    return state;
+  }
+
+  /**
+   *
+   * @return the cameras this subsystem uses
+   */
+  public PhotonCamera[] getCameras() {
+    return mCameras;
+  }
+
+  private class CameraPoseEstimator {
+    private PhotonCamera photonCamera;
+    private PhotonPoseEstimator estimator;
+    private double lastTimeStamp;
+
+    public CameraPoseEstimator(PhotonCamera photonCamera, Transform3d robotToCam,
+        AprilTagFieldLayout fieldLayout) {
+      this.photonCamera = photonCamera;
+      estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
+          photonCamera, robotToCam);
+      estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
+    }
 
     /**
-     * A vision configuration that stores important information about the field and vision subsystem
-     * on the robot
+     * A record that represents a estimated pose and a photon result from the camera pose estimator
      */
-    public static record Config(AprilTagFieldLayout kFieldLayout, String[] kCameraIDs,
-            Transform3d[] kCameraOffsets, double kPoseAmbiguityCutOff, int kMaxFrameFIDs,
-            List<Set<Integer>> kPossibleFIDCombinations,
-            Map<Integer, TagCountDeviation> kVisionStdFromTagsSeen) {
-    }
-
-    public VisionSubsystemBase(Config config) {
-        this.kConfig = config;
-        this.kFieldLayout = config.kFieldLayout;
-        this.mVisionMeasurementsBuffer = new ConcurrentLinkedQueue<>();
-        this.mCameras = new PhotonCamera[config.kCameraIDs.length];
-        for (int i = 0; i < mCameras.length; i++) {
-            mCameras[i] = new PhotonCamera(config.kCameraIDs[i]);
-        }
-
-        this.latestResults = new HashMap<>();
-        led = LED.getInstance();
+    public static record CameraEstimatorMeasurement(EstimatedRobotPose estimation,
+        PhotonPipelineResult result) {
     }
 
     /**
-     * Initalizes the vision subsystem. DO NOT CALL IN ROBOT INIT! DS IS NOT NECESSARILY READY THEN.
-     * CALL IN PERIODIC OR AUTONINIT. More details here:
-     * https://www.chiefdelphi.com/t/getalliance-always-returning-red/425782/27
+     * Updates the Camera estimator. Should be called periodically
+     *
+     * @return An Optional of the Photon pose estimator estimation and pipline result. Bad frames
+     *         are ignored.
      */
-    public void initalize() {
-        // does nothing if DS not initialized yet
-        if (!DriverStation.getAlliance().isPresent()) {
-            mInit = false;
-            return;
-        }
-        setFieldOrigin();
+    public Optional<CameraEstimatorMeasurement> update() {
+      PhotonPipelineResult result = photonCamera.getLatestResult();
+      latestResults.put(photonCamera.getName(), result);
+      if (ignoreFrame(result)) {
+        return Optional.empty();
+      }
 
-        CameraPoseEstimator[] c = new CameraPoseEstimator[mCameras.length];
-        for (int i = 0; i < c.length; i++) {
-            c[i] = new CameraPoseEstimator(mCameras[i], kConfig.kCameraOffsets[i], kFieldLayout);
-        }
-        led = LED.getInstance();
-        this.mCameraEstimators = c;
-        mInit = true;
+      Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
+      if (optEstimation.isEmpty())
+        return Optional.empty();
+      EstimatedRobotPose estimation = optEstimation.get();
 
-    }
+      if (estimation.targetsUsed.size() == 1) {
+        double ambiguity = estimation.targetsUsed.get(0).getPoseAmbiguity();
+        if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
+          return Optional.empty();
+      }
 
-    public void debugSubsystem() {
-        for (String s : kConfig.kCameraIDs) {
-            PhotonPipelineResult r = latestResults.get(s);
-            for (PhotonTrackedTarget target : r.getTargets()) {
-                var transform = target.getBestCameraToTarget();
-                Logger.recordOutput(
-                        "Camera: " + s + " distance to" + target.getFiducialId() + "is: ",
-                        Math.sqrt(Math.pow(transform.getX(), 2) + Math.pow(transform.getY(), 2)));
-                Logger.recordOutput("Camera: " + s + " angle to" + target.getFiducialId() + "is: ",
-                        target.getYaw());
-            }
-        }
+      return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result));
     }
 
     /**
-     * Sets origin based on field side (red alliance or blue alliance)
+     * Returns whether or not to ignore a frame Cases in which a frame should be ignored include
+     * when there are no targets in view, if there more targets than physically possible, or an
+     * impossible combination of target are in view
+     *
+     * @param frame the frame to be checked
+     * @return whether or not to ignore a frame
      */
-    private void setFieldOrigin() {
-        var origin = DriverStation.getAlliance().get() == Alliance.Blue
-                ? OriginPosition.kBlueAllianceWallRightSide
-                : OriginPosition.kRedAllianceWallRightSide;
-        kFieldLayout.setOrigin(origin);
+    private boolean ignoreFrame(PhotonPipelineResult frame) {
+      if (!frame.hasTargets() || frame.getTargets().size() > kConfig.kMaxFrameFIDs)
+        return true;
+      else if (isDuplicate(frame))
+        return true;
+      else if (!isPossible(frame))
+        return true;
+      else
+        return false;
     }
 
     /**
-     * Attempts to initalize vision and estimate robot pose after processing the vision feed
+     * Returns if a frame is a duplicate of the last frame Accomplishes this by comparing the
+     * timestamp of the last frame with the passed in frame
+     *
+     * @param frame the frame to be checked
+     * @return if the frame is a duplicate
      */
-    @Override
-    public void mustangPeriodic() {
-        // attempt initialization until initialized
-        if (!mInit) {
-            initalize();
-            return;
-        }
-
-        for (CameraPoseEstimator c : mCameraEstimators) {
-            mExecutor.execute(() -> {
-                processVisionFeed(c);
-            });
-        }
-    }
-
-
-    /**
-     * 
-     * @return if initialized
-     */
-    public boolean isInitialized() {
-        return mInit;
-    }
-
-    /** A representation of the visions pose estimation and its confidence */
-    public record VisionMeasurement(EstimatedRobotPose estimation, Vector<N3> confidence) {
+    private boolean isDuplicate(PhotonPipelineResult frame) {
+      boolean duplicate = frame.getTimestampSeconds() == lastTimeStamp;
+      lastTimeStamp = frame.getTimestampSeconds();
+      return duplicate;
     }
 
     /**
-     * 
-     * @return returns the first unprocessed vision measurement
+     * Returns true is the combination of targets in view is physically possible
+     *
+     * @param frame the frame to be checked
+     * @return if the frame is possible
      */
-    public VisionMeasurement getVisionMeasurement() {
-        return mVisionMeasurementsBuffer.poll();
+    private boolean isPossible(PhotonPipelineResult frame) {
+      boolean possible = false;
+      List<Integer> ids = frame.targets.stream().map(t -> t.getFiducialId()).toList();
+      for (Set<Integer> possibleFIDCombo : kConfig.kPossibleFIDCombinations) {
+        possible = possibleFIDCombo.containsAll(ids);
+        if (possible)
+          break;
+      }
+      if (!possible)
+        ConsoleLogger.consoleLog("Impossible FIDs combination: " + ids);
+      return possible;
     }
 
-    /**
-     * @return if mVisionMeasurementsBuffer is empty
-     */
-    public boolean isMeasurementBufferEmpty() {
-        return mVisionMeasurementsBuffer.isEmpty();
+  }
+  /**
+   * A record that stores and computes deviation of a target( a tag)
+   */
+  public record UnitDeviationParams(double distanceMultiplier, double eulerMultiplier,
+      double minimum) {
+    public double computeUnitDeviation(double averageDistance) {
+      return Math.max(minimum, eulerMultiplier * Math.exp(averageDistance * distanceMultiplier));
+    }
+  }
+  /**
+   * A record that stores a tag's data with their deviation
+   */
+  public record TagCountDeviation(UnitDeviationParams xParams, UnitDeviationParams yParams,
+      UnitDeviationParams thetaParams) {
+    public Vector<N3> computeDeviation(double averageDistance) {
+      return VecBuilder.fill(xParams.computeUnitDeviation(averageDistance),
+          yParams.computeUnitDeviation(averageDistance),
+          thetaParams.computeUnitDeviation(averageDistance));
     }
 
-    /**
-     * The function processes a vision feed from a camera estimator, calculates the average distance
-     * and deviation, and adds the measurement to a queue.
-     * 
-     * @param cameraEstimator The cameraEstimator parameter is an instance of the
-     *        CameraPoseEstimator class. It is used to estimate the pose (position and orientation)
-     *        of the camera based on visual measurements.
-     */
-    private void processVisionFeed(CameraPoseEstimator cameraEstimator) {
-        Optional<CameraPoseEstimator.CameraEstimatorMeasurement> optMeasurement =
-                cameraEstimator.update();
-        if (optMeasurement.isEmpty())
-            return;
-        CameraPoseEstimator.CameraEstimatorMeasurement measurement = optMeasurement.get();
-        EstimatedRobotPose estimation = measurement.estimation;
-        double avgDistance = getAverageDistance(estimation); // TODO: figure out how vision std work
-        Vector<N3> deviation = kConfig.kVisionStdFromTagsSeen
-                .get(MathUtil.clamp(estimation.targetsUsed.size(), 0,
-                        kConfig.kVisionStdFromTagsSeen.keySet().size()))
-                .computeDeviation(avgDistance);
-        mVisionMeasurementsBuffer.add(new VisionMeasurement(estimation, deviation));
+    public TagCountDeviation(UnitDeviationParams xyParams, UnitDeviationParams thetaParams) {
+      this(xyParams, xyParams, thetaParams);
     }
-
-    /**
-     * Uses a pose estimation to calculate the average distance from the closest camera on the robot
-     * to each apriltag target on the field that was used for pose estimation Used to factor in
-     * vision trust
-     * 
-     * @param estimation the pose estimation to be used for the average
-     * @return the average distance (in meters?)
-     */
-    private double getAverageDistance(EstimatedRobotPose estimation) {
-        double sumDistance = 0;
-        for (var target : estimation.targetsUsed) {
-            var t3d = target.getBestCameraToTarget();
-            sumDistance += Math.sqrt(
-                    Math.pow(t3d.getX(), 2) + Math.pow(t3d.getY(), 2) + Math.pow(t3d.getZ(), 2));
-        }
-        return sumDistance / estimation.targetsUsed.size();
-    }
-
-    /** @return the healthstate of the vision subsystem */
-    @Override
-    public HealthState checkHealth() {
-        HealthState state = HealthState.GREEN;
-        int counter = 0;
-        // checks through the photon cameras and checks if they are null or !connected
-        for (PhotonCamera camera : mCameras) {
-            if (camera == null || !camera.isConnected()) {
-                state = HealthState.YELLOW;
-                counter++;
-                if (camera.getName() == "Arducam_B") {
-                    Logger.recordOutput("Arducam_B_Connected", false);
-                }
-            } else {
-                if (camera.getName() == "Arducam_B") {
-                    Logger.recordOutput("Arducam_B_Connected", true);
-                }
-            }
-        }
-        // iff all of the cameras are null or not connected healthstate = red
-        if (counter == mCameras.length && mCameras.length != 0) {
-            state = HealthState.RED;
-        }
-        return state;
-    }
-
-    /**
-     * 
-     * @return the cameras this subsystem uses
-     */
-    public PhotonCamera[] getCameras() {
-        return mCameras;
-    }
-
-    private class CameraPoseEstimator {
-        private PhotonCamera photonCamera;
-        private PhotonPoseEstimator estimator;
-        private double lastTimeStamp;
-
-        public CameraPoseEstimator(PhotonCamera photonCamera, Transform3d robotToCam,
-                AprilTagFieldLayout fieldLayout) {
-            this.photonCamera = photonCamera;
-            estimator = new PhotonPoseEstimator(fieldLayout,
-                    PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, photonCamera, robotToCam);
-            estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
-        }
-
-        /**
-         * A record that represents a estimated pose and a photon result from the camera pose
-         * estimator
-         */
-        public static record CameraEstimatorMeasurement(EstimatedRobotPose estimation,
-                PhotonPipelineResult result) {
-        }
-
-        /**
-         * Updates the Camera estimator. Should be called periodically
-         * 
-         * @return An Optional of the Photon pose estimator estimation and pipline result. Bad
-         *         frames are ignored.
-         */
-        public Optional<CameraEstimatorMeasurement> update() {
-            PhotonPipelineResult result = photonCamera.getLatestResult();
-            latestResults.put(photonCamera.getName(), result);
-            if (ignoreFrame(result)) {
-                return Optional.empty();
-            }
-
-            Optional<EstimatedRobotPose> optEstimation = estimator.update(result);
-            if (optEstimation.isEmpty())
-                return Optional.empty();
-            EstimatedRobotPose estimation = optEstimation.get();
-
-            if (estimation.targetsUsed.size() == 1) {
-                double ambiguity = estimation.targetsUsed.get(0).getPoseAmbiguity();
-                if (ambiguity < kConfig.kPoseAmbiguityCutOff || ambiguity == -1)
-                    return Optional.empty();
-            }
-
-            return Optional.ofNullable(new CameraEstimatorMeasurement(estimation, result));
-        }
-
-        /**
-         * Returns whether or not to ignore a frame Cases in which a frame should be ignored include
-         * when there are no targets in view, if there more targets than physically possible, or an
-         * impossible combination of target are in view
-         * 
-         * @param frame the frame to be checked
-         * @return whether or not to ignore a frame
-         */
-        private boolean ignoreFrame(PhotonPipelineResult frame) {
-            if (!frame.hasTargets() || frame.getTargets().size() > kConfig.kMaxFrameFIDs)
-                return true;
-            else if (isDuplicate(frame))
-                return true;
-            else if (!isPossible(frame))
-                return true;
-            else
-                return false;
-        }
-
-        /**
-         * Returns if a frame is a duplicate of the last frame Accomplishes this by comparing the
-         * timestamp of the last frame with the passed in frame
-         * 
-         * @param frame the frame to be checked
-         * @return if the frame is a duplicate
-         */
-        private boolean isDuplicate(PhotonPipelineResult frame) {
-            boolean duplicate = frame.getTimestampSeconds() == lastTimeStamp;
-            lastTimeStamp = frame.getTimestampSeconds();
-            return duplicate;
-        }
-
-        /**
-         * Returns true is the combination of targets in view is physically possible
-         * 
-         * @param frame the frame to be checked
-         * @return if the frame is possible
-         */
-        private boolean isPossible(PhotonPipelineResult frame) {
-            boolean possible = false;
-            List<Integer> ids = frame.targets.stream().map(t -> t.getFiducialId()).toList();
-            for (Set<Integer> possibleFIDCombo : kConfig.kPossibleFIDCombinations) {
-                possible = possibleFIDCombo.containsAll(ids);
-                if (possible)
-                    break;
-            }
-            if (!possible)
-                ConsoleLogger.consoleLog("Impossible FIDs combination: " + ids);
-            return possible;
-        }
-
-    }
-    /**
-     * A record that stores and computes deviation of a target( a tag)
-     */
-    public record UnitDeviationParams(double distanceMultiplier, double eulerMultiplier,
-            double minimum) {
-        public double computeUnitDeviation(double averageDistance) {
-            return Math.max(minimum,
-                    eulerMultiplier * Math.exp(averageDistance * distanceMultiplier));
-        }
-    }
-    /**
-     * A record that stores a tag's data with their deviation
-     */
-    public record TagCountDeviation(UnitDeviationParams xParams, UnitDeviationParams yParams,
-            UnitDeviationParams thetaParams) {
-        public Vector<N3> computeDeviation(double averageDistance) {
-            return VecBuilder.fill(xParams.computeUnitDeviation(averageDistance),
-                    yParams.computeUnitDeviation(averageDistance),
-                    thetaParams.computeUnitDeviation(averageDistance));
-        }
-
-        public TagCountDeviation(UnitDeviationParams xyParams, UnitDeviationParams thetaParams) {
-            this(xyParams, xyParams, thetaParams);
-        }
-    }
+  }
 
 
 }

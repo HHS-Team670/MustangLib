@@ -21,37 +21,37 @@ import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
  */
 public class WheelCurvatureDrive extends Command implements MustangCommand {
 
-    private TankDrive driveBase;
+  private TankDrive driveBase;
 
-    private Joystick leftJoystick, rightJoystick;
+  private Joystick leftJoystick, rightJoystick;
 
-    private Map<MustangSubsystemBase, HealthState> healthRequirements =
-            new HashMap<MustangSubsystemBase, HealthState>();
+  private Map<MustangSubsystemBase, HealthState> healthRequirements =
+      new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    /**
-     * Constructor for wheel curvature drive
-     */
-    public WheelCurvatureDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
-        super();
-        this.driveBase = driveBase;
-        this.leftJoystick = leftJoystick;
-        this.rightJoystick = rightJoystick;
-        addRequirements(driveBase);
-        healthRequirements.put(driveBase, HealthState.YELLOW);
+  /**
+   * Constructor for wheel curvature drive
+   */
+  public WheelCurvatureDrive(TankDrive driveBase, Joystick leftJoystick, Joystick rightJoystick) {
+    super();
+    this.driveBase = driveBase;
+    this.leftJoystick = leftJoystick;
+    this.rightJoystick = rightJoystick;
+    addRequirements(driveBase);
+    healthRequirements.put(driveBase, HealthState.YELLOW);
 
-    }
+  }
 
-    // Called once when the command executes
-    @Override
-    public void execute() {
-        // Robot.driveBase.curvatureDrive(xSpeed, zRotation, isQuickTurn);
-        driveBase.curvatureDrive(-1 * rightJoystick.getY(), leftJoystick.getX(), false);
-    }
+  // Called once when the command executes
+  @Override
+  public void execute() {
+    // Robot.driveBase.curvatureDrive(xSpeed, zRotation, isQuickTurn);
+    driveBase.curvatureDrive(-1 * rightJoystick.getY(), leftJoystick.getX(), false);
+  }
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return healthRequirements;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return healthRequirements;
+  }
 
 }

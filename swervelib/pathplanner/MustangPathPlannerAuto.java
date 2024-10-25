@@ -8,13 +8,13 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 
 public class MustangPathPlannerAuto extends PathPlannerAuto implements MustangCommand {
 
-    public MustangPathPlannerAuto(String autoName) {
-        super(autoName);
-    }
+  public MustangPathPlannerAuto(String autoName) {
+    super(autoName);
+  }
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return null;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return null;
+  }
 
 }

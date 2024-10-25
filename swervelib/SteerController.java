@@ -3,15 +3,15 @@ package frc.team670.mustanglib.swervelib;
 import com.revrobotics.CANSparkMax;
 
 public interface SteerController {
-    CANSparkMax getSteerMotor();
+  CANSparkMax getSteerMotor();
 
-    AbsoluteEncoder getSteerEncoder();
+  AbsoluteEncoder getSteerEncoder();
 
-    double getReferenceAngle();
+  double getReferenceAngle();
 
-    void setReferenceAngle(double referenceAngleRadians);
+  void setReferenceAngle(double referenceAngleRadians);
 
-    double getStateAngle();
+  double getStateAngle();
 
-    public double realign();
+  public double realign();
 }

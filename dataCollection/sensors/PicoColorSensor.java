@@ -25,7 +25,7 @@ public class PicoColorSensor implements AutoCloseable {
 
     /**
      * Constructs a RawColor object with the specified red, green, blue, and infrared components.
-     * 
+     *
      * @param r the red component of the color
      * @param g the green component of the color
      * @param b the blue component of the color
@@ -63,7 +63,7 @@ public class PicoColorSensor implements AutoCloseable {
 
     /**
      * Returns the length of the character sequence.
-     * 
+     *
      * @return the length of the character sequence
      */
     @Override
@@ -73,7 +73,7 @@ public class PicoColorSensor implements AutoCloseable {
 
     /**
      * Returns the character at the specified index in the sequence.
-     * 
+     *
      * @param index the index of the character to return
      * @return the character at the specified index
      */
@@ -84,7 +84,7 @@ public class PicoColorSensor implements AutoCloseable {
 
     /**
      * Returns a new character sequence that is a subsequence of this sequence.
-     * 
+     *
      * @param start the start index of the subsequence
      * @param end the end index of the subsequence
      * @return a new character sequence that is a subsequence of this sequence
@@ -108,7 +108,7 @@ public class PicoColorSensor implements AutoCloseable {
    * The function `parseIntFromIndex` parses an integer value from a character sequence starting
    * from a given index, using a comma as a delimiter, and updates the index of the last comma
    * encountered.
-   * 
+   *
    * @param charSeq A SingleCharSequence object that represents a sequence of characters.
    * @param readLen The parameter "readLen" represents the length of the character sequence that
    *        needs to be parsed.
@@ -133,7 +133,7 @@ public class PicoColorSensor implements AutoCloseable {
   /**
    * The function finds the index of the next comma in a byte array, given the length of the array,
    * the index of the previous comma found, and the current read length.
-   * 
+   *
    * @param data The `data` parameter is a byte array that represents the data you are searching
    *        through.
    * @param readLen The length of the data that has been read so far.
@@ -234,7 +234,7 @@ public class PicoColorSensor implements AutoCloseable {
       color1.blue = parseIntFromIndex(charSeq, read, lastComma);
       color1.ir = parseIntFromIndex(charSeq, read, lastComma);
       /**
-       * 
+       *
        * @return The method checks if the distance is within the threshold.
        */
       int prox1 = parseIntFromIndex(charSeq, read, lastComma);
@@ -303,7 +303,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Returns the raw color data for sensor 0.
-   * 
+   *
    * @return RawColor object containing the raw color data for sensor 0.
    */
   public RawColor getRawColor0() {
@@ -317,7 +317,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Populates the provided RawColor object with the raw color data for sensor 0.
-   * 
+   *
    * @param rawColor RawColor object to be populated with the raw color data for sensor 0.
    */
   public void getRawColor0(RawColor rawColor) {
@@ -334,7 +334,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Returns the proximity value for sensor 0.
-   * 
+   *
    * @return integer value representing the proximity value for sensor 0.
    */
   public int getProximity0() {
@@ -348,7 +348,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Returns the raw color data for sensor 1.
-   * 
+   *
    * @return RawColor object containing the raw color data for sensor 1.
    */
   public RawColor getRawColor1() {
@@ -362,7 +362,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Populates the provided RawColor object with the raw color data for sensor 1.
-   * 
+   *
    * @param rawColor RawColor object to be populated with the raw color data for sensor 1.
    */
   public void getRawColor1(RawColor rawColor) {
@@ -379,7 +379,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Returns the proximity value for sensor 1.
-   * 
+   *
    * @return integer value representing the proximity value for sensor 1.
    */
   public int getProximity1() {
@@ -393,7 +393,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Returns the timestamp of the last sensor read in seconds.
-   * 
+   *
    * @return double value representing the timestamp of the last sensor read in seconds.
    */
   public double getLastReadTimestampSeconds() {
@@ -407,7 +407,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Sets whether debug prints should be enabled or not.
-   * 
+   *
    * @param debug boolean value indicating whether debug prints should be enabled or not.
    */
   void setDebugPrints(boolean debug) {
@@ -416,7 +416,7 @@ public class PicoColorSensor implements AutoCloseable {
 
   /**
    * Closes the PicoColorSensor object and joins the read thread.
-   * 
+   *
    * @throws Exception if an error occurs while closing the PicoColorSensor object.
    */
   @Override

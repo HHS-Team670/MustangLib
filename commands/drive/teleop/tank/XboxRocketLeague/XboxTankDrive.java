@@ -24,36 +24,36 @@ import frc.team670.mustanglib.utils.MustangController;
 
 public class XboxTankDrive extends Command implements MustangCommand {
 
-    private TankDrive driveBase;
-    private MustangController controller;
-    private Map<MustangSubsystemBase, HealthState> healthRequirements =
-            new HashMap<MustangSubsystemBase, HealthState>();
+  private TankDrive driveBase;
+  private MustangController controller;
+  private Map<MustangSubsystemBase, HealthState> healthRequirements =
+      new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    /**
-     * Contructing a new tank drive
-     */
-    public XboxTankDrive(TankDrive driveBase, MustangController controller) {
-        super();
-        this.driveBase = driveBase;
-        this.controller = controller;
-        addRequirements(driveBase);
-        healthRequirements.put(driveBase, HealthState.YELLOW);
+  /**
+   * Contructing a new tank drive
+   */
+  public XboxTankDrive(TankDrive driveBase, MustangController controller) {
+    super();
+    this.driveBase = driveBase;
+    this.controller = controller;
+    addRequirements(driveBase);
+    healthRequirements.put(driveBase, HealthState.YELLOW);
 
-    }
+  }
 
-    // Called once when the command executes
-    @Override
-    public void execute() {
+  // Called once when the command executes
+  @Override
+  public void execute() {
 
-        driveBase.tankDrive(-1 * controller.getLeftStickY(), -1 * controller.getRightStickY());
-    }
+    driveBase.tankDrive(-1 * controller.getLeftStickY(), -1 * controller.getRightStickY());
+  }
 
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return healthRequirements;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return healthRequirements;
+  }
 
 
 

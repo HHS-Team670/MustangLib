@@ -22,31 +22,31 @@ import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
  */
 public class SingleJoystickDrive extends Command implements MustangCommand {
 
-    private TankDrive driveBase;
-    private Joystick leftJoystick;
-    private Map<MustangSubsystemBase, HealthState> healthRequirements =
-            new HashMap<MustangSubsystemBase, HealthState>();
+  private TankDrive driveBase;
+  private Joystick leftJoystick;
+  private Map<MustangSubsystemBase, HealthState> healthRequirements =
+      new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    public SingleJoystickDrive(TankDrive driveBase, Joystick leftJoystick) {
-        super();
-        this.driveBase = driveBase;
-        this.leftJoystick = leftJoystick;
-        addRequirements(driveBase);
-        healthRequirements.put(driveBase, HealthState.YELLOW);
+  public SingleJoystickDrive(TankDrive driveBase, Joystick leftJoystick) {
+    super();
+    this.driveBase = driveBase;
+    this.leftJoystick = leftJoystick;
+    addRequirements(driveBase);
+    healthRequirements.put(driveBase, HealthState.YELLOW);
 
 
-    }
+  }
 
-    // Called just before this Command runs the first time
-    @Override
-    public void execute() {
-        driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist(), true);
-    }
+  // Called just before this Command runs the first time
+  @Override
+  public void execute() {
+    driveBase.arcadeDrive(-1 * leftJoystick.getY(), -1 * leftJoystick.getTwist(), true);
+  }
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return healthRequirements;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return healthRequirements;
+  }
 
 }

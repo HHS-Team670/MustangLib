@@ -16,34 +16,34 @@ import frc.team670.mustanglib.utils.MustangController;
  */
 public class XboxRobotOrientedDrive extends Command implements MustangCommand {
 
-    private MustangController m_controller = new MustangController(0);
-    private TankDrive driveBase;
-    public final double maxSpeed = 0.5;
-    private Map<MustangSubsystemBase, HealthState> healthRequirements =
-            new HashMap<MustangSubsystemBase, HealthState>();
+  private MustangController m_controller = new MustangController(0);
+  private TankDrive driveBase;
+  public final double maxSpeed = 0.5;
+  private Map<MustangSubsystemBase, HealthState> healthRequirements =
+      new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    public XboxRobotOrientedDrive(TankDrive driveBase, MustangController driverController) {
-        this.driveBase = driveBase;
-        this.m_controller = driverController;
-        addRequirements(driveBase);
-        healthRequirements.put(driveBase, HealthState.YELLOW);
+  public XboxRobotOrientedDrive(TankDrive driveBase, MustangController driverController) {
+    this.driveBase = driveBase;
+    this.m_controller = driverController;
+    addRequirements(driveBase);
+    healthRequirements.put(driveBase, HealthState.YELLOW);
 
-    }
+  }
 
-    @Override
-    public void execute() {
+  @Override
+  public void execute() {
 
-        // get x and y components of joystick push
-        double ySpeed = JoystickUtils.smoothInput(m_controller.getLeftStickY());
+    // get x and y components of joystick push
+    double ySpeed = JoystickUtils.smoothInput(m_controller.getLeftStickY());
 
-        // twist from right joystick
-        double zRotation = -JoystickUtils.smoothInput(m_controller.getRightStickX());
-        driveBase.curvatureDrive(-ySpeed, zRotation, true);
-    }
+    // twist from right joystick
+    double zRotation = -JoystickUtils.smoothInput(m_controller.getRightStickX());
+    driveBase.curvatureDrive(-ySpeed, zRotation, true);
+  }
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return healthRequirements;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return healthRequirements;
+  }
 }

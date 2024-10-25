@@ -15,26 +15,26 @@ import frc.team670.mustanglib.utils.ConsoleLogger;
  */
 public class ToggleIdleMode extends InstantCommand implements MustangCommand {
 
-    private DriveBase driveBase;
+  private DriveBase driveBase;
 
-    public ToggleIdleMode(DriveBase driveBase) {
-        super();
-        ConsoleLogger.consoleLog("Switching idle mode");
-        this.driveBase = driveBase;
-    }
+  public ToggleIdleMode(DriveBase driveBase) {
+    super();
+    ConsoleLogger.consoleLog("Switching idle mode");
+    this.driveBase = driveBase;
+  }
 
 
-    /**
-     * The initialize function toggles the idle mode of the drive base.
-     */
-    public void initialize() {
-        driveBase.toggleIdleMode();
-    }
+  /**
+   * The initialize function toggles the idle mode of the drive base.
+   */
+  public void initialize() {
+    driveBase.toggleIdleMode();
+  }
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
-        return null;
-    }
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+    return null;
+  }
 
 
 

@@ -7,53 +7,53 @@ import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
 /**
  * Basic test for motors using SparkMAX controllers
- * 
+ *
  * @author ctychen
  */
 public class SparkMAXChecker extends MotorChecker<CANSparkMax> {
 
-    public static class StoredSparkConfig {
-        CANSparkMax leader = null;
+  public static class StoredSparkConfig {
+    CANSparkMax leader = null;
+  }
+
+  public ArrayList<StoredSparkConfig> mStoredConfigs = new ArrayList<>();
+
+  @Override
+  public void storeConfig() {
+    // record the last configs used on these motors
+    for (MotorConfig<CANSparkMax> config : motorsToCheck) {
+      SparkMAXLite spark = (SparkMAXLite) config.motor;
+
+      StoredSparkConfig configuration = new StoredSparkConfig();
+      configuration.leader = spark.getLeader();
+
+      mStoredConfigs.add(configuration);
+      spark.restoreFactoryDefaults();
     }
+  }
 
-    public ArrayList<StoredSparkConfig> mStoredConfigs = new ArrayList<>();
-
-    @Override
-    public void storeConfig() {
-        // record the last configs used on these motors
-        for (MotorConfig<CANSparkMax> config : motorsToCheck) {
-            SparkMAXLite spark = (SparkMAXLite) config.motor;
-
-            StoredSparkConfig configuration = new StoredSparkConfig();
-            configuration.leader = spark.getLeader();
-
-            mStoredConfigs.add(configuration);
-            spark.restoreFactoryDefaults();
-        }
+  @Override
+  public void restoreConfig() {
+    for (int i = 0; i < motorsToCheck.size(); ++i) {
+      if (mStoredConfigs.get(i).leader != null) {
+        motorsToCheck.get(i).motor.follow(mStoredConfigs.get(i).leader);
+      }
     }
+  }
 
-    @Override
-    public void restoreConfig() {
-        for (int i = 0; i < motorsToCheck.size(); ++i) {
-            if (mStoredConfigs.get(i).leader != null) {
-                motorsToCheck.get(i).motor.follow(mStoredConfigs.get(i).leader);
-            }
-        }
-    }
+  @Override
+  public void setOutput(CANSparkMax motor, double output) {
+    motor.getPIDController().setReference(output, CANSparkMax.ControlType.kDutyCycle);
+  }
 
-    @Override
-    public void setOutput(CANSparkMax motor, double output) {
-        motor.getPIDController().setReference(output, CANSparkMax.ControlType.kDutyCycle);
-    }
+  @Override
+  public double getCurrent(CANSparkMax motor) {
+    return motor.getOutputCurrent();
+  }
 
-    @Override
-    public double getCurrent(CANSparkMax motor) {
-        return motor.getOutputCurrent();
-    }
-
-    public static boolean checkMotors(MustangSubsystemBase subsystem,
-            ArrayList<MotorConfig<CANSparkMax>> motorsToCheck, Config checkerConfig) {
-        return SparkMAXChecker.checkMotors(subsystem, motorsToCheck, checkerConfig);
-    }
+  public static boolean checkMotors(MustangSubsystemBase subsystem,
+      ArrayList<MotorConfig<CANSparkMax>> motorsToCheck, Config checkerConfig) {
+    return SparkMAXChecker.checkMotors(subsystem, motorsToCheck, checkerConfig);
+  }
 
 }

@@ -8,9 +8,9 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
 
 /**
- * 
+ *
  * Resets navX. Makes all navX fields reset or go to zero
- * 
+ *
  *
  * This instant command which implements the MustangCommand interface to allow easier debugging and
  * integration into the MustangLib ecosystem developed by FRC team 670 is used to reset the navX and
@@ -20,22 +20,22 @@ import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
  */
 public class ResetNavX extends InstantCommand implements MustangCommand {
 
-    NavX navx;
+  NavX navx;
 
-    public ResetNavX(NavX navx) {
-        this.navx = navx;
-    }
-
-
-    public void initialize() {
-        navx.reset();
-
-    }
+  public ResetNavX(NavX navx) {
+    this.navx = navx;
+  }
 
 
-    @Override
-    public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+  public void initialize() {
+    navx.reset();
 
-        return null;
-    }
+  }
+
+
+  @Override
+  public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+
+    return null;
+  }
 }
