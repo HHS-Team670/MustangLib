@@ -61,6 +61,10 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
 
     }
 
+    public void unregister(){
+        MustangScheduler.getInstance().unregisterSubsystem(this);
+    }
+
     /**
      * 
      * @param check Whether or not the subsystem's health should be (re)calculated.
