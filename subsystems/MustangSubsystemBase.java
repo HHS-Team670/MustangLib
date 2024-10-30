@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.commands.MustangScheduler;
 import frc.team670.mustanglib.utils.MustangNotifications;
+import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 
 /**
  * Basic framework for a subsystem of the robot with defined levels of system
@@ -93,6 +94,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
     public void initDefaultCommand(MustangCommand command) {
         MustangScheduler.getInstance().setDefaultCommand(this, command);
     }
+
+    public abstract SparkMAXLite[] getMotors();
 
     /**
      * Checks the health of this subsystem and attempts to run this subsystem's mustangperiodic if the health is yellow unknown or green
