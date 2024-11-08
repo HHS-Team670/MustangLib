@@ -1,0 +1,40 @@
+/*
+IMPORTANT NOTE WHEN MOVING THIS FILE INTO ANOTHER PROJECT:
+This file must be inside of the .vscode folder. This folder must be at the ROOT of the project.
+When moving mustangLib into another project, add the settings.json settings below into the settings.json file of the other proejct and keep anything else already in settings.json
+
+*/
+
+{
+  // Format the code when saving files
+  "editor.formatOnSave": true,
+
+  // Enable organizing imports (sort imports and remove unused ones)
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit"
+  },
+
+  "editor.tabSize": 2,
+  "editor.insertSpaces": true,
+  "editor.autoIndent": "full",
+  "editor.detectIndentation": false,
+
+  // Set maximum line length for word wrapping
+  "editor.wordWrap": "bounded",
+  "editor.wordWrapColumn": 140,
+
+  "java.format.enabled": true,
+  "[java]": {
+    "editor.defaultFormatter": "redhat.java"
+  },
+
+  // Use a specific Java formatter
+  "java.format.settings.url": "https://raw.githubusercontent.com/google/styleguide/gh-pages/eclipse-java-google-style.xml",
+  "java.format.settings.profile": "GoogleStyle", // Change to your preferred profile
+
+  //Remove extra spaces/tabs at the end of lines
+  "files.trimTrailingWhitespace": true,
+
+  //Remove more than one extra new line at the end of files
+  "files.trimFinalNewlines": true,
+}
