@@ -1,8 +1,8 @@
 # Description
 
-Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change.
-
-Fixes # (Issue)
+Removed the path finder folder and related files from mustanglib.
+The files were not being used anywhere except fieldConstants (outdated file)
+Change does not affect any subsystems. 
 
 ## Affected Subsystems
 
@@ -14,7 +14,7 @@ Please check the subsystems that will be affected by this change
 - [ ] Climber
 - [ ] Indexer
 - [ ] VendorDeps Update
-- [ ] Library Update
+- [X] Library Update
 - [ ] Vision
 - [ ] Auton
       
@@ -24,8 +24,8 @@ Please describe the steps you took to verify this feature/change/bux fix.
 
 # Checklist:
 
-- [ ] My changes pass ./gradlew build
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
+- [x] My changes pass ./gradlew build
+- [x] My code follows the style guidelines of this project
+- [x] I have performed a self-review of my code
+- [x] I have commented my code, particularly in hard-to-understand areas
+- [x] I have made corresponding changes to the documentation
