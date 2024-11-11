@@ -10,7 +10,6 @@ Generalized Robot Code for Team 670
 - Drivebase Generalization- TankDrive, H-drive, Swerve Drive
 - Command Generalization (RocketLeague, Field Oriented) that uses the drivebase generalization
 - MustangController
-- Sophisticated vision and obstacle avoidance (not fully functional)
 - Sensor Generalizations (NavX, BeamBreak, IR, Color, Time of Flight, Multiplexer, etc.)
 - Utilities: Math, Logger, Search algorithms
 - SparkMaxFactory - configuring SparkMax motor to default settings

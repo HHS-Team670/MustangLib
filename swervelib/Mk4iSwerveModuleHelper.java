@@ -109,7 +109,6 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive NEO.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @param encoderType      The type of encoder this module is using
      * @return The configured swerve module.
      */
@@ -118,11 +117,9 @@ public final class Mk4iSwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
-            
+            int steerEncoderPort
     ) {
-        return createNeo(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createNeo(container, new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort);
     }
 
     /**
@@ -176,7 +173,6 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive NEO.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @param encoderType      The type of encoder this module is using
      * @return The configured swerve module.
      */
@@ -184,11 +180,9 @@ public final class Mk4iSwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
-            
+            int steerEncoderPort           
     ) {
-        return createNeo(new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createNeo(new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort);
     }
 
 
@@ -202,7 +196,6 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive KrakenX60.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @return The configured swerve module.
      */
     public static SwerveModule createKrakenX60Neo(
@@ -235,7 +228,6 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive Kraken X60.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @return The configured swerve module.
      */
     public static SwerveModule createKrakenX60Neo(
@@ -256,7 +248,6 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive Kraken X60.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @return The configured swerve module.
      */
     public static SwerveModule createKrakenX60Neo(
@@ -264,8 +255,7 @@ public final class Mk4iSwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
     ) {
         return new SwerveModuleFactory<>(
                 gearRatio.getConfiguration(),
@@ -288,17 +278,15 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive Kraken X60.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @return The configured swerve module.
      */
     public static SwerveModule createKrakenX60Neo(
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
+            int steerEncoderPort
     ) {
-        return createKrakenX60Neo(new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort, steerOffset);
+        return createKrakenX60Neo(new Mk4ModuleConfiguration(), gearRatio, driveMotorPort, steerMotorPort, steerEncoderPort);
     }
 
 

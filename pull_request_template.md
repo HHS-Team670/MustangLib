@@ -4,6 +4,7 @@
 - tank drive: switch smartdashboard to logger (TODO)
 - SparkMaxRotatingSubsystem:  use the allowed error in degrees param
 - MK4i: removed encoder offset
+- When Run: remove swerve offsets from RobotConstants
 
 
 
