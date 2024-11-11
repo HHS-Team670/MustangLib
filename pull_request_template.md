@@ -4,6 +4,10 @@ Removed the path finder folder and related files from mustanglib.
 The files were not being used anywhere except fieldConstants (outdated file)
 Change does not affect any subsystems. 
 
+Also fixed errors from 2025 main branch
+- Class Name does not match file name
+- SetDesiredHeading readded to XboxSwerveDrive
+
 ## Affected Subsystems
 
 Please check the subsystems that will be affected by this change

@@ -21,13 +21,13 @@ import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 * uses a singles joystick to control the left and right sides of the tank drive
 * Forward back for froward reverse and twist to turn
 */
-public class SingleJoystickDrive extends Command implements MustangCommand {
+public class JoystickRobotOrientedDrive extends Command implements MustangCommand {
     private TankDrive driveBase;
     private Joystick leftJoystick;
     private Map<MustangSubsystemBase, HealthState> healthRequirements = new HashMap<MustangSubsystemBase, HealthState>();
 
 
-    public SingleJoystickDrive(TankDrive driveBase, Joystick leftJoystick) {
+    public JoystickRobotOrientedDrive(TankDrive driveBase, Joystick leftJoystick) {
         super();
         this.driveBase = driveBase;
         this.leftJoystick = leftJoystick;
