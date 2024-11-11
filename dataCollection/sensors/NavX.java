@@ -11,6 +11,8 @@ import edu.wpi.first.math.geometry.Rotation2d;
 /**
  * Driver for a NavX board. Basically a wrapper for the AHRS class. Much of this
  * was taken from 254's code release.
+ * 
+ * https://firstwiki.github.io/wiki/navx
  */
 public class NavX {
     protected class Callback implements ITimestampedDataSubscriber {

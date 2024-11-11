@@ -5,7 +5,7 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DigitalInput;
 
 /**
- * Used to get inputs from an IR Sensor
+ * Used to get inputs from an IR Sensor. Bream Break
  * 
  * @author lakshbhambhani
  */
