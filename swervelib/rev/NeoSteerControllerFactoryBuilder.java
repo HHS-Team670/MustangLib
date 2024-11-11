@@ -2,7 +2,8 @@ package frc.team670.mustanglib.swervelib.rev;
 
 import com.revrobotics.*;
 import frc.team670.mustanglib.swervelib.*;
-import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoder;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoderFactory;
 import frc.team670.mustanglib.utils.motorcontroller.SparkMAXFactory;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardContainer;
 import static frc.team670.mustanglib.swervelib.rev.RevUtils.checkNeoError;

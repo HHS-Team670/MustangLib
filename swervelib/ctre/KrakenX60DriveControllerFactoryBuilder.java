@@ -48,12 +48,6 @@ public final class KrakenX60DriveControllerFactoryBuilder {
                     * moduleConfiguration.getDriveReduction() / TICKS_PER_ROTATION;
             double sensorVelocityCoefficient = sensorPositionCoefficient * 10.0;
 
-            // if (hasCurrentLimit()) {
-            //     motorConfiguration.CurrentLimits.SupplyCurrentLimit = currentLimit; // TODO lines 54-59?
-            //     motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
-            // }
-           // These lines of code are configuring the current limits for the TalonFX motor controller.
-           // Here's a breakdown of what each line is doing:
             motorConfiguration.CurrentLimits.SupplyCurrentLimit = 40;
             motorConfiguration.CurrentLimits.SupplyCurrentLimitEnable = true;
             motorConfiguration.CurrentLimits.StatorCurrentLimit= 100;

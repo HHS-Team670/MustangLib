@@ -1,7 +1,6 @@
 package frc.team670.mustanglib.swervelib;
 
 import frc.team670.mustanglib.swervelib.ctre.*;
-import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
 import frc.team670.mustanglib.swervelib.rev.*;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
 

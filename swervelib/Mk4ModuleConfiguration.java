@@ -2,7 +2,7 @@ package frc.team670.mustanglib.swervelib;
 
 import java.util.Objects;
 
-import frc.team670.mustanglib.swervelib.redux.AbsoluteEncoderType;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoderType;
 
 /**
  * Additional Mk4 module configuration parameters.

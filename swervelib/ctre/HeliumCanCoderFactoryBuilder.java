@@ -1,9 +1,9 @@
-package frc.team670.mustanglib.swervelib.redux;
+package frc.team670.mustanglib.swervelib.ctre;
 
 
-import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
-import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
-import frc.team670.mustanglib.swervelib.ctre.CtreUtils;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoder;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoderFactory;
+import frc.team670.mustanglib.swervelib.redux.CanandCoderAbsoluteConfiguration;
 
 import com.ctre.phoenix6.configs.MagnetSensorConfigs;
 import com.reduxrobotics.sensors.canandmag.Canandmag;

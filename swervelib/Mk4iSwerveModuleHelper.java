@@ -1,6 +1,7 @@
 package frc.team670.mustanglib.swervelib;
 
 import frc.team670.mustanglib.swervelib.ctre.*;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoderType;
 import frc.team670.mustanglib.swervelib.redux.*;
 import frc.team670.mustanglib.swervelib.rev.*;
 

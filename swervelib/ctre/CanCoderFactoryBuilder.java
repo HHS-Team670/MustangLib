@@ -8,8 +8,8 @@ import com.ctre.phoenix6.signals.AbsoluteSensorRangeValue;
 import com.ctre.phoenix6.signals.SensorDirectionValue;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.team670.mustanglib.swervelib.AbsoluteEncoder;
-import frc.team670.mustanglib.swervelib.AbsoluteEncoderFactory;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoder;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoderFactory;
 
 public class CanCoderFactoryBuilder {
 
@@ -34,13 +34,11 @@ public class CanCoderFactoryBuilder {
 
             
             config.MagnetSensor.AbsoluteSensorRange = AbsoluteSensorRangeValue.Unsigned_0To1;
-            // config.MagnetSensor.MagnetOffset = configuration.getOffset();// Should be roations
             config.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
 
             encoder.getConfigurator().apply(config);
             CtreUtils.checkCtreError(encoder.getConfigurator().apply(config), "Failed to configure CANCoder");
 
-            // CtreUtils.checkCtreError(encoder.optimizeBusUtilization(periodMilliseconds), "Failed to configure CANCoder update rate");
 
             return new EncoderImplementation(encoder);
         };

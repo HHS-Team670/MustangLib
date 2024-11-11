@@ -2,6 +2,7 @@ package frc.team670.mustanglib.swervelib;
 
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoder;
 
 public interface SwerveModule {
     Object getDriveMotor();

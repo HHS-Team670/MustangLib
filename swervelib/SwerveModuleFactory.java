@@ -4,6 +4,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardLayout;
+import frc.team670.mustanglib.swervelib.encoder.AbsoluteEncoder;
 
 public class SwerveModuleFactory<DC, SC> {
     private final ModuleConfiguration moduleConfiguration;

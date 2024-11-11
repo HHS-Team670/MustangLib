@@ -1,4 +1,4 @@
-package frc.team670.mustanglib.swervelib;
+package frc.team670.mustanglib.swervelib.encoder;
 
 @FunctionalInterface
 public interface AbsoluteEncoderFactory<Configuration> {
