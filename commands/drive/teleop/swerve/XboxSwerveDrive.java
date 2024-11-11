@@ -78,4 +78,19 @@ public class XboxSwerveDrive extends Command implements MustangCommand {
         value = deadband(value, 0.05);
         return value;
     }
+    public class SetDesiredHeading extends InstantCommand implements MustangCommand {
+        Rotation2d desiredHeading;
+        public SetDesiredHeading(Rotation2d desiredHeading) {
+            this.desiredHeading = desiredHeading;
+        }
+        @Override
+        public void initialize() {
+            driveBase.setmDesiredHeading(desiredHeading);
+        }
+        @Override
+        public Map<MustangSubsystemBase, HealthState> getHealthRequirements() {
+            return null;
+        }
+    }
+    
 }
