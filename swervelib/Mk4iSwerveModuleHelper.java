@@ -61,7 +61,6 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive NEO.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @param encoderType      The type of encoder this module is using
      * @return The configured swerve module.
      */
@@ -71,9 +70,9 @@ public final class Mk4iSwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
-    ) {
+            int steerEncoderPort
+        )
+    {
         if(configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER){
                 return new SwerveModuleFactory<>(
                         gearRatio.getConfiguration(),
@@ -134,7 +133,6 @@ public final class Mk4iSwerveModuleHelper {
      * @param driveMotorPort   The CAN ID of the drive NEO.
      * @param steerMotorPort   The CAN ID of the steer NEO.
      * @param steerEncoderPort The CAN ID of the steer CANCoder.
-     * @param steerOffset      The offset of the CANCoder in radians.
      * @param encoderType      The type of encoder this module is using
      * @return The configured swerve module.
      */
@@ -143,9 +141,7 @@ public final class Mk4iSwerveModuleHelper {
             GearRatio gearRatio,
             int driveMotorPort,
             int steerMotorPort,
-            int steerEncoderPort,
-            double steerOffset
-            
+            int steerEncoderPort
     ) {
         if(configuration.getSteerEncoderType() == AbsoluteEncoderType.HELIUM_CANCODER){
                 return new SwerveModuleFactory<>(

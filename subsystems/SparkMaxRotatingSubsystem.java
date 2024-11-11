@@ -43,7 +43,7 @@ public abstract class SparkMaxRotatingSubsystem extends MustangSubsystemBase
         this.mEncoder = mRotator.getEncoder();
         this.mRotator.setIdleMode(kConfig.kIdleMode);
         this.mController = mRotator.getPIDController();
-        this.kAllowedDeviation = kConfig.kRotatorGearRatio * 0.2 / 360;
+        this.kAllowedDeviation = kConfig.kRotatorGearRatio * kAllowedErrorDegrees/360;
 
         // set PID coefficients
         mController.setP(kConfig.kP);

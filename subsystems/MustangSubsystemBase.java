@@ -135,5 +135,8 @@ public abstract class MustangSubsystemBase extends SubsystemBase {
      */
     public abstract void mustangPeriodic();
 
+    /*
+     * Runs periodically, can be turned off
+     */
     public abstract void debugSubsystem();
 }

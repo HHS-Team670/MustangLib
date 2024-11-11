@@ -85,16 +85,16 @@ public abstract class SwerveDrive extends DriveBase {
             Motor_Type kDriveMotorType, Motor_Type kSteerMotorType,  double headingOffsetRadians,
 
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
-            int kFrontLeftModuleSteerEncoder, double kFrontLeftModuleSteerOffset, AbsoluteEncoderType kFrontLeftModuleEncoderType,
+            int kFrontLeftModuleSteerEncoder, AbsoluteEncoderType kFrontLeftModuleEncoderType,
             
             int kFrontRightModuleDriveMotor, int kFrontRightModuleSteerMotor,
-            int kFrontRightModuleSteerEncoder, double kFrontRightModuleSteerOffset, AbsoluteEncoderType kFrontRightModuleEncoderType,
+            int kFrontRightModuleSteerEncoder, AbsoluteEncoderType kFrontRightModuleEncoderType,
             
             int kBackLeftModuleDriveMotor, int kBackLeftModuleSteerMotor,
-            int kBackLeftModuleSteerEncoder, double kBackLeftModuleSteerOffset, AbsoluteEncoderType kBackLeftModuleEncoderType,
+            int kBackLeftModuleSteerEncoder,  AbsoluteEncoderType kBackLeftModuleEncoderType,
             
             int kBackRightModuleDriveMotor, int kBackRightModuleSteerMotor,
-            int kBackRightModuleSteerEncoder, double kBackRightModuleSteerOffset, AbsoluteEncoderType kBackRightModuleEncoderType
+            int kBackRightModuleSteerEncoder, AbsoluteEncoderType kBackRightModuleEncoderType
 
             
             ) {
@@ -141,8 +141,7 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
                     .withPosition(0, 0),
                 kModuleConfigFrontLeft, config.kSwerveModuleGearRatio, config.kFrontLeftModuleDriveMotor,
-                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder,
-                config.kFrontLeftModuleSteerOffset);
+                config.kFrontLeftModuleSteerMotor, config.kFrontLeftModuleSteerEncoder);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[0] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Front Left Module", BuiltInLayouts.kList).withSize(2, 4)
@@ -159,8 +158,7 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(2, 0),
                 kModuleConfigFrontRight, config.kSwerveModuleGearRatio, config.kFrontRightModuleDriveMotor,
-                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder,
-                config.kFrontRightModuleSteerOffset);
+                config.kFrontRightModuleSteerMotor, config.kFrontRightModuleSteerEncoder);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[1] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Front Right Module", BuiltInLayouts.kList).withSize(2, 4)
@@ -178,7 +176,7 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
                         .withPosition(4, 0),
                 kModuleConfigBackLeft, config.kSwerveModuleGearRatio, config.kBackLeftModuleDriveMotor,
-                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder,config.kBackLeftModuleSteerOffset);
+                config.kBackLeftModuleSteerMotor, config.kBackLeftModuleSteerEncoder);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[2] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Back Left Module", BuiltInLayouts.kList).withSize(2, 4)
@@ -195,7 +193,7 @@ public abstract class SwerveDrive extends DriveBase {
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
                     .withPosition(6, 0),
             kModuleConfigBackRight, config.kSwerveModuleGearRatio, config.kBackRightModuleDriveMotor,
-            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder,config.kBackLeftModuleSteerOffset);
+            config.kBackRightModuleSteerMotor, config.kBackRightModuleSteerEncoder);
         } else if (config.kDriveMotorType == Motor_Type.KRAKEN_X60) {
             mModules[3] = Mk4iSwerveModuleHelper.createKrakenX60Neo(
                 tab.getLayout("Back Right Module", BuiltInLayouts.kList).withSize(2, 4)
@@ -606,9 +604,7 @@ public abstract class SwerveDrive extends DriveBase {
         }
 
         public boolean atReference() {
-            // final var eTranslate = m_poseError.getTranslation();
             final var eRotate = m_rotationError;
-            // final var tolTranslate = m_poseTolerance.getTranslation();
             return Math.abs(eRotate.getRadians()) < m_rotationTolerance.getRadians();
         }
 
@@ -620,10 +616,6 @@ public abstract class SwerveDrive extends DriveBase {
         public double calculateRotationSpeed(Rotation2d currentHeading, Rotation2d desiredHeading) {
             double thetaFF =  m_thetaController.calculate(currentHeading.getRadians(),
                     desiredHeading.getRadians());
-            // if(DriverStation.isAutonomousEnabled() && SwervePoseEstimatorBase.getAlliance() == Alliance.Blue)
-            //     thetaFF *= -1;
-            //TO DO: Fix this abombination because desired heading goes the wrong way for blue
-
             m_rotationError = desiredHeading.minus(currentHeading);
 
             return thetaFF;
