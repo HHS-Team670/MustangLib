@@ -16,8 +16,8 @@ import frc.team670.mustanglib.commands.MustangCommand;
 import frc.team670.mustanglib.subsystems.drivebase.TankDrive;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase;
 import frc.team670.mustanglib.subsystems.MustangSubsystemBase.HealthState;
+import frc.team670.mustanglib.utils.JoystickUtils;
 import frc.team670.mustanglib.utils.MustangController;
-import frc.team670.mustanglib.utils.functions.JoystickUtils;
 
 /**
  * Drives the Robot using Xbox controls like the game Rocket League. Triggers
