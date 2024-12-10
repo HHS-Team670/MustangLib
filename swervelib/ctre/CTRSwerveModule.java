@@ -11,12 +11,14 @@ import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.FeedbackSensorSourceValue;
 import com.ctre.phoenix6.signals.InvertedValue;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
  
 public class CTRSwerveModule {
+
     private TalonFX m_driveMotor;
     private TalonFX m_steerMotor;
     private CANcoder m_cancoder;
@@ -33,38 +35,41 @@ public class CTRSwerveModule {
 
     private SwerveModulePosition m_internalState = new SwerveModulePosition();
 
-    public CTRSwerveModule(SwerveModuleConstants constants, String canbusName) {
-        m_driveMotor = new TalonFX(constants.DriveMotorId, canbusName);
-        m_steerMotor = new TalonFX(constants.SteerMotorId, canbusName);
-        m_cancoder = new CANcoder(constants.CANcoderId, canbusName);
+    
+
+    public CTRSwerveModule(CTRModuleConfiguration swerveModuleConstant, String canbusName) {
+
+        m_driveMotor = new TalonFX(swerveModuleConstant.DriveMotorId, canbusName);
+        m_steerMotor = new TalonFX(swerveModuleConstant.SteerMotorId, canbusName);
+        m_cancoder = new CANcoder(swerveModuleConstant.CANcoderId, canbusName);
 
         TalonFXConfiguration talonConfigs = new TalonFXConfiguration();
 
-        talonConfigs.Slot0 = constants.DriveMotorGains;
-        talonConfigs.TorqueCurrent.PeakForwardTorqueCurrent = constants.SlipCurrent;
-        talonConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -constants.SlipCurrent;
+        talonConfigs.Slot0 = swerveModuleConstant.DriveMotorGains;
+        talonConfigs.TorqueCurrent.PeakForwardTorqueCurrent = swerveModuleConstant.SlipCurrent;
+        talonConfigs.TorqueCurrent.PeakReverseTorqueCurrent = -swerveModuleConstant.SlipCurrent;
         m_driveMotor.getConfigurator().apply(talonConfigs);
 
         /* Undo changes for torqueCurrent */
         talonConfigs.TorqueCurrent = new TorqueCurrentConfigs();
 
-        talonConfigs.Slot0 = constants.SteerMotorGains;
+        talonConfigs.Slot0 = swerveModuleConstant.SteerMotorGains;
         // Modify configuration to use remote CANcoder fused
-        talonConfigs.Feedback.FeedbackRemoteSensorID = constants.CANcoderId;
+        talonConfigs.Feedback.FeedbackRemoteSensorID = swerveModuleConstant.CANcoderId;
         talonConfigs.Feedback.FeedbackSensorSource = FeedbackSensorSourceValue.FusedCANcoder;
-        talonConfigs.Feedback.RotorToSensorRatio = constants.SteerMotorGearRatio;
+        talonConfigs.Feedback.RotorToSensorRatio = swerveModuleConstant.SteerMotorGearRatio;
 
         talonConfigs.ClosedLoopGeneral.ContinuousWrap =
                 true; // Enable continuous wrap for swerve modules
 
         talonConfigs.MotorOutput.Inverted =
-                constants.SteerMotorReversed
+                swerveModuleConstant.SteerMotorReversed
                         ? InvertedValue.Clockwise_Positive
                         : InvertedValue.CounterClockwise_Positive;
         m_steerMotor.getConfigurator().apply(talonConfigs);
 
         CANcoderConfiguration cancoderConfigs = new CANcoderConfiguration();
-        cancoderConfigs.MagnetSensor.MagnetOffset = constants.CANcoderOffset;
+        cancoderConfigs.MagnetSensor.MagnetOffset = swerveModuleConstant.CANcoderOffset;
         m_cancoder.getConfigurator().apply(cancoderConfigs);
 
         m_drivePosition = m_driveMotor.getPosition();
@@ -79,8 +84,8 @@ public class CTRSwerveModule {
         m_signals[3] = m_steerVelocity;
 
         /* Calculate the ratio of drive motor rotation to meter on ground */
-        double rotationsPerWheelRotation = constants.DriveMotorGearRatio;
-        double metersPerWheelRotation = 2 * Math.PI * Units.inchesToMeters(constants.WheelRadius);
+        double rotationsPerWheelRotation = swerveModuleConstant.DriveMotorGearRatio;
+        double metersPerWheelRotation = 2 * Math.PI * Units.inchesToMeters(swerveModuleConstant.WheelRadius);
         m_driveRotationsPerMeter = rotationsPerWheelRotation / metersPerWheelRotation;
     }
 
@@ -116,7 +121,7 @@ public class CTRSwerveModule {
         m_driveMotor.setControl(m_velocitySetter.withVelocity(velocityToSet));
     }
 
-    BaseStatusSignal[] getSignals() {
+    public BaseStatusSignal[] getSignals() {
         return m_signals;
     }
 }

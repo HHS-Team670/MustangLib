@@ -2,7 +2,7 @@ package frc.team670.mustanglib.swervelib.ctre;
 
 import com.ctre.phoenix6.configs.Slot0Configs;
 
-public class SwerveModuleConstants {
+public class CTRModuleConfiguration {
     /** CAN ID of the drive motor */
     public int DriveMotorId = 0;
     /** CAN ID of the steer motor */
@@ -39,67 +39,67 @@ public class SwerveModuleConstants {
     /** True if the steering motor is reversed from the CANcoder */
     public boolean SteerMotorReversed = false;
 
-    public SwerveModuleConstants withDriveMotorId(int id) {
+    public CTRModuleConfiguration withDriveMotorId(int id) {
         this.DriveMotorId = id;
         return this;
     }
 
-    public SwerveModuleConstants withSteerMotorId(int id) {
+    public CTRModuleConfiguration withSteerMotorId(int id) {
         this.SteerMotorId = id;
         return this;
     }
 
-    public SwerveModuleConstants withCANcoderId(int id) {
+    public CTRModuleConfiguration withCANcoderId(int id) {
         this.CANcoderId = id;
         return this;
     }
 
-    public SwerveModuleConstants withCANcoderOffset(double offset) {
+    public CTRModuleConfiguration withCANcoderOffset(double offset) {
         this.CANcoderOffset = offset;
         return this;
     }
 
-    public SwerveModuleConstants withDriveMotorGearRatio(double ratio) {
+    public CTRModuleConfiguration withDriveMotorGearRatio(double ratio) {
         this.DriveMotorGearRatio = ratio;
         return this;
     }
 
-    public SwerveModuleConstants withSteerMotorGearRatio(double ratio) {
+    public CTRModuleConfiguration withSteerMotorGearRatio(double ratio) {
         this.SteerMotorGearRatio = ratio;
         return this;
     }
 
-    public SwerveModuleConstants withWheelRadius(double radius) {
+    public CTRModuleConfiguration withWheelRadius(double radius) {
         this.WheelRadius = radius;
         return this;
     }
 
-    public SwerveModuleConstants withLocationX(double locationXMeters) {
+    public CTRModuleConfiguration withLocationX(double locationXMeters) {
         this.LocationX = locationXMeters;
         return this;
     }
 
-    public SwerveModuleConstants withLocationY(double locationYMeters) {
+    public CTRModuleConfiguration withLocationY(double locationYMeters) {
         this.LocationY = locationYMeters;
         return this;
     }
 
-    public SwerveModuleConstants withSteerMotorGains(Slot0Configs gains) {
+    public CTRModuleConfiguration withSteerMotorGains(Slot0Configs gains) {
         this.SteerMotorGains = gains;
         return this;
     }
 
-    public SwerveModuleConstants withDriveMotorGains(Slot0Configs gains) {
+    public CTRModuleConfiguration withDriveMotorGains(Slot0Configs gains) {
         this.DriveMotorGains = gains;
         return this;
     }
 
-    public SwerveModuleConstants withSlipCurrent(double slipCurrent) {
+    public CTRModuleConfiguration withSlipCurrent(double slipCurrent) {
         this.SlipCurrent = slipCurrent;
         return this;
     }
 
-    public SwerveModuleConstants withSteerMotorReversed(boolean steerMotorReversed) {
+    public CTRModuleConfiguration withSteerMotorReversed(boolean steerMotorReversed) {
         this.SteerMotorReversed = steerMotorReversed;
         return this;
     }
