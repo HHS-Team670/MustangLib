@@ -125,14 +125,14 @@ public class CTRSwerve {
             return FailedDaqs;
         }
     }
-    public static record Config(double TurnKp, double TurnKd, 
+    public static record Config(double kTurnP, double kTurnD, 
             double kDriveBaseTrackWidth, double kDriveBaseWheelBase, 
-            double swerveModuleDriveRatio, double swerveModuleSteerRatio,
-            double swerveModuleWheelRadius, double swerveModuleSlipCurrent,
-            Slot0Configs swerveModuleSteerGains, Slot0Configs swerveModuleDriveGains,
-            boolean SteerMotorReversed, String CANbusName,
+            double kSwerveModuleDriveRatio, double kSwerveModuleSteerRatio,
+            double kSwerveModuleWheelRadius, double kSwerveModuleSlipCurrent,
+            Slot0Configs kSwerveModuleDriveGains, Slot0Configs kSwerveModuleSteerGains,
+            boolean kSteerMotorReversed, String kCANbusName,
 
-            int Pigeon2Id,
+            int kPigeon2Id,
 
             int kFrontLeftModuleDriveMotor, int kFrontLeftModuleSteerMotor,
             int kFrontLeftModuleSteerEncoder, double kFrontLeftEncoderOffset,
@@ -152,13 +152,12 @@ public class CTRSwerve {
 
             ) {
     }
-    public CTRSwerve(
-            Config kConfig) {
+    public CTRSwerve(Config kConfig) {
         this.kConfig = kConfig;
         m_modules = new CTRSwerveModule[4];
         MODULE_COUNT = m_modules.length;
         
-        m_pigeon2 = new Pigeon2(kConfig.Pigeon2Id, kConfig.CANbusName);
+        m_pigeon2 = new Pigeon2(kConfig.kPigeon2Id, kConfig.kCANbusName);
 
         m_modules = new CTRSwerveModule[MODULE_COUNT];
         m_moduleConfigurations = new CTRModuleConfiguration[]{
@@ -174,13 +173,13 @@ public class CTRSwerve {
                 .withCANcoderOffset(kConfig.kFrontLeftEncoderOffset)
                 .withLocationX(kConfig.kFrontLeftLocationX)
                 .withLocationY(kConfig.kFrontLeftLocationY)
-                .withDriveMotorGearRatio(kConfig.swerveModuleDriveRatio)
-                .withSteerMotorGearRatio(kConfig.swerveModuleSteerRatio)
-                .withWheelRadius(kConfig.swerveModuleWheelRadius)
-                .withSlipCurrent(kConfig.swerveModuleSlipCurrent)
-                .withSteerMotorGains(kConfig.swerveModuleSteerGains)
-                .withDriveMotorGains(kConfig.swerveModuleDriveGains)
-                .withSteerMotorReversed(kConfig.SteerMotorReversed);
+                .withDriveMotorGearRatio(kConfig.kSwerveModuleDriveRatio)
+                .withSteerMotorGearRatio(kConfig.kSwerveModuleSteerRatio)
+                .withWheelRadius(kConfig.kSwerveModuleWheelRadius)
+                .withSlipCurrent(kConfig.kSwerveModuleSlipCurrent)
+                .withSteerMotorGains(kConfig.kSwerveModuleSteerGains)
+                .withDriveMotorGains(kConfig.kSwerveModuleDriveGains)
+                .withSteerMotorReversed(kConfig.kSteerMotorReversed);
 
         kModuleConfigFrontRight.withSteerMotorId(kConfig.kFrontRightModuleSteerMotor)
                 .withDriveMotorId(kConfig.kFrontRightModuleDriveMotor)
@@ -188,13 +187,13 @@ public class CTRSwerve {
                 .withCANcoderOffset(kConfig.kFrontRightEncoderOffset)
                 .withLocationX(kConfig.kFrontRightLocationX)
                 .withLocationY(kConfig.kFrontRightLocationY)
-                .withDriveMotorGearRatio(kConfig.swerveModuleDriveRatio)
-                .withSteerMotorGearRatio(kConfig.swerveModuleSteerRatio)
-                .withWheelRadius(kConfig.swerveModuleWheelRadius)
-                .withSlipCurrent(kConfig.swerveModuleSlipCurrent)
-                .withSteerMotorGains(kConfig.swerveModuleSteerGains)
-                .withDriveMotorGains(kConfig.swerveModuleDriveGains)
-                .withSteerMotorReversed(kConfig.SteerMotorReversed);
+                .withDriveMotorGearRatio(kConfig.kSwerveModuleDriveRatio)
+                .withSteerMotorGearRatio(kConfig.kSwerveModuleSteerRatio)
+                .withWheelRadius(kConfig.kSwerveModuleWheelRadius)
+                .withSlipCurrent(kConfig.kSwerveModuleSlipCurrent)
+                .withSteerMotorGains(kConfig.kSwerveModuleSteerGains)
+                .withDriveMotorGains(kConfig.kSwerveModuleDriveGains)
+                .withSteerMotorReversed(kConfig.kSteerMotorReversed);
 
         kModuleConfigBackLeft.withSteerMotorId(kConfig.kBackLeftModuleSteerMotor)
                 .withDriveMotorId(kConfig.kBackLeftModuleDriveMotor)
@@ -202,13 +201,13 @@ public class CTRSwerve {
                 .withCANcoderOffset(kConfig.kBackLeftEncoderOffset)
                 .withLocationX(kConfig.kBackLeftLocationX)
                 .withLocationY(kConfig.kBackLeftLocationY)
-                .withDriveMotorGearRatio(kConfig.swerveModuleDriveRatio)
-                .withSteerMotorGearRatio(kConfig.swerveModuleSteerRatio)
-                .withWheelRadius(kConfig.swerveModuleWheelRadius)
-                .withSlipCurrent(kConfig.swerveModuleSlipCurrent)
-                .withSteerMotorGains(kConfig.swerveModuleSteerGains)
-                .withDriveMotorGains(kConfig.swerveModuleDriveGains)
-                .withSteerMotorReversed(kConfig.SteerMotorReversed);
+                .withDriveMotorGearRatio(kConfig.kSwerveModuleDriveRatio)
+                .withSteerMotorGearRatio(kConfig.kSwerveModuleSteerRatio)
+                .withWheelRadius(kConfig.kSwerveModuleWheelRadius)
+                .withSlipCurrent(kConfig.kSwerveModuleSlipCurrent)
+                .withSteerMotorGains(kConfig.kSwerveModuleSteerGains)
+                .withDriveMotorGains(kConfig.kSwerveModuleDriveGains)
+                .withSteerMotorReversed(kConfig.kSteerMotorReversed);
         
         kModuleConfigBackRight.withSteerMotorId(kConfig.kBackRightModuleSteerMotor)
                 .withDriveMotorId(kConfig.kBackRightModuleDriveMotor)
@@ -216,16 +215,16 @@ public class CTRSwerve {
                 .withCANcoderOffset(kConfig.kBackRightEncoderOffset)
                 .withLocationX(kConfig.kBackRightLocationX)
                 .withLocationY(kConfig.kBackRightLocationY)
-                .withDriveMotorGearRatio(kConfig.swerveModuleDriveRatio)
-                .withSteerMotorGearRatio(kConfig.swerveModuleSteerRatio)
-                .withWheelRadius(kConfig.swerveModuleWheelRadius)
-                .withSlipCurrent(kConfig.swerveModuleSlipCurrent)
-                .withSteerMotorGains(kConfig.swerveModuleSteerGains)
-                .withDriveMotorGains(kConfig.swerveModuleDriveGains)
-                .withSteerMotorReversed(kConfig.SteerMotorReversed);
+                .withDriveMotorGearRatio(kConfig.kSwerveModuleDriveRatio)
+                .withSteerMotorGearRatio(kConfig.kSwerveModuleSteerRatio)
+                .withWheelRadius(kConfig.kSwerveModuleWheelRadius)
+                .withSlipCurrent(kConfig.kSwerveModuleSlipCurrent)
+                .withSteerMotorGains(kConfig.kSwerveModuleSteerGains)
+                .withDriveMotorGains(kConfig.kSwerveModuleDriveGains)
+                .withSteerMotorReversed(kConfig.kSteerMotorReversed);
 
         for(int iteration = 0; iteration < MODULE_COUNT; iteration++) {
-            m_modules[iteration] = new CTRSwerveModule(m_moduleConfigurations[iteration], kConfig.CANbusName);
+            m_modules[iteration] = new CTRSwerveModule(m_moduleConfigurations[iteration], kConfig.kCANbusName);
             m_moduleLocations[iteration] = new Translation2d(m_moduleConfigurations[iteration].LocationX, m_moduleConfigurations[iteration].LocationY);
             m_modulePositions[iteration] = m_modules[iteration].getPosition(true);
         }
@@ -236,7 +235,7 @@ public class CTRSwerve {
         m_field = new Field2d();
         SmartDashboard.putData("Field", m_field);
 
-        m_turnPid = new PIDController(kConfig.TurnKp, 0, kConfig.TurnKd);
+        m_turnPid = new PIDController(kConfig.kTurnP, 0, kConfig.kTurnD);
         m_turnPid.enableContinuousInput(-Math.PI, Math.PI);
 
         m_odometryThread = new OdometryThread();
