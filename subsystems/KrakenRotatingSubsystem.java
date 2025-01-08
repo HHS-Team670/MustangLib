@@ -6,16 +6,11 @@ import com.ctre.phoenix6.configs.*;
 import com.ctre.phoenix6.controls.*;
 import com.ctre.phoenix6.hardware.TalonFX;
 import com.ctre.phoenix6.signals.*;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkBase.SoftLimitDirection;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.SparkPIDController;
 
 import frc.team670.mustanglib.swervelib.ctre.CtreUtils;
 import frc.team670.mustanglib.utils.ConsoleLogger;
 import frc.team670.mustanglib.utils.functions.MathUtils;
 import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
-import frc.team670.mustanglib.utils.motorcontroller.SparkMAXLite;
 import frc.team670.mustanglib.utils.motorcontroller.CTREFactory;
 import frc.team670.mustanglib.utils.motorcontroller.CTRELite;
 
@@ -54,35 +49,31 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
         talonSlot0Configs.kI = kConfig.kI;
         talonSlot0Configs.kD = kConfig.kD;
         
-
-        mRotator.setNeutralMode(NeutralModeValue.Brake);
-
-        mController.setIZone(kConfig.kIz);
-        mController.setFF(kConfig.kFF);
-        mController.setOutputRange(kConfig.kMinOutput, kConfig.kMaxOutput);
+        talonFXConfigs.CurrentLimits.StatorCurrentLimit = kConfig.kContinuousCurrent;
+        talonFXConfigs.CurrentLimits.SupplyCurrentLimit = kConfig.kPeakCurrent;
+        talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        talonFXConfigs.MotorOutput.PeakForwardDutyCycle = kConfig.kMaxOutput;
+        talonFXConfigs.MotorOutput.PeakReverseDutyCycle = -kConfig.kMaxOutput;
 
         var motionMagicConfigs = talonFXConfigs.MotionMagic;
-        mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM, kConfig.kSlot);
-        mController.setSmartMotionMinOutputVelocity(kConfig.kMinRotatorRPM, kConfig.kSlot);
-        mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration, kConfig.kSlot);
-        mController.setSmartMotionAllowedClosedLoopError(kAllowedDeviation, kConfig.kSlot);
-
+        motionMagicConfigs.MotionMagicAcceleration = kConfig.kMaxAcceleration;
         
-        mRotator.setSmartCurrentLimit(kConfig.kPeakCurrent, kConfig.kContinuousCurrent);
-
-        CtreUtils.checkCtreError(mRotator.getConfigurator().apply(talonFXConfigs),
-                    "Failed to configure Kraken PIDs");
+        
 
         //sets the soft limits
-        if (kConfig.kSoftLimits == null || kConfig.kSoftLimits.length > 2) {
-            mRotator.enableSoftLimit(SoftLimitDirection.kForward, false);
-            mRotator.enableSoftLimit(SoftLimitDirection.kReverse, false);
+        if (!(kConfig.kSoftLimits == null || kConfig.kSoftLimits.length > 2)) {
+            talonFXConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+            talonFXConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
         } else {
-            mRotator.setSoftLimit(SoftLimitDirection.kForward, kConfig.kSoftLimits[0]);
-            mRotator.setSoftLimit(SoftLimitDirection.kReverse, kConfig.kSoftLimits[1]);
-            mRotator.enableSoftLimit(SoftLimitDirection.kForward, true);
-            mRotator.enableSoftLimit(SoftLimitDirection.kReverse, true);
+            talonFXConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kConfig.kSoftLimits[0];
+            talonFXConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kConfig.kSoftLimits[1];
+            talonFXConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+            talonFXConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
         }
+        
+        CtreUtils.checkCtreError(mRotator.getConfigurator().apply(talonFXConfigs),
+                    "Failed to configure Kraken PIDs");
+        
         // getMaxSubsystemRPM(config.kMaxRotatorRPM);
         mSetpoint = kNoSetPoint;
 
@@ -155,11 +146,9 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
     protected boolean setSystemMotionTarget(double setpoint, double arbitraryFF) {
         if (checkSoftLimits(setpoint)) {
             if (setpoint != kNoSetPoint) {
-                mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion, 0,
-                        arbitraryFF);
-    
+                mRotator.setControl(new MotionMagicDutyCycle(setpoint).withFeedForward(arbitraryFF));
             } else {
-                mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+                mRotator.setControl(0);
             }
             this.mSetpoint = setpoint;
             return true;
@@ -179,7 +168,7 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
     protected boolean setTemporaryMotionTarget(double setpoint) {
         if (checkSoftLimits(setpoint)) {
             mTempSetpoint = setpoint;
-            mController.setReference(setpoint, CANSparkMax.ControlType.kSmartMotion);
+            mRotator.setControl(new MotionMagicDutyCycle(setpoint));
             return true;
         }
         return false;
@@ -272,8 +261,7 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
      */
     public void updateArbitraryFeedForward(double voltage) {
         if (mSetpoint != kNoSetPoint) {
-            mController.setReference(mSetpoint, CANSparkMax.ControlType.kSmartMotion, kConfig.kSlot,
-                    voltage);
+            mRotator.setControl(new MotionMagicVoltage(mSetpoint).withFeedForward(voltage));
         }
     }
 
@@ -319,7 +307,7 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
      */
     public boolean clearSetpoint() {
         if (checkSoftLimits(0)) {
-            mController.setReference(0, CANSparkMax.ControlType.kDutyCycle);
+            mRotator.setControl(new MotionMagicDutyCycle(0));
             mSetpoint = kNoSetPoint;
             return true;
         }
@@ -327,22 +315,14 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
 
     }
   /**
-    * The function returns the SparkMAXLite object for the rotator.
+    * The function returns the CTRELite object for the rotator.
     * 
-    * @return The method is returning an object of type SparkMAXLite.
+    * @return The method is returning an object of type CTRELite.
     */
     public CTRELite getRotator() {
         return this.mRotator;
     }
 
-   /**
-     * The function returns a SparkMaxPIDController object named "mController".
-     * 
-     * @return The method is returning a SparkMaxPIDController object.
-     */
-    public SparkPIDController getRotatorController() {
-        return this.mController;
-    }
    /**
      * The function sets the output of a rotator based on a given percentage.
      * 

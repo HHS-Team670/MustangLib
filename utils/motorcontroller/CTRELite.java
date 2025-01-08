@@ -9,7 +9,7 @@ import com.ctre.phoenix6.controls.ControlRequest;
  * Wrapper class for a SparkMAX for reducing CAN bus overhead by skipping
  * duplicate set commands.
  * 
- * @author ctychen, lakshbhambhani
+ * @author smishra467, ctychen, lakshbhambhani
  */
 public final class CTRELite extends TalonFX {
 
