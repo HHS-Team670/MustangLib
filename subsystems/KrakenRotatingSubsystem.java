@@ -86,7 +86,7 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
      * @return The count, in motor rotations, from the subsystem's rotator's integrated encoder.
      */
     public double getUnadjustedPosition() {
-        return this.mRotator.getPosition().getValueAsDouble();
+        return this.mRotator.getPosition().getValue().magnitude();
     }
     /**
      * The function calculates the maximum subsystem RPM based on the given rotator RPM and a constant
@@ -228,9 +228,9 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
      * @param factor Multiplier for ff. For example, if you want to halve it, factor should be 0.5
      */
     protected void temporaryScaleSmartMotionMaxVelAndAccel(double factor) {
-        mController.setFF(kConfig.kFF * factor);
-        mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM * factor, kConfig.kSlot);
-        mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration * factor, kConfig.kSlot);
+        TalonFXConfigurator tfc = mRotator.getConfigurator();
+        tfc.refresh(new Slot0Configs().withKA(kConfig.kFF * factor)); // Assumes acceleration FF
+        tfc.refresh(new MotionMagicConfigs().withMotionMagicCruiseVelocity(kConfig.kMaxRotatorRPM * factor).withMotionMagicAcceleration(kConfig.kMaxAcceleration * factor));
     }
 
     /**
@@ -239,9 +239,9 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
      * testing, unjamming, or zeroing, to bring motion back to normal.
      */
     protected void resetSmartMotionSettingsToSystem() {
-        mController.setFF(kConfig.kFF);
-        mController.setSmartMotionMaxVelocity(kConfig.kMaxRotatorRPM, kConfig.kSlot);
-        mController.setSmartMotionMaxAccel(kConfig.kMaxAcceleration, kConfig.kSlot);
+        TalonFXConfigurator tfc = mRotator.getConfigurator();
+        tfc.refresh(new Slot0Configs().withKA(kConfig.kFF)); // Assumes acceleration FF
+        tfc.refresh(new MotionMagicConfigs().withMotionMagicCruiseVelocity(kConfig.kMaxRotatorRPM).withMotionMagicAcceleration(kConfig.kMaxAcceleration));
     }
 
     /**
@@ -249,7 +249,7 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
      * @return The current position of the subsystem, in degrees.
      */
     public double getCurrentAngleInDegrees() {
-        double rotations = getRotatorEncoder().getPosition();
+        double rotations = this.mRotator.getPosition().getValue().magnitude();
         double angle = 360 * ((rotations) / kConfig.kRotatorGearRatio);
         return angle%360;
     }
@@ -278,20 +278,20 @@ public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
      * @return true if the subsystem is close to its target position, within some margin of error.
      */
     public boolean hasReachedTargetPosition() {
-        return (MathUtils.doublesEqual(mRotator.getPosition().getValueAsDouble(), mSetpoint, kAllowedDeviation));
+        return (MathUtils.doublesEqual(this.mRotator.getPosition().getValue().magnitude(), mSetpoint, kAllowedDeviation));
     }
 
     /*
      * sets idle mode to coast
      */
     protected void enableCoastMode() {
-        mRotator.setIdleMode(IdleMode.kCoast);
+        mRotator.setNeutralMode(NeutralModeValue.Coast);
     }
     /*
      * sets idle mode to brake
      */
     protected void enableBrakeMode() {
-        mRotator.setIdleMode(IdleMode.kBrake);
+        mRotator.setNeutralMode(NeutralModeValue.Brake);
     }
 
     /**
