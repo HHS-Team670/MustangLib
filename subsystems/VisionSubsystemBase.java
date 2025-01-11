@@ -235,7 +235,7 @@ public abstract class VisionSubsystemBase extends MustangSubsystemBase {
                 AprilTagFieldLayout fieldLayout) {
             this.photonCamera = photonCamera;
             estimator = new PhotonPoseEstimator(fieldLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,
-                    photonCamera, robotToCam);
+                    robotToCam);
             estimator.setMultiTagFallbackStrategy(PoseStrategy.LOWEST_AMBIGUITY);
         }
         /**

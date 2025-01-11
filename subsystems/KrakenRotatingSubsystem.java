@@ -1,0 +1,335 @@
+
+package frc.team670.mustanglib.subsystems;
+
+import com.ctre.phoenix6.*;
+import com.ctre.phoenix6.configs.*;
+import com.ctre.phoenix6.controls.*;
+import com.ctre.phoenix6.hardware.TalonFX;
+import com.ctre.phoenix6.signals.*;
+
+import frc.team670.mustanglib.swervelib.ctre.CtreUtils;
+import frc.team670.mustanglib.utils.ConsoleLogger;
+import frc.team670.mustanglib.utils.functions.MathUtils;
+import frc.team670.mustanglib.utils.motorcontroller.MotorConfig;
+import frc.team670.mustanglib.utils.motorcontroller.CTREFactory;
+import frc.team670.mustanglib.utils.motorcontroller.CTRELite;
+
+/**
+ * Superclass for any rotating subsystem which uses a Kraken to control the rotator.
+ */
+public abstract class KrakenRotatingSubsystem extends MustangSubsystemBase
+        implements TunableSubsystem {
+
+    protected CTRELite mRotator;
+    protected double mSetpoint;
+    protected double mTempSetpoint;
+
+    protected final Config kConfig;
+    protected static final double kNoSetPoint = 9999;
+    
+    private final double kAllowedDeviation;
+    
+    public record Config(int kDeviceID, int kSlot, MotorConfig.Motor_Type kMotorType,
+            IdleMode kIdleMode, double kRotatorGearRatio, double kP, double kI, double kD,
+            double kFF, double kIz, double kMaxOutput, double kMinOutput, double kMaxRotatorRPM,
+            double kMinRotatorRPM, double kMaxAcceleration, double kAllowedErrorDegrees, 
+            float[] kSoftLimits, int kContinuousCurrent, int kPeakCurrent) {
+    }
+
+    public KrakenRotatingSubsystem(Config kConfig) {
+        this.kConfig = kConfig;
+
+        this.mRotator = CTREFactory.buildFactoryKraken(kConfig.kDeviceID, kConfig.kMotorType);
+        this.kAllowedDeviation = kConfig.kRotatorGearRatio * 0.2 / 360;
+
+        var talonFXConfigs = new TalonFXConfiguration();
+        // set PID coefficients
+        Slot0Configs talonSlot0Configs = talonFXConfigs.Slot0;
+        talonSlot0Configs.kP = kConfig.kP;
+        talonSlot0Configs.kI = kConfig.kI;
+        talonSlot0Configs.kD = kConfig.kD;
+        
+        talonFXConfigs.CurrentLimits.StatorCurrentLimit = kConfig.kContinuousCurrent;
+        talonFXConfigs.CurrentLimits.SupplyCurrentLimit = kConfig.kPeakCurrent;
+        talonFXConfigs.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+        talonFXConfigs.MotorOutput.PeakForwardDutyCycle = kConfig.kMaxOutput;
+        talonFXConfigs.MotorOutput.PeakReverseDutyCycle = -kConfig.kMaxOutput;
+
+        var motionMagicConfigs = talonFXConfigs.MotionMagic;
+        motionMagicConfigs.MotionMagicAcceleration = kConfig.kMaxAcceleration;
+        
+        
+
+        //sets the soft limits
+        if (!(kConfig.kSoftLimits == null || kConfig.kSoftLimits.length > 2)) {
+            talonFXConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = false;
+            talonFXConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = false;
+        } else {
+            talonFXConfigs.SoftwareLimitSwitch.ForwardSoftLimitThreshold = kConfig.kSoftLimits[0];
+            talonFXConfigs.SoftwareLimitSwitch.ReverseSoftLimitThreshold = kConfig.kSoftLimits[1];
+            talonFXConfigs.SoftwareLimitSwitch.ForwardSoftLimitEnable = true;
+            talonFXConfigs.SoftwareLimitSwitch.ReverseSoftLimitEnable = true;
+        }
+        
+        CtreUtils.checkCtreError(mRotator.getConfigurator().apply(talonFXConfigs),
+                    "Failed to configure Kraken PIDs");
+        
+        // getMaxSubsystemRPM(config.kMaxRotatorRPM);
+        mSetpoint = kNoSetPoint;
+
+        clearSetpoint();
+
+    }
+
+    /**
+     * 
+     * @return The count, in motor rotations, from the subsystem's rotator's integrated encoder.
+     */
+    public double getUnadjustedPosition() {
+        return this.mRotator.getPosition().getValue().magnitude();
+    }
+    /**
+     * The function calculates the maximum subsystem RPM based on the given rotator RPM and a constant
+     * gear ratio.
+     * 
+     * @param rotRPM The parameter "rotRPM" represents the rotational speed of a subsystem, rotations per minute
+     * @return The method is returning the maximum subsystem RPM.
+     */
+    public double getMaxSubsystemRPM(double rotRPM) {
+        return rotRPM / kConfig.kRotatorGearRatio;
+    }
+    
+    /**
+     * The function checks if a given setpoint is within the soft limits defined in the kConfig object.
+     * 
+     * @param setpoint The "setpoint" parameter represents the value that you want to check if it is
+     * within the soft limits.
+     * @return if a given setpoint is within the soft limits defined in the kConfig object.
+     */
+    private boolean checkSoftLimits(double setpoint){
+        
+        if (kConfig.kSoftLimits != null && (setpoint > kConfig.kSoftLimits[0] || setpoint < kConfig.kSoftLimits[1])) {
+            ConsoleLogger.consoleLog("In " +getName()+" Improper setpoint: " + setpoint + " Setpoint should be between " +kConfig.kSoftLimits[1]
+            + " and " + kConfig.kSoftLimits[0]);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * The function sets the motion target for a system, but first checks if the setpoint is within the soft
+     * limits and logs an error message if it is not.
+     * 
+     * @param setpoint The setpoint is the desired target value for the system's motion.
+     * @return if this action was sucessful
+     */
+    protected boolean setSystemMotionTarget(double setpoint) {
+        if (checkSoftLimits(setpoint)) {
+            setSystemMotionTarget(setpoint, 0);
+            return true;
+        }
+        return false;
+        
+    }
+
+   /**
+     * The function sets the motion target for a system, taking into account soft limits and using a
+     * PID controller if a setpoint is provided.
+     * 
+     * @param setpoint The setpoint parameter is the desired target value for the system's motion. It
+     * represents the position that the system needs to reach or maintain.
+     * @param arbitraryFF The arbitraryFF parameter is a feedforward term that is used to compensate
+     * for any external forces or disturbances acting on the system. It is an arbitrary value that you
+     * can adjust to achieve the desired response of the system.
+     * @return if this action was sucessful
+     */
+    protected boolean setSystemMotionTarget(double setpoint, double arbitraryFF) {
+        if (checkSoftLimits(setpoint)) {
+            if (setpoint != kNoSetPoint) {
+                mRotator.setControl(new MotionMagicDutyCycle(setpoint).withFeedForward(arbitraryFF));
+            } else {
+                mRotator.setControl(0);
+            }
+            this.mSetpoint = setpoint;
+            return true;
+        }
+        return false;
+       
+    }
+
+    /**
+     * Sets an intermediate or temporary goal for the subsystem to move to. Use this when you need
+     * to do something in the process of moving to your system's target, like if you need to unjam
+     * something.
+     * 
+     * @param setpoint The temporary setpoint for the system, in motor rotations
+     * @return if this action was sucessful
+     */
+    protected boolean setTemporaryMotionTarget(double setpoint) {
+        if (checkSoftLimits(setpoint)) {
+            mTempSetpoint = setpoint;
+            mRotator.setControl(new MotionMagicDutyCycle(setpoint));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Sets the overall target angle this subsystem should move to, in degrees. In some process,
+     * this is where you ultimately want to end up, so this value will be saved as the system
+     * setpoint.
+     * 
+     * @param angle The target angle this subsystem should turn to, in degrees
+     * @return if this action was sucessful
+     */
+    public boolean setSystemTargetAngleInDegrees(double angle) {
+        double setpoint= getMotorRotationsFromAngle(angle);
+        if (checkSoftLimits(setpoint)) {
+            setSystemMotionTarget(getMotorRotationsFromAngle(angle));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Sets a temporary angle setpoint for this subsystem to turn to. Use this as an intermediate
+     * step in some process -- this setpoint won't be saved.
+     * 
+     * @param angle The angle this subsystem should turn to, in degrees
+     * @return if this action was sucessful
+     */
+    public boolean setTemporaryTargetAngleInDegrees(double angle) {
+        double setpoint= getMotorRotationsFromAngle(angle);
+        if (checkSoftLimits(setpoint)) {
+            setTemporaryMotionTarget(getMotorRotationsFromAngle(angle));
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 
+     * @param angle The angle, in degrees, to be converted to motor rotations
+     * @return The number of motor rotations, as measured by the encoder, equivalent to the
+     *         subsystem turning through this angle
+     */
+    protected double getMotorRotationsFromAngle(double angle) {
+        double rotations = (angle / 360) * kConfig.kRotatorGearRatio
+                + ((int) (getUnadjustedPosition() / kConfig.kRotatorGearRatio))
+                        * kConfig.kRotatorGearRatio;
+        // Logger.consoleLog("Indexer motor rotations from angle is %s", rotations);
+        return rotations;
+    }
+
+    /**
+     * Change the system's feedforward and max velocity and acceleration temporarily. Possibly
+     * useful when zeroing, testing, or unjamming.
+     * 
+     * @param factor Multiplier for ff. For example, if you want to halve it, factor should be 0.5
+     */
+    protected void temporaryScaleSmartMotionMaxVelAndAccel(double factor) {
+        TalonFXConfigurator tfc = mRotator.getConfigurator();
+        tfc.refresh(new Slot0Configs().withKA(kConfig.kFF * factor)); // Assumes acceleration FF
+        tfc.refresh(new MotionMagicConfigs().withMotionMagicCruiseVelocity(kConfig.kMaxRotatorRPM * factor).withMotionMagicAcceleration(kConfig.kMaxAcceleration * factor));
+    }
+
+    /**
+     * Resets feedforward, SmartMotion acceleration and velocity settings to the defined system
+     * constants. Possibly useful when the system previously temporarily scaled these values for
+     * testing, unjamming, or zeroing, to bring motion back to normal.
+     */
+    protected void resetSmartMotionSettingsToSystem() {
+        TalonFXConfigurator tfc = mRotator.getConfigurator();
+        tfc.refresh(new Slot0Configs().withKA(kConfig.kFF)); // Assumes acceleration FF
+        tfc.refresh(new MotionMagicConfigs().withMotionMagicCruiseVelocity(kConfig.kMaxRotatorRPM).withMotionMagicAcceleration(kConfig.kMaxAcceleration));
+    }
+
+    /**
+     * 
+     * @return The current position of the subsystem, in degrees.
+     */
+    public double getCurrentAngleInDegrees() {
+        double rotations = this.mRotator.getPosition().getValue().magnitude();
+        double angle = 360 * ((rotations) / kConfig.kRotatorGearRatio);
+        return angle%360;
+    }
+
+    /**
+     * Calculated voltage using VoltageCalculator
+     * 
+     * @param voltage
+     */
+    public void updateArbitraryFeedForward(double voltage) {
+        if (mSetpoint != kNoSetPoint) {
+            mRotator.setControl(new MotionMagicVoltage(mSetpoint).withFeedForward(voltage));
+        }
+    }
+
+    /**
+     * 
+     * @return The setpoint in motor rotations
+     */
+    public double getSetpoint() {
+        return mSetpoint;
+    }
+
+    /**
+     * 
+     * @return true if the subsystem is close to its target position, within some margin of error.
+     */
+    public boolean hasReachedTargetPosition() {
+        return (MathUtils.doublesEqual(this.mRotator.getPosition().getValue().magnitude(), mSetpoint, kAllowedDeviation));
+    }
+
+    /*
+     * sets idle mode to coast
+     */
+    protected void enableCoastMode() {
+        mRotator.setNeutralMode(NeutralModeValue.Coast);
+    }
+    /*
+     * sets idle mode to brake
+     */
+    protected void enableBrakeMode() {
+        mRotator.setNeutralMode(NeutralModeValue.Brake);
+    }
+
+    /**
+     * Stops the motion of the subsystem.
+     */
+    public synchronized void stop() {
+        mRotator.set(0);
+    }
+
+    /**
+     * Clears the setpoint of this subsystem
+     * @return if this action was sucessful
+     */
+    public boolean clearSetpoint() {
+        if (checkSoftLimits(0)) {
+            mRotator.setControl(new MotionMagicDutyCycle(0));
+            mSetpoint = kNoSetPoint;
+            return true;
+        }
+        return false;
+
+    }
+  /**
+    * The function returns the CTRELite object for the rotator.
+    * 
+    * @return The method is returning an object of type CTRELite.
+    */
+    public CTRELite getRotator() {
+        return this.mRotator;
+    }
+
+   /**
+     * The function sets the output of a rotator based on a given percentage.
+     * 
+     * @param output The "output" parameter is a double value representing the desired percent output
+     * for the "mRotator" object.
+     */
+    public void moveByPercentOutput(double output) {
+        mRotator.set(output);
+    }
+}

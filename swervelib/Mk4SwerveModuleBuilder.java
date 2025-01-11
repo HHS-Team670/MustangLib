@@ -88,7 +88,7 @@ public class Mk4SwerveModuleBuilder {
             case NEO:
                 this.driveFactory = getNeoDriveFactory(this.configuration);
                 break;
-            case KRAKEN_X60:
+            case KRAKEN:
                 this.driveFactory = getKrakenX60DriveFactory(this.configuration);
                 break;
             default:
@@ -169,7 +169,7 @@ public class Mk4SwerveModuleBuilder {
 
         SteerConfiguration<CanCoderAbsoluteConfiguration> steerConfig;
 
-        if (steerMotorType == MotorType.KRAKEN_X60) {
+        if (steerMotorType == MotorType.KRAKEN) {
             steerConfig = new SteerConfiguration<>(
                     steerMotorPort, 
                     new CanCoderAbsoluteConfiguration(
